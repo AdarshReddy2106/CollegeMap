@@ -1,0 +1,135 @@
+@import "../colortheme.scss";
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    background: #002d2d;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    .logo {
+        width: 11rem;
+
+        span {
+            color: #10c3bc;
+        }
+
+        @media (max-width: 990px) {
+            width: 7rem;
+        }
+    }
+
+    .navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        .cta {
+            background-color: #10c3bc;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+
+            &:hover {
+                background-color: #0ea5a0;
+            }
+        }
+
+        .login-size {
+            padding: 0.7rem 1rem;
+        }
+
+        .logout {
+            background-color: #ef4444;
+
+            &:hover {
+                background-color: #dc2626;
+            }
+        }
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 1.5rem;
+        list-style: none;
+        align-items: baseline;
+
+        li a {
+            text-decoration: none;
+            color: $white;
+            font-weight: 500;
+
+            &:hover {
+                color: #10c3bc;
+            }
+        }
+
+        @media (max-width: 990px) {
+
+            display: none;
+            position: absolute;
+            top: 50px;
+            left: 0;
+            right: 0;
+            background: #005d63;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+            &.open {
+                display: flex;
+            }
+
+            li {
+                padding: 0.5rem 0;
+            }
+        }
+    }
+
+    .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+
+            span {
+                height: 3px;
+                width: 25px;
+                background: #ffffff;
+                border-radius: 2px;
+                transition: 0.3s ease;
+            }
+
+            &.open span:nth-child(1) {
+                transform: rotate(45deg) translateY(11px);
+            }
+
+            &.open span:nth-child(2) {
+                opacity: 0;
+            }
+
+            &.open span:nth-child(3) {
+                transform: rotate(-45deg) translateY(-11px);
+            }
+
+            @media (max-width: 990px) {
+                display: flex;
+            }
+        }
+    }
+}

@@ -1,0 +1,148 @@
+.team {
+    background-color: #e5f6ff;
+    text-align: center;
+    padding: 3rem 2rem;
+
+    h2 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    p {
+        margin-bottom: 2rem;
+        color: #333;
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        justify-items: center;
+        padding: 0 200px;
+    }
+
+    .member {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 217px;
+        transition: transform 0.3s;
+
+        &:hover {
+            transform: translateY(-5px);
+        }
+
+        .photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 1rem;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+
+        .member a {
+            margin-top: 0.5rem;
+            display: inline-block;
+            color: #0e76a8;
+            font-size: 1.5rem;
+            /* Increased size of the icon */
+        }
+
+        .member a i {
+            font-size: 1.5rem;
+            /* Ensure the LinkedIn icon is big enough */
+            color: #0e76a8;
+            /* LinkedIn blue color */
+            transition: color 0.3s ease;
+        }
+
+        .member a i:hover {
+            color: #0077b5;
+            /* Change to a slightly darker blue when hovered */
+        }
+
+
+        h4 {
+            margin: 0.5rem 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        h4,
+        .role,
+        .member-itt {
+            margin: 0;
+        }
+
+        .member-itt {
+            color: var(--light-green-blue);
+            margin-top: 4px;
+        }
+
+        a {
+            margin-top: 0.5rem;
+            display: inline-block;
+            color: #0e76a8;
+
+            i {
+                font-size: 1.5rem;
+            }
+        }
+    }
+
+
+    @media (max-width: 768px) {
+        .team-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem;
+            padding: 0 !important;
+        }
+
+        .member {
+            min-height: 200px !important;
+            height: 200px !important;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1rem 0;
+
+            .photo {
+                width: 80px;
+                height: 80px;
+            }
+
+            h4 {
+                font-size: 0.9rem;
+            }
+
+            .role,
+            .member-itt {
+                font-size: 0.8rem;
+                text-align: center;
+                padding: 0 0.5rem;
+            }
+
+            a {
+                margin-top: auto;
+
+                i {
+                    font-size: 1.2rem;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 1000px) and (min-width: 769px) {
+        .team-grid {
+            padding: 0 !important;
+        }
+    }
+}
