@@ -7,6 +7,15 @@ const PlusIcon = () => <span className="icon-plus">+</span>;
 
 const SeminarPage = () => {
     const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
+    const [contactForm, setContactForm] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        preferredDate: '', // ADDED: State for preferred date
+        preferredTime: '',
+        message: ''
+    });
+    const [showSuccess, setShowSuccess] = useState(false);
 
     useEffect(() => {
         if (timeLeft <= 0) return;
@@ -41,6 +50,59 @@ const SeminarPage = () => {
         }
     };
 
+    const handleContactFormChange = (e) => {
+        const { name, value } = e.target;
+        setContactForm(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleContactSubmit = async (e) => {
+        e.preventDefault();
+        
+        const submissionData = {
+            ...contactForm,
+            timestamp: new Date().toLocaleString(),
+            id: Date.now()
+        };
+        
+        console.log("Form data to be sent to server:", submissionData);
+        
+        try {
+            const response = await fetch('http://localhost:4000/api/save-booking', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(submissionData)
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Server response:', result);
+                setShowSuccess(true);
+                
+                // MODIFIED: Clear the form, including the new date field
+                setContactForm({
+                    name: '',
+                    email: '',
+                    phone: '',
+                    preferredDate: '',
+                    preferredTime: '',
+                    message: ''
+                });
+                
+                setTimeout(() => setShowSuccess(false), 3000);
+            } else {
+                console.error('Server error:', response.status);
+                alert('There was an error submitting your booking. Please try again.');
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            alert('Unable to submit booking. Please check your internet connection and try again.');
+        }
+    };
 
     return (
         <div className="seminar-page">
@@ -149,7 +211,7 @@ const SeminarPage = () => {
                  <div className="cta-box-final">
                     <h3>Total Value: <span className='value-strikethrough'>₹3999</span> (Session + Bonuses)</h3>
                     <p className="timer-final">Offer Ends In: <b>{formatTime(timeLeft)}</b></p>
-                    <a href="#pricing" className="cta-button-large">BOOK YOUR 1-on-1 SESSION NOW FOR JUST ₹299</a>
+                    <a href="#contact" className="cta-button-large">BOOK YOUR 1-on-1 SESSION NOW FOR JUST ₹299</a>
                     <p className="price-final">Regular Price: <s>₹1999</s></p>
                 </div>
             </section>
@@ -166,7 +228,7 @@ const SeminarPage = () => {
             
             {/* --- FAQ Section --- */}
             <section className="faq-section">
-                <h2>Frequently Asked Questions</h2>
+                                <h2>Frequently Asked Questions</h2>
                 <div className="faq-list">
                     {faqs.map((faq, index) => (
                          <div className="faq-item" key={index}>
@@ -174,9 +236,135 @@ const SeminarPage = () => {
                                 {faq.q}
                                 <PlusIcon />
                             </div>
-                            {openFaq === index && <div className="faq-answer">{faq.a}</div>}
+                            {openFaq === index && (
+                                <div className="faq-answer">
+                                    {faq.a}
+                                </div>
+                            )}
                         </div>
                     ))}
+                </div>
+            </section>
+
+            {/* --- Contact Us Section --- */}
+            <section id="contact" className="contact-section">
+                <div className="contact-container">
+                    <div className="contact-info">
+                        <h2>Ready to Transform Your Future?</h2>
+                        <p>Book your personalized 1-on-1 guidance session now. Fill out the form and we'll get back to you within 24 hours with your session details.</p>
+                        
+                        <div className="contact-details">
+                            <div className="contact-item">
+                                <h4>📧 Email</h4>
+                                <p>guidance@collegemap.com</p>
+                            </div>
+                            <div className="contact-item">
+                                <h4>📞 Phone</h4>
+                                <p>+91 98765 43210</p>
+                            </div>
+                            <div className="contact-item">
+                                <h4>⏰ Response Time</h4>
+                                <p>Within 24 hours</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="contact-form-container">
+                        <form className="contact-form" onSubmit={handleContactSubmit}>
+                            <h3>Book Your Session</h3>
+                            
+                            <div className="form-group">
+                                <label htmlFor="name">Full Name *</label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    value={contactForm.name}
+                                    onChange={handleContactFormChange}
+                                    required
+                                    placeholder="Enter your full name"
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="email">Email Address *</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    value={contactForm.email}
+                                    onChange={handleContactFormChange}
+                                    required
+                                    placeholder="your.email@example.com"
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="phone">Phone Number *</label>
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    name="phone"
+                                    value={contactForm.phone}
+                                    onChange={handleContactFormChange}
+                                    required
+                                    placeholder="+91 98765 43210"
+                                />
+                            </div>
+                            
+                            {/* ADDED: Preferred Date Input Field */}
+                            <div className="form-group">
+                                <label htmlFor="preferredDate">Preferred Date *</label>
+                                <input
+                                    type="date"
+                                    id="preferredDate"
+                                    name="preferredDate"
+                                    value={contactForm.preferredDate}
+                                    onChange={handleContactFormChange}
+                                    required
+                                    min={new Date().toISOString().split("T")[0]}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="preferredTime">Preferred Session Time</label>
+                                <select
+                                    id="preferredTime"
+                                    name="preferredTime"
+                                    value={contactForm.preferredTime}
+                                    onChange={handleContactFormChange}
+                                >
+                                    <option value="">Select preferred time</option>
+                                    <option value="morning">Morning (9 AM - 12 PM)</option>
+                                    <option value="afternoon">Afternoon (2 PM - 5 PM)</option>
+                                    <option value="evening">Evening (6 PM - 9 PM)</option>
+                                    <option value="flexible">I'm flexible</option>
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="message">Additional Message (Optional)</label>
+                                <textarea
+                                    id="message"
+                                    name="message"
+                                    rows="4"
+                                    value={contactForm.message}
+                                    onChange={handleContactFormChange}
+                                    placeholder="Any specific questions or concerns?"
+                                ></textarea>
+                            </div>
+
+                            <button type="submit" className="submit-button">
+                                BOOK MY SESSION FOR ₹299
+                            </button>
+
+                            {showSuccess && (
+                                <div className="success-message">
+                                    ✅ Success! Your booking request has been submitted. We'll contact you within 24 hours.
+                                </div>
+                            )}
+                        </form>
+                    </div>
                 </div>
             </section>
 

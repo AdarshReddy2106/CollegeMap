@@ -64,7 +64,7 @@ const Navbar = () => {
                     {isLoggedIn ? (
                         <button className="cta logout login-size" onClick={() => { handleLogout(); setIsMenuOpen(false); }}>Sign Out</button>
                     ) : (
-                        <button button
+                        <button
                             className="cta login-size"
                             onClick={() => {
                                 setIsMenuOpen(false);
