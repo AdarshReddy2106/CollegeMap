@@ -70,7 +70,7 @@ const SeminarPage = () => {
         console.log("Form data to be sent to server:", submissionData);
         
         try {
-            const response = await fetch('http://localhost:4000/api/save-booking', {
+            const response = await fetch('https://collegemapseminarpage.vercel.app/api/save-booking', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 4000;
 // Middleware
 app.use(cors({
   origin: [
-    'https://your-frontend-domain.vercel.app',
+    'https://collegemapseminarpage.vercel.app',
     'http://localhost:3000',
     'http://localhost:5173'
   ],
