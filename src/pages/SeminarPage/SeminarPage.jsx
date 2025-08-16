@@ -70,20 +70,24 @@ const SeminarPage = () => {
         console.log("Form data to be sent to server:", submissionData);
         
         try {
+            // First try the direct API endpoint
             const response = await fetch('https://collegemapseminarpage.vercel.app/api/save-booking', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
                 },
                 body: JSON.stringify(submissionData)
             });
             
+            // Try to parse response as JSON regardless of status code
+            const responseData = await response.json().catch(() => null);
+            
             if (response.ok) {
-                const result = await response.json();
-                console.log('Server response:', result);
+                console.log('Server response:', responseData);
                 setShowSuccess(true);
                 
-                // MODIFIED: Clear the form, including the new date field
+                // Clear the form
                 setContactForm({
                     name: '',
                     email: '',
@@ -96,11 +100,22 @@ const SeminarPage = () => {
                 setTimeout(() => setShowSuccess(false), 3000);
             } else {
                 console.error('Server error:', response.status);
-                alert('There was an error submitting your booking. Please try again.');
+                
+                // Handle duplicate booking error (409 Conflict)
+                if (response.status === 409 && responseData?.existingBooking) {
+                    const { timestamp } = responseData.existingBooking;  // Removed unused 'name' variable
+                    const bookingDate = new Date(timestamp).toLocaleDateString();
+                    alert(`You already have a booking for ${submissionData.preferredDate} with this email address.\n\nYour previous booking was made on ${bookingDate}.\n\nPlease choose a different date or contact us if you need to modify your existing booking.`);
+                } else {
+                    // Generic error for other status codes
+                    alert(responseData?.message || 'There was an error submitting your booking. Please try again or contact us directly.');
+                }
             }
         } catch (error) {
             console.error('Network error:', error);
-            alert('Unable to submit booking. Please check your internet connection and try again.');
+            
+            // If CORS error occurs, notify the user with a more helpful message
+            alert('Unable to submit booking through our online system. Please email your details to guidance@collegemap.com or try again later.');
         }
     };
 
@@ -373,9 +388,9 @@ const SeminarPage = () => {
                 <h3>CollegeMap</h3>
                 <p>By IITians, for Future IITians</p>
                 <div className="footer-links">
-                    <a href="#">Terms and Conditions</a>
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Refunds</a>
+                    <a href="/Terms-and-Conditions">Terms and Conditions</a>
+                    <a href="/Privacy-Policy">Privacy Policy</a>
+                    <a href="/Cancellation-and-Refund">Refunds</a>
                 </div>
                 <p className="copyright">&copy; 2025 CollegeMap. All rights reserved.</p>
             </footer>

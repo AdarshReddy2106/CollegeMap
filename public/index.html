@@ -42,6 +42,18 @@
 
     gtag('config', 'G-CS9033TE3K');
   </script>
+  <script>
+    // Suppress Google Play log errors
+    (function() {
+      const originalFetch = window.fetch;
+      window.fetch = function(url, options) {
+        if (typeof url === 'string' && url.includes('play.google.com/log')) {
+          return Promise.resolve(new Response('', {status: 200}));
+        }
+        return originalFetch.apply(this, arguments);
+      };
+    })();
+  </script>
 </head>
 
 <body>
