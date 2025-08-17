@@ -12,7 +12,8 @@ app.use(cors({
     'https://collegemapseminarpage.vercel.app',
     'http://localhost:3000',
     'http://localhost:5173',
-    'https://www.collegemap.in'
+    'https://www.collegemap.in',
+    'https://collegemap.in'
   ],
   methods: ['GET', 'POST', 'OPTIONS'],
   credentials: true
