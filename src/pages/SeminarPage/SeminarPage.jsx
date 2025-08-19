@@ -11,9 +11,6 @@ const SeminarPage = () => {
         name: '',
         email: '',
         phone: '',
-        preferredDate: '', // ADDED: State for preferred date
-        preferredTime: '',
-        message: ''
     });
     const [showSuccess, setShowSuccess] = useState(false);
 
@@ -92,9 +89,6 @@ const SeminarPage = () => {
                     name: '',
                     email: '',
                     phone: '',
-                    preferredDate: '',
-                    preferredTime: '',
-                    message: ''
                 });
                 
                 setTimeout(() => setShowSuccess(false), 3000);
@@ -146,7 +140,7 @@ const SeminarPage = () => {
                         </ul>
                         <div className="cta-box">
                              <p className="offer-ends">Special Offer Ends In: <b>{formatTime(timeLeft)}</b></p>
-                            <a href="#pricing" className="cta-button">BOOK YOUR SESSION NOW AT ₹299</a>
+                            <a href="#contact" className="cta-button">BOOK YOUR SESSION NOW AT ₹299</a>
                             <p className="price"><s>₹1999</s></p>
                         </div>
                     </div>
@@ -223,21 +217,15 @@ const SeminarPage = () => {
                     <div className="bonus-card"><h4>Bonus #3</h4><p>E-Book: Decoding Placements Branch-by-Branch</p></div>
                     <div className="bonus-card"><h4>Bonus #4</h4><p>Private Community Access with Fellow Aspirants</p></div>
                 </div>
-                 <div className="cta-box-final">
-                    <h3>Total Value: <span className='value-strikethrough'>₹3999</span> (Session + Bonuses)</h3>
-                    <p className="timer-final">Offer Ends In: <b>{formatTime(timeLeft)}</b></p>
-                    <a href="#contact" className="cta-button-large">BOOK YOUR 1-on-1 SESSION NOW FOR JUST ₹299</a>
-                    <p className="price-final">Regular Price: <s>₹1999</s></p>
-                </div>
             </section>
 
             {/* --- Guarantee Section --- */}
             <section className="guarantee-section">
                 <div className="guarantee-text">
-                    <h2>Still Not Sure? We've Got Your Back!</h2>
+                    <h2> High-Value Learning, No Cost.</h2>
                     <h3>Our 100% Satisfaction Guarantee</h3>
-                    <p>We are confident our guidance will provide you with immense clarity. If after the session you feel it wasn't worth your investment, just send us an email. We'll refund your full payment. No questions asked.</p>
-                     <a href="#pricing" className="cta-button">BOOK RISK-FREE AT ₹299/- ONLY</a>
+                    <p> We're committed to making quality guidance accessible to all. Join our live session to experience our unique approach to JEE preparation firsthand. We're confident the insights you'll gain will provide immense clarity for your journey.</p>
+                     <a href="#contact" className="cta-button">SAVE MY SPOT</a>
                 </div>
             </section>
             
@@ -322,55 +310,11 @@ const SeminarPage = () => {
                                     name="phone"
                                     value={contactForm.phone}
                                     onChange={handleContactFormChange}
-                                    required
                                     placeholder="+91 98765 43210"
                                 />
                             </div>
-                            
-                            {/* ADDED: Preferred Date Input Field */}
-                            <div className="form-group">
-                                <label htmlFor="preferredDate">Preferred Date *</label>
-                                <input
-                                    type="date"
-                                    id="preferredDate"
-                                    name="preferredDate"
-                                    value={contactForm.preferredDate}
-                                    onChange={handleContactFormChange}
-                                    required
-                                    min={new Date().toISOString().split("T")[0]}
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="preferredTime">Preferred Session Time</label>
-                                <select
-                                    id="preferredTime"
-                                    name="preferredTime"
-                                    value={contactForm.preferredTime}
-                                    onChange={handleContactFormChange}
-                                >
-                                    <option value="">Select preferred time</option>
-                                    <option value="morning">Morning (9 AM - 12 PM)</option>
-                                    <option value="afternoon">Afternoon (2 PM - 5 PM)</option>
-                                    <option value="evening">Evening (6 PM - 9 PM)</option>
-                                    <option value="flexible">I'm flexible</option>
-                                </select>
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="message">Additional Message (Optional)</label>
-                                <textarea
-                                    id="message"
-                                    name="message"
-                                    rows="4"
-                                    value={contactForm.message}
-                                    onChange={handleContactFormChange}
-                                    placeholder="Any specific questions or concerns?"
-                                ></textarea>
-                            </div>
-
                             <button type="submit" className="submit-button">
-                                BOOK MY SESSION FOR ₹299
+                                REGISTER FOR FREE
                             </button>
 
                             {showSuccess && (
@@ -382,26 +326,9 @@ const SeminarPage = () => {
                     </div>
                 </div>
             </section>
-
-            {/* --- Footer --- */}
-            <footer className="page-footer">
-                <h3>CollegeMap</h3>
-                <p>By IITians, for Future IITians</p>
-                <div className="footer-links">
-                    <a href="/Terms-and-Conditions">Terms and Conditions</a>
-                    <a href="/Privacy-Policy">Privacy Policy</a>
-                    <a href="/Cancellation-and-Refund">Refunds</a>
-                </div>
-                <p className="copyright">&copy; 2025 CollegeMap. All rights reserved.</p>
-            </footer>
-
             {/* --- Sticky Footer CTA --- */}
             <div className="sticky-footer">
-                <div className="sticky-info">
-                    <span className="sticky-price">₹299 <s>₹1999</s></span>
-                    <span className="sticky-timer">Offer Ends in: <b>{formatTime(timeLeft)}</b></span>
-                </div>
-                <a href="#pricing" className="cta-button">BOOK YOUR SPOT NOW</a>
+                <a href="#contact" className="cta-button">BOOK YOUR SPOT NOW</a>
             </div>
         </div>
     );
