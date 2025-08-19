@@ -30,11 +30,11 @@ const SeminarPage = () => {
     
     // --- FAQ Data ---
     const faqs = [
-        { q: "How will I get the link to the 1-on-1 session?", a: "Once you book your spot, you'll receive a confirmation email with a calendar invite and a video call link (Google Meet/Zoom)." },
-        { q: "Why does this guidance session only cost ₹299?", a: "Our mission is to make quality guidance accessible. This introductory price helps us reach more students like you. The price will increase soon." },
-        { q: "Can my parents join the session with me?", a: "Absolutely! We encourage parents to be part of the session to ensure everyone is on the same page about this crucial decision." },
-        { q: "What if I miss my scheduled session?", a: "No problem. Just email us at least 2 hours in advance, and we will find another suitable time slot for you." },
-        { q: "Is this a live session with a real person?", a: "Yes! This is a 100% live, interactive 1-on-1 session with an experienced IITian mentor, not a pre-recorded webinar." }
+        { q: "How will I get the link to the live seminar?", a: "After you complete your free registration, the unique link to the online seminar will be sent to your registered email address. We will also send reminders before the session starts." },
+        { q: "Why is this guidance session free?", a: "We believe that quality guidance should be accessible to all students. This seminar is part of our commitment to making JEE counselling easy and a great way to experience the value CollegeMap provides, at no cost to you." },
+        { q: "Can my parents join the session with me?", a: "Yes, absolutely! We encourage parents to attend the session with their child. It's an opportunity for both of you to get clarity and understand the best preparation strategies." },
+        { q: "Will there be recording for the entire session?", a: "A link to the recording will be sent to all registered participants a few hours after the live seminar." },
+        { q: "Are all seminars live and interactive?", a: "Yes, all our seminars are live and interactive. You will be able to ask your questions directly to our speaker, an experienced IITian, during the Q&A session." }
     ];
 
     const [openFaq, setOpenFaq] = useState(null);
@@ -97,19 +97,17 @@ const SeminarPage = () => {
                 
                 // Handle duplicate booking error (409 Conflict)
                 if (response.status === 409 && responseData?.existingBooking) {
-                    const { timestamp } = responseData.existingBooking;  // Removed unused 'name' variable
-                    const bookingDate = new Date(timestamp).toLocaleDateString();
-                    alert(`You already have a booking for ${submissionData.preferredDate} with this email address.\n\nYour previous booking was made on ${bookingDate}.\n\nPlease choose a different date or contact us if you need to modify your existing booking.`);
+                    alert(`You have already registered with this email address. Please use a different email or contact support@collegemap.com if you need assistance.`);
                 } else {
                     // Generic error for other status codes
-                    alert(responseData?.message || 'There was an error submitting your booking. Please try again or contact us directly.');
+                    alert(responseData?.message || 'There was an error submitting your registration. Please try again or contact us directly.');
                 }
             }
         } catch (error) {
             console.error('Network error:', error);
             
             // If CORS error occurs, notify the user with a more helpful message
-            alert('Unable to submit booking through our online system. Please email your details to guidance@collegemap.com or try again later.');
+            alert('Unable to submit registration through our online system. Please email your details to support@collegemap.com or try again later.');
         }
     };
 
@@ -118,30 +116,33 @@ const SeminarPage = () => {
             {/* --- Hero Section --- */}
             <header className="hero-section">
                 <p className="subtitle">By IITians, for Future IITians</p>
-                <h1>Stop Guessing Your Future. Secure Your Dream IIT Branch with 100% Confidence.</h1>
-                <p className="urgency">JEE Counselling Starts Soon. Don't Make a Choice You'll Regret.</p>
+                <h1>Master Your JEE Prep: The Ultimate Strategy Session.</h1>
+                <p className="urgency"> Join our live online seminar and learn proven techniques to ace your JEE.</p>
 
                 <div className="hero-details">
                     <div className="mentor-intro">
                         <img src="https://www.bing.com/th/id/OIP.IGNf7GuQaCqz_RPq5wCkPgHaLH?w=160&h=211&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2" alt="IITian Mentor" className="mentor-photo" />
-                        <h3>Your Personal Mentor</h3>
-                        <p>An experienced graduate from a top IIT, dedicated to guiding you.</p>
+                        <h3>Meet Your Mentor</h3>
+                        <p>A CS student from IIT Bombay, dedicated to helping you succeed</p>
                         <div className="social-proof">
-                            <p>⭐ <b>4.9/5 Star Rating</b> from 5,000+ Guided Students</p>
+                            <p>B.E Maths: AIR 1</p>
+                            <p>JEE Advanced: AIR 94</p>
                         </div>
                     </div>
                     <div className="workshop-info">
-                        <h2>What You'll Get</h2>
+                        <h2>What You'll Learn at the Seminar</h2>
                         <ul>
-                            <li><CheckIcon /> Unlock a data-driven list of your best-fit IITs & Branches.</li>
-                            <li><CheckIcon /> Learn the hidden truths about campus life, placements, and research.</li>
-                            <li><CheckIcon /> Gain a clear roadmap with backup options, eliminating all confusion.</li>
-                            <li><CheckIcon /> <b>More Confidence, Less Anxiety.</b> A guaranteed clear path forward.</li>
+                            <li><CheckIcon /> Master a proven time management and study plan to optimize your preparation.</li>
+                            <li><CheckIcon /> Learn exam-day strategies to manage pressure and boost your score.</li>
+                            <li><CheckIcon /> Discover how to tackle high-weight topics and avoid common mistakes.</li>
+                            <li><CheckIcon /> "Unlock expert insights into building a resilient mindset for success.</li>
+                            <li><CheckIcon /> Ask your question directly to IIT Bombay students.</li>
                         </ul>
                         <div className="cta-box">
-                             <p className="offer-ends">Special Offer Ends In: <b>{formatTime(timeLeft)}</b></p>
-                            <a href="#contact" className="cta-button">BOOK YOUR SESSION NOW AT ₹299</a>
-                            <p className="price"><s>₹1999</s></p>
+                            <p className="offer-ends">Special Offer Ends In: <b>{formatTime(timeLeft)}</b></p>
+                            <a href="#contact" className="cta-button">REGISTER NOW FOR FREE</a>
+                            
+                            <p className="price"><s>₹499</s></p>
                         </div>
                     </div>
                 </div>
@@ -149,31 +150,32 @@ const SeminarPage = () => {
 
             {/* --- Who is this for Section --- */}
             <section className="target-audience">
-                 <h2>Is This Guidance Session For You?</h2>
-                 <div className="audience-columns">
+                <h2>Is This Guidance Session For You?</h2>
+                <div className="audience-columns">
                     <div className="audience-yes">
                         <h3>This Is For YOU If...</h3>
                         <ul>
-                            <li>You have your JEE Rank and are confused about counselling.</li>
-                            <li>You are overwhelmed by conflicting advice.</li>
-                            <li>You want a decision based on data, not just perception.</li>
-                            <li>You are serious about making the best choice for your career.</li>
+                            <li>You are a serious JEE aspirant looking for a proven preparation strategy.</li>
+                            <li>You are struggling with time management or staying motivated.</li>
+                            <li> You feel overwhelmed by the vast syllabus and want a clear roadmap.</li>
+                            <li>You are ready to learn from someone who has successfully gone through the process.</li>
                         </ul>
                     </div>
                     <div className="audience-no">
                         <h3>This Is NOT For You If...</h3>
-                         <ul>
-                            <li>You are not serious about your IIT choice.</li>
-                            <li>You prefer guesswork over expert guidance.</li>
-                            <li>You aren't ready to take control of your future.</li>
+                        <ul>
+                            <li>You prefer to rely on guesswork instead of a data-backed plan.</li>
+                            <li> You are not committed to putting in the hard work required for JEE.</li>
+                            <li>You are already confident in your preparation and do not need expert guidance.</li>
+                            <li> You are not open to learning new strategies from successful IITians.</li>
                         </ul>
                     </div>
-                 </div>
+                </div>
             </section>
 
             {/* --- Testimonials Section --- */}
             <section className="testimonials">
-                <h2>Thousands of Students Transformed Their Confusion into Clarity</h2>
+                <h2>Thousands of Students Will Transform Their Confusion into Clarity</h2>
                 <div className="testimonial-cards">
                     <div className="card">
                         <p>"CollegeMap changed everything. I got into IIT Madras in a branch I love, which I wasn't even considering before!"</p>
@@ -181,27 +183,27 @@ const SeminarPage = () => {
                             <img src="https://i.imgur.com/dZAP2rN.png" alt="Ananya S."/>
                             <div>
                                 <h4>Ananya S.</h4>
-                                <p>Student, IIT Madras</p>
+                                <p>Student, Preparing for Jee 2026</p>
                             </div>
                         </div>
                     </div>
-                     <div className="card">
+                    <div className="card">
                         <p>"The 1-on-1 session was the best money I spent on my education. The data they have is insane and the mentor was so helpful."</p>
-                         <div className="author">
+                        <div className="author">
                             <img src="https://i.imgur.com/XkYzkDe.png" alt="Rohan K."/>
                             <div>
                                 <h4>Rohan K.</h4>
-                                <p>Student, IIT Delhi</p>
+                                <p>Student, Preparing for Jee 2026</p>
                             </div>
                         </div>
                     </div>
-                     <div className="card">
+                    <div className="card">
                         <p>"I was completely lost with my rank. The mentor gave me a clear, personalized preference list. Forever grateful!"</p>
-                         <div className="author">
+                        <div className="author">
                             <img src="https://i.imgur.com/uN6F3hJ.png" alt="Priya V."/>
                             <div>
                                 <h4>Priya V.</h4>
-                                <p>Student, IIT Bombay</p>
+                                <p>Student, Preparing for Jee 2026</p>
                             </div>
                         </div>
                     </div>
@@ -210,12 +212,12 @@ const SeminarPage = () => {
             
             {/* --- Bonuses Section --- */}
             <section id="pricing" className="bonuses-section">
-                <h2>Book Before The Timer Hits 0 And Get 4 Exclusive Bonuses</h2>
-                <div className="bonuses-grid">
-                    <div className="bonus-card"><h4>Bonus #1</h4><p>5 Mistakes to Avoid in JoSAA Counselling (PDF Guide)</p></div>
-                    <div className="bonus-card"><h4>Bonus #2</h4><p>The Ultimate College Life Prep Checklist</p></div>
-                    <div className="bonus-card"><h4>Bonus #3</h4><p>E-Book: Decoding Placements Branch-by-Branch</p></div>
-                    <div className="bonus-card"><h4>Bonus #4</h4><p>Private Community Access with Fellow Aspirants</p></div>
+                <h2>Follow us for more updates.</h2>
+                <div className="social-links">
+                    <a href="https://whatsapp.com" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="https://youtube.com" target="_blank" rel="noopener noreferrer">YouTube</a>
                 </div>
             </section>
 
@@ -231,10 +233,10 @@ const SeminarPage = () => {
             
             {/* --- FAQ Section --- */}
             <section className="faq-section">
-                                <h2>Frequently Asked Questions</h2>
+                <h2>Frequently Asked Questions</h2>
                 <div className="faq-list">
                     {faqs.map((faq, index) => (
-                         <div className="faq-item" key={index}>
+                        <div className="faq-item" key={index}>
                             <div className="faq-question" onClick={() => toggleFaq(index)}>
                                 {faq.q}
                                 <PlusIcon />
@@ -254,30 +256,21 @@ const SeminarPage = () => {
                 <div className="contact-container">
                     <div className="contact-info">
                         <h2>Ready to Transform Your Future?</h2>
-                        <p>Book your personalized 1-on-1 guidance session now. Fill out the form and we'll get back to you within 24 hours with your session details.</p>
-                        
+                        <p> Register for our free seminar now. Fill out the form below and we'll send your session details to your email instantly.</p>
                         <div className="contact-details">
                             <div className="contact-item">
                                 <h4>📧 Email</h4>
-                                <p>guidance@collegemap.com</p>
-                            </div>
-                            <div className="contact-item">
-                                <h4>📞 Phone</h4>
-                                <p>+91 98765 43210</p>
-                            </div>
-                            <div className="contact-item">
-                                <h4>⏰ Response Time</h4>
-                                <p>Within 24 hours</p>
+                                <p>support@collegemap.com</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="contact-form-container">
                         <form className="contact-form" onSubmit={handleContactSubmit}>
-                            <h3>Book Your Session</h3>
-                            
+                            <h3>Reserve Your Spot</h3>
+
                             <div className="form-group">
-                                <label htmlFor="name">Full Name *</label>
+                                <label htmlFor="name">Full Name*</label>
                                 <input
                                     type="text"
                                     id="name"
@@ -290,7 +283,7 @@ const SeminarPage = () => {
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="email">Email Address *</label>
+                                <label htmlFor="email">Email Address*</label>
                                 <input
                                     type="email"
                                     id="email"
@@ -303,7 +296,7 @@ const SeminarPage = () => {
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="phone">Phone Number *</label>
+                                <label htmlFor="phone">Phone Number</label>
                                 <input
                                     type="tel"
                                     id="phone"
@@ -319,7 +312,7 @@ const SeminarPage = () => {
 
                             {showSuccess && (
                                 <div className="success-message">
-                                    ✅ Success! Your booking request has been submitted. We'll contact you within 24 hours.
+                                    ✅ Success! Your registration is complete. Check your email for session details.
                                 </div>
                             )}
                         </form>

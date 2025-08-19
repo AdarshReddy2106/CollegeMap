@@ -69,10 +69,7 @@ const initializeSheet = async () => {
         'Timestamp', 
         'Name', 
         'Email', 
-        'Phone', 
-        'Preferred Date', 
-        'Preferred Time', 
-        'Message'
+        'Phone',
       ];
 
       await sheets.spreadsheets.values.update({
@@ -105,9 +102,6 @@ const addBookingToSheet = async (bookingData) => {
       bookingData.name,
       bookingData.email,
       bookingData.phone,
-      bookingData.preferredDate,
-      bookingData.preferredTime || 'flexible',
-      bookingData.message || ''
     ];
 
     const response = await sheets.spreadsheets.values.append({
@@ -146,9 +140,6 @@ const getAllBookingsFromSheet = async () => {
       name: row[1] || '',
       email: row[2] || '',
       phone: row[3] || '',
-      preferredDate: row[4] || '',
-      preferredTime: row[5] || '',
-      message: row[6] || ''
     })).filter(booking => booking.name && booking.email); // Filter out empty rows
 
     return bookings;
@@ -264,9 +255,6 @@ app.post('/api/save-booking', async (req, res) => {
       name: data.name.trim(),
       email: data.email.trim().toLowerCase(),
       phone: data.phone.trim(),
-      preferredDate: data.preferredDate,
-      preferredTime: data.preferredTime || 'flexible',
-      message: data.message ? data.message.trim() : ''
     };
 
     // Add to Google Sheets
