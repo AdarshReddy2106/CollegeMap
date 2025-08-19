@@ -149,19 +149,7 @@ const getAllBookingsFromSheet = async () => {
   }
 };
 
-const checkDuplicateBooking = async (email, preferredDate) => {
-  try {
-    const bookings = await getAllBookingsFromSheet();
-    return bookings.find(
-      booking => 
-        booking.email.toLowerCase() === email.toLowerCase() &&
-        booking.preferredDate === preferredDate
-    );
-  } catch (error) {
-    console.error('Error checking duplicate booking:', error);
-    return null;
-  }
-};
+
 
 const getBookingCount = async () => {
   try {
@@ -225,9 +213,9 @@ app.post('/api/save-booking', async (req, res) => {
     console.log('Received booking data:', data);
 
     // Validation
-    if (!data.name || !data.email || !data.phone || !data.preferredDate) {
+    if (!data.name || !data.email) {
       return res.status(400).json({ 
-        message: 'Name, Email, Phone, and Preferred Date are required.'
+        message: 'Name and Email are required.'
       });
     }
 
@@ -238,7 +226,7 @@ app.post('/api/save-booking', async (req, res) => {
     }
 
     // Check for duplicate booking
-    const existingBooking = await checkDuplicateBooking(data.email, data.preferredDate);
+    const existingBooking = await checkDuplicateBooking(data.email);
     if (existingBooking) {
       return res.status(409).json({ 
         message: 'A booking with this email already exists.',
@@ -328,17 +316,11 @@ app.get('/api/stats', async (req, res) => {
       new Date(b.timestamp) >= thisWeek
     ).length;
     
-    const timeSlotStats = allBookings.reduce((acc, booking) => {
-      const slot = booking.preferredTime || 'flexible';
-      acc[slot] = (acc[slot] || 0) + 1;
-      return acc;
-    }, {});
-    
+    // Remove the reference to timeSlotStats that doesn't exist
     res.status(200).json({
       total: allBookings.length,
       today: todayBookings,
       thisWeek: weeklyBookings,
-      timeSlotPreferences: timeSlotStats,
       sheetsUrl: `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEETS_ID}`,
       lastUpdated: new Date().toISOString()
     });
@@ -383,6 +365,19 @@ app.get('/api/search', async (req, res) => {
     });
   }
 });
+
+// Fix the checkDuplicateBooking function to work without preferredDate
+const checkDuplicateBooking = async (email) => {
+  try {
+    const bookings = await getAllBookingsFromSheet();
+    return bookings.find(
+      booking => booking.email.toLowerCase() === email.toLowerCase()
+    );
+  } catch (error) {
+    console.error('Error checking duplicate booking:', error);
+    return null;
+  }
+};
 
 // Error handling middleware
 app.use((error, req, res, next) => {
