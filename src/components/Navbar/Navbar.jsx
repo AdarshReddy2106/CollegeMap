@@ -80,7 +80,7 @@ const Navbar = () => {
                 </div>
 
                 <div className="nav-actions">
-                    <Link to="/Questionaire" className="cta">Try Now!</Link>
+                    <Link to="/seminar" className="cta">Seminar</Link>
 
                     <div className={`hamburger ${isMenuOpen ? "open" : ""}`} onClick={toggleMenu} ref={hamburgerRef}>
                         <span></span>
