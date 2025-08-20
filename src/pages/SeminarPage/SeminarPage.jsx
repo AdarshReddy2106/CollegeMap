@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
 import './SeminarPage.scss';
 
 // You can replace these with actual icons from a library like react-icons
@@ -125,7 +126,7 @@ const SeminarPage = () => {
                         <h3>Meet Your Mentor</h3>
                         <p>A CS student from IIT Bombay, dedicated to helping you succeed</p>
                         <div className="social-proof">
-                            <p>B.E Maths: AIR 1</p>
+                            <p>JEE Mains: AIR 1</p>
                             <p>JEE Advanced: AIR 94</p>
                         </div>
                     </div>
@@ -214,10 +215,10 @@ const SeminarPage = () => {
             <section id="pricing" className="bonuses-section">
                 <h2>Follow us for more updates.</h2>
                 <div className="social-links">
-                    <a href="https://whatsapp.com" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-                    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
-                    <a href="https://youtube.com" target="_blank" rel="noopener noreferrer">YouTube</a>
+                    <Link to="https://wa.link/lo05a1" target="_blank" rel="noopener noreferrer">WhatsApp</Link>
+                    <Link to="https://www.linkedin.com/company/collegemap/" target="_blank" rel="noopener noreferrer">LinkedIn</Link>
+                    <Link to="https://www.instagram.com/collegemap.in/" target="_blank" rel="noopener noreferrer">Instagram</Link>
+                    <Link to="https://www.youtube.com/@CollegeMap-in" target="_blank" rel="noopener noreferrer">YouTube</Link>
                 </div>
             </section>
 
