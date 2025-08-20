@@ -69,7 +69,7 @@ function App() {
           <Route path="/Cancellation-and-Refund" element={<CancellationRefundPolicy />} />
           <Route path="/Terms-and-Conditions" element={<TermsAndConditions />} />
           <Route path="/ComingSoon" element={<ComingSoon />} />
-          <Route path="/SeminarPage" element={<SeminarPage />} />
+          <Route path="/seminar" element={<SeminarPage />} />
           {/* Add other routes as needed */}
         </Routes>
       </Layout>

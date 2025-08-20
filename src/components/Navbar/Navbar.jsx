@@ -59,7 +59,7 @@ const Navbar = () => {
                     <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>IIT News</Link></li>
                     {/* <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>Talk to an IITian</Link></li> */}
                     <li><Link to="/Contact-Us" onClick={() => setIsMenuOpen(false)}>Contact Us</Link></li>
-                    <li><Link to="/SeminarPage" onClick={() => setIsMenuOpen(false)}>Seminar</Link></li>
+                    <li><Link to="/seminar" onClick={() => setIsMenuOpen(false)}>Seminar</Link></li>
 
                     {isLoggedIn ? (
                         <button className="cta logout login-size" onClick={() => { handleLogout(); setIsMenuOpen(false); }}>Sign Out</button>
