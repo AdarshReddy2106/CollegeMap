@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import './SeminarPage.scss';
+import mentorImage from '../../assets/mentor.png';
 
 // You can replace these with actual icons from a library like react-icons
 const CheckIcon = () => <span className="icon-check">✓</span>;
@@ -98,7 +99,7 @@ const SeminarPage = () => {
                 
                 // Handle duplicate booking error (409 Conflict)
                 if (response.status === 409 && responseData?.existingBooking) {
-                    alert(`You have already registered with this email address. Please use a different email or contact support@collegemap.com if you need assistance.`);
+                    alert(`You have already registered with this email address. Please use a different email or contact support@collegemap.in if you need assistance.`);
                 } else {
                     // Generic error for other status codes
                     alert(responseData?.message || 'There was an error submitting your registration. Please try again or contact us directly.');
@@ -108,7 +109,7 @@ const SeminarPage = () => {
             console.error('Network error:', error);
             
             // If CORS error occurs, notify the user with a more helpful message
-            alert('Unable to submit registration through our online system. Please email your details to support@collegemap.com or try again later.');
+            alert('Unable to submit registration through our online system. Please email your details to support@collegemap.in or try again later.');
         }
     };
 
@@ -117,21 +118,21 @@ const SeminarPage = () => {
             {/* --- Hero Section --- */}
             <header className="hero-section">
                 <p className="subtitle">By IITians, for Future IITians</p>
-                <h1>Master Your JEE Prep: The Ultimate Strategy Session.</h1>
-                <p className="urgency"> Join our live online seminar and learn proven techniques to ace your JEE.</p>
+                <h1>Master Your <span className="highlight-text">JEE PREP</span>: The Ultimate Strategy Session.</h1>
+                <p className="urgency"> Join our <span className="highlight-text">live online seminar</span> and learn proven techniques to ace your <span className="highlight-text">JEE</span>.</p>
 
                 <div className="hero-details">
                     <div className="mentor-intro">
-                        <img src="https://www.bing.com/th/id/OIP.IGNf7GuQaCqz_RPq5wCkPgHaLH?w=160&h=211&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2" alt="IITian Mentor" className="mentor-photo" />
+                        <img src={mentorImage} alt="IITian Mentor" className="mentor-photo" />
                         <h3>Meet Your Mentor</h3>
-                        <p>A CS student from IIT Bombay, dedicated to helping you succeed</p>
+                        <p>Nilkrishna, A CS student from IIT Bombay, dedicated to helping you succeed</p>
                         <div className="social-proof">
-                            <p>JEE Mains: AIR 1</p>
-                            <p>JEE Advanced: AIR 94</p>
+                            <p><span className="highlight-text">JEE Mains:</span> AIR 1</p>
+                            <p><span className="highlight-text">JEE Advanced:</span> AIR 94</p>
                         </div>
                     </div>
                     <div className="workshop-info">
-                        <h2>What You'll Learn at the Seminar</h2>
+                        <h2>What You'll Learn at the <span className="highlight-text">Seminar</span></h2>
                         <ul>
                             <li><CheckIcon /> Master a proven time management and study plan to optimize your preparation.</li>
                             <li><CheckIcon /> Learn exam-day strategies to manage pressure and boost your score.</li>
@@ -151,10 +152,10 @@ const SeminarPage = () => {
 
             {/* --- Who is this for Section --- */}
             <section className="target-audience">
-                <h2>Is This Guidance Session For You?</h2>
+                <h2>Is This  <span className="highlight-text">Guidance Session</span> For You?</h2>
                 <div className="audience-columns">
                     <div className="audience-yes">
-                        <h3>This Is For YOU If...</h3>
+                        <h3>This Is <span className="highlight-text">For YOU</span> If...</h3>
                         <ul>
                             <li>You are a serious JEE aspirant looking for a proven preparation strategy.</li>
                             <li>You are struggling with time management or staying motivated.</li>
@@ -163,7 +164,7 @@ const SeminarPage = () => {
                         </ul>
                     </div>
                     <div className="audience-no">
-                        <h3>This Is NOT For You If...</h3>
+                        <h3>This Is <span className="highlight-text">NOT</span> For You If...</h3>
                         <ul>
                             <li>You prefer to rely on guesswork instead of a data-backed plan.</li>
                             <li> You are not committed to putting in the hard work required for JEE.</li>
@@ -179,9 +180,8 @@ const SeminarPage = () => {
                 <h2>Thousands of Students Will Transform Their Confusion into Clarity</h2>
                 <div className="testimonial-cards">
                     <div className="card">
-                        <p>"CollegeMap changed everything. I got into IIT Madras in a branch I love, which I wasn't even considering before!"</p>
-                        <div className="author">
-                            <img src="https://i.imgur.com/dZAP2rN.png" alt="Ananya S."/>
+                        <p>"The seminar helped me organize my study schedule better. I'm much more confident in my preparation now and feel I have a clear path forward."</p>
+                        <div className="author" style={{ justifyContent: 'center', textAlign: 'center' }}>
                             <div>
                                 <h4>Ananya S.</h4>
                                 <p>Student, Preparing for Jee 2026</p>
@@ -189,9 +189,8 @@ const SeminarPage = () => {
                         </div>
                     </div>
                     <div className="card">
-                        <p>"The 1-on-1 session was the best money I spent on my education. The data they have is insane and the mentor was so helpful."</p>
-                        <div className="author">
-                            <img src="https://i.imgur.com/XkYzkDe.png" alt="Rohan K."/>
+                        <p>"The strategic study approach shared in the seminar improved my understanding significantly. My scores are steadily rising, and I finally feel ready for JEE."</p>
+                        <div className="author" style={{ justifyContent: 'center', textAlign: 'center' }}>
                             <div>
                                 <h4>Rohan K.</h4>
                                 <p>Student, Preparing for Jee 2026</p>
@@ -199,9 +198,8 @@ const SeminarPage = () => {
                         </div>
                     </div>
                     <div className="card">
-                        <p>"I was completely lost with my rank. The mentor gave me a clear, personalized preference list. Forever grateful!"</p>
-                        <div className="author">
-                            <img src="https://i.imgur.com/uN6F3hJ.png" alt="Priya V."/>
+                        <p>"I was ready to give up on JEE until this seminar. The practical study methods really changed my perspective. For the first time, I'm actually enjoying JEE prep!"</p>
+                        <div className="author" style={{ justifyContent: 'center', textAlign: 'center' }}>
                             <div>
                                 <h4>Priya V.</h4>
                                 <p>Student, Preparing for Jee 2026</p>
@@ -213,7 +211,7 @@ const SeminarPage = () => {
             
             {/* --- Bonuses Section --- */}
             <section id="pricing" className="bonuses-section">
-                <h2>Follow us for more updates.</h2>
+                <h2>Follow us for more <span className="highlight-text">Updates</span>.</h2>
                 <div className="social-links">
                     <Link to="https://wa.link/lo05a1" target="_blank" rel="noopener noreferrer">WhatsApp</Link>
                     <Link to="https://www.linkedin.com/company/collegemap/" target="_blank" rel="noopener noreferrer">LinkedIn</Link>
@@ -234,7 +232,7 @@ const SeminarPage = () => {
             
             {/* --- FAQ Section --- */}
             <section className="faq-section">
-                <h2>Frequently Asked Questions</h2>
+                <h2>Frequently Asked <span className="highlight-text">Questions</span></h2>
                 <div className="faq-list">
                     {faqs.map((faq, index) => (
                         <div className="faq-item" key={index}>
@@ -256,12 +254,12 @@ const SeminarPage = () => {
             <section id="contact" className="contact-section">
                 <div className="contact-container">
                     <div className="contact-info">
-                        <h2>Ready to Transform Your Future?</h2>
+                        <h2>Ready to <span className="highlight-text">Transform Your Future?</span></h2>
                         <p> Register for our free seminar now. Fill out the form below and we'll send your session details to your email instantly.</p>
                         <div className="contact-details">
                             <div className="contact-item">
                                 <h4>📧 Email</h4>
-                                <p>support@collegemap.com</p>
+                                <p>support@collegemap.in</p>
                             </div>
                         </div>
                     </div>
