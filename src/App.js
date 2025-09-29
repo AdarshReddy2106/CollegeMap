@@ -18,6 +18,7 @@ import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
 import ProtectedRoute from "./Routes/ProtectedRoute";
 import ComingSoon from "./pages/ComingSoon/ComingSoon";
 import SeminarPage from "./pages/SeminarPage/SeminarPage";
+import ResourcesPage from "./pages/ResourcesPage/ResourcesPage";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -70,6 +71,7 @@ function App() {
           <Route path="/Terms-and-Conditions" element={<TermsAndConditions />} />
           <Route path="/ComingSoon" element={<ComingSoon />} />
           <Route path="/seminar" element={<SeminarPage />} />
+          <Route path="/resources" element={<ResourcesPage />} /> {/* Add the new route here */}
           {/* Add other routes as needed */}
         </Routes>
       </Layout>
