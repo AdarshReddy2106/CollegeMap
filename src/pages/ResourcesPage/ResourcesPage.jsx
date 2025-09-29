@@ -2,85 +2,137 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import './ResourcesPage.scss';
 
-// Sample resource data - this would normally come from an API
-const resourcesData = [
+
+const resourcesData = [  
   {
     id: 1,
-    title: "JEE Mathematics Formulas",
-    description: "Comprehensive formula sheet covering all JEE Math topics",
-    type: "cheatsheet",
-    subject: "Mathematics",
-    thumbnail: "https://via.placeholder.com/150?text=Math+Formulas",
-    downloadUrl: "#",
-    popular: true,
-    dateAdded: "2023-08-15"
+    title: "Mechanics I",
+    type: "Books",
+    subject: "Physics",
+    downloadUrl: "https://drive.google.com/drive/folders/1nu8LUMs8RmT5AKdSHEv-pvMVwIQw4LUl",
   },
   {
-    id: 2,
-    title: "Physics Quick Reference Guide",
-    description: "Essential physics concepts and equations for quick revision",
-    type: "shortNotes",
+    id:2,
+    title: "Mechanics II",
+    type: "Books",
     subject: "Physics",
-    thumbnail: "https://via.placeholder.com/150?text=Physics+Guide",
-    downloadUrl: "#",
-    popular: true,
-    dateAdded: "2023-09-02"
+    downloadUrl: "https://drive.google.com/drive/folders/1RE_hBQogejGMxClAYYw9lQES4klRpAjd",
   },
   {
     id: 3,
-    title: "Organic Chemistry Mechanisms",
-    description: "Visual guide to important organic chemistry reaction mechanisms",
-    type: "cheatsheet",
-    subject: "Chemistry",
-    thumbnail: "https://via.placeholder.com/150?text=Chemistry",
-    downloadUrl: "#",
-    popular: false,
-    dateAdded: "2023-07-20"
+    title: "Magnetism",
+    type: "Books",
+    subject: "Physics",
+    downloadUrl: "https://drive.google.com/drive/folders/1AX-FJxu8EYcoE4LME9dRGZKuI2OWJHZY",
   },
   {
     id: 4,
-    title: "Calculus Master Notes",
-    description: "Detailed explanations of calculus concepts with examples",
-    type: "notes",
-    subject: "Mathematics",
-    thumbnail: "https://via.placeholder.com/150?text=Calculus",
-    downloadUrl: "#",
-    popular: false,
-    dateAdded: "2023-10-05"
+    title: "Thermometry",
+    type: "Books",
+    subject: "Physics",
+    downloadUrl: "https://drive.google.com/drive/folders/17hlNXTFZiNuUGLNNMK6hMlSv-VbBQIcM",
   },
   {
     id: 5,
-    title: "Electromagnetism Simplified",
-    description: "Clear explanations of electromagnetic principles and applications",
-    type: "notes",
+    title: "Electrostatics",
+    type: "Books",
     subject: "Physics",
-    thumbnail: "https://via.placeholder.com/150?text=Electromagnetism",
-    downloadUrl: "#",
-    popular: true,
-    dateAdded: "2023-09-18"
+    downloadUrl: "https://drive.google.com/drive/folders/1W2YEoENQlhgLe2Ky_M-d2rA1cVc9Dbf6",
   },
   {
+    id: 6,
+    title: "Optics",
+    type: "Books",
+    subject: "Physics",
+    downloadUrl: "https://drive.google.com/drive/folders/1muAo9SzSkFPfcjsj3fhJDCveyWul3f8G",
+  },
+
+
+  {
     id: 7,
-    title: "Vectors & 3D Geometry",
-    description: "Illustrated guide to vectors and three-dimensional geometry",
-    type: "cheatsheet",
-    subject: "Mathematics",
-    thumbnail: "https://via.placeholder.com/150?text=Vectors",
-    downloadUrl: "#",
-    popular: false,
-    dateAdded: "2023-10-12"
+    title: "Physical Chemistry I",
+    type: "Books",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/drive/folders/1C00WgC5fPhUFrGmfZ9xo5h_w4sMDahg_",
   },
   {
     id: 8,
-    title: "Chemistry Equations Handbook",
-    description: "All important chemical equations and reactions for JEE preparation",
-    type: "cheatsheet",
+    title: "Physical Chemistry II",
+    type: "Books",
     subject: "Chemistry",
-    thumbnail: "https://via.placeholder.com/150?text=Chem+Equations",
-    downloadUrl: "#",
-    popular: true,
-    dateAdded: "2023-07-25"
+    downloadUrl: "https://drive.google.com/drive/folders/1o-Zpun8PFjvr2wAtmRGRb0ixVbr5Oar7",
   },
+  {
+    id: 9,
+    title: "Inorganic Chemistry I",
+    type: "Books",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/drive/folders/1D_pdEgTWEFQ0rwJSS-hIgObM51rE9qYe",
+  },
+  {
+    id: 10,
+    title: "Inorganic Chemistry II",
+    type: "Books",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/drive/folders/1gWFrxlwQ_W-KEheqkCOKVvvb4QKQcoK3",
+  },
+  {
+    id: 11,
+    title: "Organic Chemistry I",
+    type: "Books",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/drive/folders/1IxXUj5wO2hdx3ID5G8lFDamomGu_KfdJ",
+  },
+  {
+    id: 12,
+    title: "Organic Chemistry II",
+    type: "Books",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/drive/folders/1fpjU3VWAwOd8O8cVvWNkZPWWcA2cQA72",
+  },
+
+  
+  {
+    id: 13,
+    title: "Trigonometry",
+    type: "Books",
+    subject: "Mathematics",
+    downloadUrl: "https://drive.google.com/drive/folders/1XNLJuPpw-9wQ9MWnnEzJ_4Vfw16J6ZAH",
+  },
+  
+  {
+    id: 14,
+    title: "Calculus",
+    type: "Books",
+    subject: "Mathematics",
+    downloadUrl: "https://drive.google.com/drive/folders/1a_wPAXU_Q1fiyVtZFGLFQj3hx_eIomH-",
+  },
+  
+  {
+    id: 15,
+    title: "3D Geometry",
+    type: "Books",
+    subject: "Mathematics",
+    downloadUrl: "https://drive.google.com/drive/folders/1LJByflN76lAwqTR02NP9FGaiM9clri5s",
+  },
+  {
+    id: 16,
+    title: "Algebra",
+    type: "Books",
+    subject: "Mathematics",
+    downloadUrl: "https://drive.google.com/drive/folders/1H6j6Ew3A0ntL971RTqpbkaJqsdIwdodG",
+  },
+  {
+    id: 17,
+    title: "Coordinate Geometry",
+    type: "Books",
+    subject: "Mathematics",
+    downloadUrl: "https://drive.google.com/drive/folders/1MSVkAlTy-ljQauWc0awJdO1wMf40YT2J",
+  },
+
+
+  // Practice Papers
+  
 ];
 
 const ResourcesPage = () => {
@@ -89,7 +141,7 @@ const ResourcesPage = () => {
   const [activeSubject, setActiveSubject] = useState('All');
   const [activeType, setActiveType] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('popular');
+  const [sortBy, setSortBy] = useState('newest');
 
   // Simulate fetching resources from an API
   useEffect(() => {
@@ -115,18 +167,16 @@ const ResourcesPage = () => {
     if (searchQuery) {
       result = result.filter(
         resource =>
-          resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          resource.description.toLowerCase().includes(searchQuery.toLowerCase())
+          resource.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
     
     // Sort resources
-    if (sortBy === 'popular') {
-      result = [...result].sort((a, b) => (b.popular === a.popular) ? 0 : b.popular ? 1 : -1);
-    } else if (sortBy === 'newest') {
-      result = [...result].sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
-    } else if (sortBy === 'oldest') {
-      result = [...result].sort((a, b) => new Date(a.dateAdded) - new Date(b.dateAdded));
+    if (sortBy === 'newest') {
+    } else if (sortBy === 'a-z') {
+      result = [...result].sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortBy === 'z-a') {
+      result = [...result].sort((a, b) => b.title.localeCompare(a.title));
     }
     
     setFilteredResources(result);
@@ -164,11 +214,14 @@ const ResourcesPage = () => {
         </div>
         
         <div className="sort-dropdown">
-          <label>Sort by:</label>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option value="popular">Popular</option>
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
+          <label htmlFor="sort-select">Sort by:</label>
+          <select 
+            id="sort-select" 
+            value={sortBy} 
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option value="a-z">A-Z</option>
+            <option value="z-a">Z-A</option>
           </select>
         </div>
       </div>
@@ -199,8 +252,7 @@ const ResourcesPage = () => {
                   className={activeType === type ? 'active' : ''}
                   onClick={() => setActiveType(type)}
                 >
-                  {type === 'shortNotes' ? 'Short Notes' : 
-                   type === 'All' ? 'All Types' : type}
+                  {type === 'Practice Papers' ? 'Practice Papers' : type}
                 </button>
               ))}
             </div>
@@ -228,22 +280,18 @@ const ResourcesPage = () => {
                 whileHover={{ scale: 1.03, boxShadow: '0 10px 20px rgba(0,0,0,0.25)' }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <div className="resource-thumbnail">
-                  <img src={resource.thumbnail} alt={resource.title} />
-                  {resource.popular && <span className="popular-tag">Popular</span>}
+                <div className="resource-content">
                   <span className={`type-indicator ${resource.type}`}>
-                    {resource.type === 'shortNotes' ? 'Short Notes' : resource.type}
+                    {resource.type === 'Practice Papers' ? 'Practice Papers' : resource.type}
                   </span>
-                </div>
-                <div className="resource-details">
-                  <h3>{resource.title}</h3>
-                  <p className="resource-subject">{resource.subject}</p>
-                  <p className="resource-description">{resource.description}</p>
-                  <div className="resource-actions">
-                    <a href={resource.downloadUrl} className="download-button">
-                      Download
-                    </a>
-                    <button className="preview-button">Preview</button>
+                  <div className="resource-details">
+                    <h3>{resource.title}</h3>
+                    <p className="resource-subject">{resource.subject}</p>
+                    <div className="resource-actions">
+                      <a href={resource.downloadUrl} className="view-button">
+                        View
+                      </a>
+                    </div>
                   </div>
                 </div>
               </motion.div>

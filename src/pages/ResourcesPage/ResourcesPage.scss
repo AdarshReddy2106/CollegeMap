@@ -1,7 +1,6 @@
 @import "../../components/colortheme.scss";
 
 .resources-page {
-  max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
   background: var(--background);
@@ -190,56 +189,44 @@
         overflow: hidden;
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
         
-        .resource-thumbnail {
-          position: relative;
-          height: 180px;
-          overflow: hidden;
+        .resource-content {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+        
+        .type-indicator {
+          background: rgba(0, 0, 0, 0.6);
+          color: white;
+          padding: 8px 12px;
+          text-transform: capitalize;
+          font-size: 0.9rem;
+          font-weight: 500;
           
-          img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
+          &.cheatsheet {
+            background: rgba(33, 150, 243, 0.9);
           }
           
-          .popular-tag {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 87, 34, 0.9);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            box-shadow: 0 2px 10px rgba(255, 87, 34, 0.3);
+          &.notes {
+            background: rgba(76, 175, 80, 0.9);
           }
           
-          .type-indicator {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
-            padding: 8px 12px;
-            text-transform: capitalize;
-            font-size: 0.9rem;
-            font-weight: 500;
-            
-            &.cheatsheet {
-              background: rgba(33, 150, 243, 0.9);
-            }
-            
-            &.notes, &.shortNotes {
-              background: rgba(76, 175, 80, 0.9);
-            }
+          &.Books {
+            background: rgba(156, 39, 176, 0.9);
+          }
+          
+          &.Practice {
+            background: rgba(76, 175, 80, 0.9);
           }
         }
         
         .resource-details {
           padding: 24px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
           
           h3 {
             font-size: 1.4rem;
@@ -252,22 +239,15 @@
           .resource-subject {
             color: var(--primary);
             font-weight: bold;
-            margin-bottom: 12px;
-            font-size: 1rem;
-          }
-          
-          .resource-description {
-            color: #666;
             margin-bottom: 24px;
-            font-size: 0.95rem;
-            line-height: 1.6;
+            font-size: 1rem;
           }
           
           .resource-actions {
             display: flex;
             gap: 12px;
             
-            .download-button, .preview-button {
+            .view-button {
               padding: 10px 18px;
               border-radius: 8px;
               cursor: pointer;
@@ -275,9 +255,6 @@
               font-size: 1rem;
               transition: all 0.2s ease;
               text-align: center;
-            }
-            
-            .download-button {
               background-color: var(--primary);
               color: white;
               flex: 1;
@@ -293,27 +270,12 @@
                 box-shadow: 0 6px 15px rgba(16, 195, 188, 0.4);
               }
             }
-            
-            .preview-button {
-              background-color: transparent;
-              border: 1px solid #ddd;
-              color: #555;
-              
-              &:hover {
-                background-color: #f5f5f5;
-                border-color: #ccc;
-              }
-            }
           }
         }
         
         &:hover {
           transform: translateY(-5px);
           box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-          
-          .resource-thumbnail img {
-            transform: scale(1.05);
-          }
         }
       }
     }
@@ -353,11 +315,9 @@
       }
     }
   }
-}
 
-// Responsive design
-@media (max-width: 768px) {
-  .resources-page {
+  // Responsive design
+  @media (max-width: 768px) {
     .resources-header {
       padding: 30px 15px;
       
@@ -394,10 +354,8 @@
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     }
   }
-}
 
-@media (max-width: 480px) {
-  .resources-page {
+  @media (max-width: 480px) {
     padding: 15px;
     
     .resources-header {
@@ -419,80 +377,73 @@
       }
     }
   }
-}
 
-// Dark mode support
-@media (prefers-color-scheme: dark) {
-  .resources-page {
-    .filter-section {
-      background-color: var(--surface-color);
-      
-      .filter-group {
-        h3 {
-          color: var(--text-light);
-        }
+  // Dark mode support
+  @media (prefers-color-scheme: dark) {
+    .resources-page {
+      .filter-section {
+        background-color: var(--surface-color);
         
-        .filter-buttons {
-          button {
-            background: var(--bg-color);
-            border-color: #444;
+        .filter-group {
+          h3 {
             color: var(--text-light);
-            
-            &:hover:not(.active) {
-              background-color: var(--surface-color);
-            }
           }
-        }
-      }
-    }
-    
-    .resources-container {
-      .no-results {
-        background: var(--surface-color);
-        color: var(--text-light);
-        
-        h3, p {
-          color: var(--text-secondary-color);
-        }
-      }
-      
-      .resources-grid {
-        .resource-card {
-          background: var(--surface-color);
           
-          .resource-details {
-            h3 {
+          .filter-buttons {
+            button {
+              background: var(--bg-color);
+              border-color: #444;
               color: var(--text-light);
-            }
-            
-            .resource-description {
-              color: var(--text-secondary-color);
-            }
-            
-            .resource-actions {
-              .preview-button {
-                border-color: #444;
-                color: var(--text-secondary-color);
-                
-                &:hover {
-                  background-color: rgba(255, 255, 255, 0.05);
-                }
+              
+              &:hover:not(.active) {
+                background-color: var(--surface-color);
               }
             }
           }
         }
       }
-    }
-    
-    .resources-footer {
-      background: var(--surface-color);
       
-      h3 {
-        color: var(--text-light);
+      .resources-container {
+        .no-results {
+          background: var(--surface-color);
+          color: var(--text-light);
+          
+          h3, p {
+            color: var(--text-secondary-color);
+          }
+        }
+        
+        .resources-grid {
+          .resource-card {
+            background: var(--surface-color);
+            
+            .resource-details {
+              h3 {
+                color: var(--text-light);
+              }
+              
+              .resource-description {
+                color: var(--text-secondary-color);
+              }
+              
+              .resource-actions {
+                // Remove any preview button related styles
+              }
+            }
+          }
+        }
       }
       
-      p {
-        color: var(--text-secondary-color);
+      .resources-footer {
+        background: var(--surface-color);
+        
+        h3 {
+          color: var(--text-light);
+        }
+        
+        p {
+          color: var(--text-secondary-color);
+        }
       }
     }
   }
