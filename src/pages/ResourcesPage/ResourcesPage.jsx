@@ -129,10 +129,85 @@ const resourcesData = [
     subject: "Mathematics",
     downloadUrl: "https://drive.google.com/drive/folders/1MSVkAlTy-ljQauWc0awJdO1wMf40YT2J",
   },
-
-
   // Practice Papers
-  
+  {
+    id: 18,
+    title: "Chemical Bonding",
+    type: "Practice",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/file/d/1m81vSNTEBYHPw_2SJ-VJg6aFfF_QnWCh/view?usp=drive_link",
+  },
+ {
+    id: 19,
+    title: "Equilibrium",
+    type: "Practice",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/file/d/18wPaGQQKU31JlZvAfOMWoC5U6hd2EmG7/view?usp=drive_link"
+ },
+ {
+    id: 20,
+    title: "Relations and Functions",
+    type: "Practice",
+    subject: "Mathematics",
+    downloadUrl: "https://drive.google.com/file/d/18wPaGQQKU31JlZvAfOMWoC5U6hd2EmG7/view?usp=drive_link"
+ },
+ {
+    id: 21,
+    title: "Electrostatics",
+    type: "Practice",
+    subject: "Physics",
+    downloadUrl: "https://drive.google.com/file/d/1Mboxm38IM52dOgqVkm7CfEO8gCu7IUiy/view?usp=drive_link"
+ },
+ {
+    id: 22,
+    title: "Rotational Motion",
+    type: "Practice",
+    subject: "Physics",
+    downloadUrl: "https://drive.google.com/file/d/1tu3JN8NBubZIrmCkGuJXhoUJEQk4I6iR/view?usp=drive_link"
+ },
+ {
+    id: 23,
+    title:"Semiconductor",
+    type: "Practice",
+    subject: "Physics",
+    downloadUrl: "https://drive.google.com/file/d/1MBmybEUQaDIRgbC5aSUwdzuWMEUiH7km/view?usp=drive_link"
+ },
+ {
+    id: 24,
+    title: "Thermal Physics",
+    type: "Practice",
+    subject: "Physics",
+    downloadUrl: "https://drive.google.com/file/d/1dFQN2vSgKh-gAum51kjgM8XNXIZmlBr1/view?usp=drive_link"
+ },
+ // Cheatsheets
+  {
+    id: 25,
+    title: "Haloalkanes and Haloarenes",
+    type: "Cheatsheets",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/file/d/17kQbg8vycn02LjTNNw45rtgd96GB5b87/view?usp=drive_link"
+  },
+  {
+    id: 26,
+    title: "Hydrogen",
+    type: "Cheatsheets",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/file/d/1lV89zgepRmXa0rUCmyXrg3efxU5-oK5F/view?usp=drive_link"
+  },
+  {
+    id: 27,
+    title: "Conic Sections",
+    type: "Cheatsheets",
+    subject: "Mathematics",
+    downloadUrl: "https://drive.google.com/file/d/1SYTCaC9XrV41gLu2MutxfWhY-w-pD5Tx/view?usp=drive_link"
+  },
+  {
+    id: 28,
+    title: "Circular Motion",
+    type: "Cheatsheets",
+    subject: "Physics",
+    downloadUrl: "https://drive.google.com/file/d/1NtnlcBpQ4IjJzkmUp_IlujrWKOs0h6gC/view?usp=drive_link"
+  }  
 ];
 
 const ResourcesPage = () => {
