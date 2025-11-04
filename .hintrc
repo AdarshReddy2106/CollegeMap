@@ -9,7 +9,9 @@
         "ignore": [
           "position: sticky",
           "scroll-behavior",
-          "scroll-behavior: smooth"
+          "scroll-behavior: smooth",
+          "min-height: auto",
+          "backdrop-filter"
         ]
       }
     ]

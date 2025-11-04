@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import './ResourcesPage.scss';
 
 
@@ -213,10 +213,14 @@ const resourcesData = [
 const ResourcesPage = () => {
   const [resources, setResources] = useState([]);
   const [filteredResources, setFilteredResources] = useState([]);
-  const [activeSubject, setActiveSubject] = useState('All');
-  const [activeType, setActiveType] = useState('All');
+  const [activeSubject, setActiveSubject] = useState('Physics');
+  const [activeType, setActiveType] = useState('Practice');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  const [showBooks, setShowBooks] = useState(false);
+  const [booksSelected, setBooksSelected] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedResource, setSelectedResource] = useState(null);
 
   // Simulate fetching resources from an API
   useEffect(() => {
@@ -238,6 +242,11 @@ const ResourcesPage = () => {
       result = result.filter(resource => resource.type === activeType);
     }
     
+    // For Books type, only show if books category is selected
+    if (activeType === 'Books' && !booksSelected) {
+      result = [];
+    }
+    
     // Filter by search query
     if (searchQuery) {
       result = result.filter(
@@ -255,11 +264,37 @@ const ResourcesPage = () => {
     }
     
     setFilteredResources(result);
-  }, [resources, activeSubject, activeType, searchQuery, sortBy]);
+    
+    // Show books selection when Books type is active
+    setShowBooks(activeType === 'Books' && !booksSelected);
+  }, [resources, activeSubject, activeType, searchQuery, sortBy, booksSelected]);
 
   // Get unique subjects and types for filters
   const subjects = ['All', ...new Set(resources.map(item => item.subject))];
   const types = ['All', ...new Set(resources.map(item => item.type))];
+
+  const handleTypeChange = (type) => {
+    setActiveType(type);
+    setBooksSelected(false); // Reset books selection when type changes
+  };
+
+  const handleBooksClick = () => {
+    setBooksSelected(true);
+  };
+
+  const handleBackFromBooks = () => {
+    setBooksSelected(false);
+  };
+
+  const handleViewResource = (resource) => {
+    setSelectedResource(resource);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedResource(null);
+  };
 
   return (
     <div className="resources-page">
@@ -269,8 +304,7 @@ const ResourcesPage = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1>Student Resources</h1>
-        <p>Access valuable study materials to enhance your learning experience</p>
+        <h1>Our Resources</h1>
       </motion.div>
       
       <div className="search-section">
@@ -317,7 +351,7 @@ const ResourcesPage = () => {
               ))}
             </div>
           </div>
-          
+              
           <div className="filter-group type-filters">
             <h3>Resource Type</h3>
             <div className="filter-buttons">
@@ -325,7 +359,7 @@ const ResourcesPage = () => {
                 <button
                   key={type}
                   className={activeType === type ? 'active' : ''}
-                  onClick={() => setActiveType(type)}
+                  onClick={() => handleTypeChange(type)}
                 >
                   {type === 'Practice Papers' ? 'Practice Papers' : type}
                 </button>
@@ -341,39 +375,114 @@ const ResourcesPage = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        {filteredResources.length === 0 ? (
-          <div className="no-results">
-            <h3>No resources found</h3>
-            <p>Try changing your filters or search query</p>
+        {showBooks ? (
+          <div className="books-selection">
+            <motion.div
+              className="books-card"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              onClick={handleBooksClick}
+            >
+              <div className="books-content">
+                <div className="books-icon">📚</div>
+                <h2>Cengage</h2>
+                <p>Click to view all available books</p>
+              </div>
+            </motion.div>
           </div>
         ) : (
-          <div className="resources-grid">
-            {filteredResources.map((resource) => (
-              <motion.div 
-                className="resource-card"
-                key={resource.id}
-                whileHover={{ scale: 1.03, boxShadow: '0 10px 20px rgba(0,0,0,0.25)' }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <div className="resource-content">
-                  <span className={`type-indicator ${resource.type}`}>
-                    {resource.type === 'Practice Papers' ? 'Practice Papers' : resource.type}
-                  </span>
-                  <div className="resource-details">
-                    <h3>{resource.title}</h3>
-                    <p className="resource-subject">{resource.subject}</p>
-                    <div className="resource-actions">
-                      <a href={resource.downloadUrl} className="view-button">
-                        View
-                      </a>
+          <>
+            {booksSelected && activeType === 'Books' && (
+              <div className="back-button-container">
+                <button className="back-button" onClick={handleBackFromBooks}>
+                  ←Back
+                </button>
+              </div>
+            )}
+            {filteredResources.length === 0 ? (
+              <div className="no-results">
+                <h3>No resources found</h3>
+                <p>Try changing your filters or search query</p>
+              </div>
+            ) : (
+              <div className="resources-grid">
+                {filteredResources.map((resource) => (
+                  <motion.div 
+                    className="resource-card"
+                    key={resource.id}
+                    whileHover={{ scale: 1.03, boxShadow: '0 10px 20px rgba(0,0,0,0.25)' }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <div className="resource-content">
+                      <span className={`type-indicator ${resource.type}`}>
+                        {resource.type === 'Practice Papers' ? 'Practice Papers' : resource.type}
+                      </span>
+                      <div className="resource-details">
+                        <h3>{resource.title}</h3>
+                        <p className="resource-subject">{resource.subject}</p>
+                        <div className="resource-actions">
+                          <button 
+                            onClick={() => handleViewResource(resource)} 
+                            className="view-button"
+                          >
+                            View
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </motion.div>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {showModal && selectedResource && (
+          <motion.div
+            className="modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleCloseModal}
+          >
+            <motion.div
+              className="modal-content"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-header">
+                <h2>{selectedResource.title}</h2>
+                <button className="close-button" onClick={handleCloseModal}>
+                  X
+                </button>
+              </div>
+              <div className="modal-body">
+                <iframe
+                  src={selectedResource.downloadUrl.replace('/view?usp=drive_link', '/preview').replace('/drive/folders/', '/embeddedfolderview?id=')}
+                  title={selectedResource.title}
+                  className="resource-iframe"
+                  allow="autoplay"
+                />
+              </div>
+              <div className="modal-footer">
+                <a 
+                  href={selectedResource.downloadUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="open-drive-button"
+                >
+                  Open in Google Drive
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

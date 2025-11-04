@@ -774,16 +774,6 @@ body {
     }
 }
 
-/* Dark Mode Preference Support */
-@media (prefers-color-scheme: dark) {
-    .seminar-page {
-        // Dark theme is already the default, but we can enhance it
-        .highlight-text {
-            text-shadow: 0 0 8px rgba($primary-color, 0.3);
-        }
-    }
-}
-
 /* Print Styles */
 @media print {
     .seminar-page {
