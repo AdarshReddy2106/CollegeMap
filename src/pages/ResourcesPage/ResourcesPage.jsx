@@ -307,6 +307,8 @@ const ResourcesPage = () => {
         <h1>Our Resources</h1>
       </motion.div>
       
+      <elevenlabs-convai agent-id="agent_6001k906ndgzee69c8hjc31kv5fg"></elevenlabs-convai>
+      
       <div className="search-section">
         <div className="search-bar">
           <input
