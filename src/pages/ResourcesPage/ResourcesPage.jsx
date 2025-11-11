@@ -207,7 +207,78 @@ const resourcesData = [
     type: "Cheatsheets",
     subject: "Physics",
     downloadUrl: "https://drive.google.com/file/d/1NtnlcBpQ4IjJzkmUp_IlujrWKOs0h6gC/view?usp=drive_link"
-  }  
+  },
+  {
+    id: 29,
+    title: "Current Electricity",
+    type: "Cheatsheets",
+    subject: "Physics",
+    downloadUrl: "https://drive.google.com/file/d/1gMwhL9ApLqsQdoIdduc-MHubdrXkogH7/view?usp=drive_link",
+  },
+  {
+    id: 30,
+    title: "Kinematics",
+    type: "Cheatsheets",
+    subject: "Physics",
+    downloadUrl: "https://drive.google.com/file/d/1bxTEGfNF146WKHQ64xLXMYX14UkH7Tgs/view?usp=drive_link",
+  },
+  {
+    id: 31,
+    title: "Matrices and Determinants",
+    type: "Cheatsheets",
+    subject: "Mathematics",
+    downloadUrl: "https://drive.google.com/file/d/1tmcO4p4nbJ0l8Q8j0LTJKJ4mpqj4FGfU/view?usp=drive_link",
+  },
+  {
+    id: 32,
+    title: "Alcohols, Phenols and Ethers",
+    type: "Cheatsheets",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/file/d/1sVpsbGy0MqRKLhuJRAkaFPdU4Rf1dhGj/view?usp=drive_link",
+  },
+  {
+    id: 33,
+    title: "Aldehydes, Ketones and Carboxylic Acids",
+    type: "Cheatsheets",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/file/d/1sdcIZgPgYD7OfZ9KOsLdPnDJjvfrnDHI/view?usp=drive_link",
+  },
+  {
+    id: 34,
+    title: "Chemical Bonding",
+    type: "Cheatsheets",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/file/d/1-tkhhgDSSXcZGthAgkixLN7zPf8h6ns1/view?usp=drive_link",
+  },
+  {
+    id: 35,
+    title: "d and f Block Elements",
+    type: "Cheatsheets",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/file/d/1XujNDPq5FQ-NF0ZJJTUdGyH2qCwhe24H/view?usp=drive_link",
+  },
+  {
+    id: 36,
+    title: "Hydrocarbons",
+    type: "Cheatsheets",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/file/d/1vFgQaWgwICP6ISJN_J0H-QEczH8Grx5z/view?usp=drive_link",
+  },
+  {
+    id: 37,
+    title: "Periodic Table",
+    type: "Cheatsheets",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/file/d/1JxObHYROlvFyjqmi1PBaGcYF9ZK_NU_w/view?usp=drive_link",
+  },
+  {
+    id: 38,
+    title: "Solutions",
+    type: "Cheatsheets",
+    subject: "Chemistry",
+    downloadUrl: "https://drive.google.com/file/d/1xuqZBsmuMFsdDKknwgiH0MiBKJd_O7Rs/view?usp=drive_link",
+  },
+  
 ];
 
 const ResourcesPage = () => {
@@ -256,8 +327,7 @@ const ResourcesPage = () => {
     }
     
     // Sort resources
-    if (sortBy === 'newest') {
-    } else if (sortBy === 'a-z') {
+    if (sortBy === 'a-z') {
       result = [...result].sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortBy === 'z-a') {
       result = [...result].sort((a, b) => b.title.localeCompare(a.title));
@@ -294,6 +364,16 @@ const ResourcesPage = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedResource(null);
+  };
+
+  // Helper function to create a direct download link for files
+  const getDownloadLink = (url) => {
+    const fileIdMatch = url.match(/\/d\/(.*?)\//);
+    if (fileIdMatch && fileIdMatch[1]) {
+      const fileId = fileIdMatch[1];
+      return `https://drive.google.com/uc?export=download&id=${fileId}`;
+    }
+    return url; // Fallback for folders (though this button won't show)
   };
 
   return (
@@ -472,6 +552,18 @@ const ResourcesPage = () => {
                 />
               </div>
               <div className="modal-footer">
+                {/* Conditionally render download button only for files (not folders/Books) */}
+                {selectedResource.type !== 'Books' && (
+                  <a
+                    href={getDownloadLink(selectedResource.downloadUrl)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="download-button"
+                    download
+                  >
+                    Download PDF
+                  </a>
+                )}
                 <a 
                   href={selectedResource.downloadUrl} 
                   target="_blank" 

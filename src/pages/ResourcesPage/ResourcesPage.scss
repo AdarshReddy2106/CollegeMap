@@ -420,6 +420,31 @@
         display: flex;
         justify-content: flex-end;
         background: white;
+        gap: 12px; // --- MODIFICATION: Added gap for button spacing
+
+        // --- MODIFICATION START: Added Download Button styles
+        .download-button {
+          padding: 10px 24px;
+          background-color: #fff;
+          color: #10c3bc;
+          border: 1px solid #10c3bc;
+          border-radius: 8px;
+          font-size: 1rem;
+          cursor: pointer;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 500;
+          
+          &:hover {
+            background-color: #f0fafa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 195, 188, 0.2);
+          }
+        }
+        // --- MODIFICATION END ---
         
         .open-drive-button {
           padding: 10px 24px;
@@ -535,6 +560,12 @@
         .modal-footer {
           padding: 12px 20px;
           
+          // --- MODIFICATION: Added responsive styles for download button
+          .download-button {
+            padding: 8px 18px;
+            font-size: 0.9rem;
+          }
+
           .open-drive-button {
             padding: 8px 18px;
             font-size: 0.9rem;

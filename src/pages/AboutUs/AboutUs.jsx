@@ -5,7 +5,6 @@ import { useRef } from 'react';
 import vision from '../../assets/aboutus/vision.png';
 import mission from '../../assets/aboutus/mission.png';
 import usp from '../../assets/aboutus/usp.png';
-import visionImg from "../../assets/vision.png"
 import Team from "../../components/Team/Team";
 import Banner from '../../components/Banner/Banner';
 const SlideInSection = ({ children, direction = 'left' }) => {

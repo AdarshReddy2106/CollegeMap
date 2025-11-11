@@ -1,6 +1,5 @@
 import React from 'react';
 import './WhySection.scss';
-import vision from "../../assets/vision.png";
 import idealCollege from "../../assets/whySection/idea-college.png";
 import advancedResults from "../../assets/whySection/advanced-results.png";
 import mentoring from "../../assets/whySection/1-1-mentor.png"
