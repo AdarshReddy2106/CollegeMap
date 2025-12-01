@@ -6,23 +6,19 @@ const NewsPage = () => {
   const [updates, setUpdates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [lastUpdated, setLastUpdated] = useState(null);
   const [selectedUpdate, setSelectedUpdate] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [filterCategory, setFilterCategory] = useState('All');
-
-  const categories = ['All', 'Exam Notifications', 'Result Updates', 'Admit Card', 'Important Dates'];
 
   const fetchUpdates = async () => {
     try {
       setLoading(true);
-      // Use port 4000 where your backend is running
-      const response = await fetch('http://localhost:4000/api/nta-updates');
+      const API_URL = 'https://collegemapseminarpage.vercel.app'; // Points to production
+
+      const response = await fetch(`${API_URL}/api/nta-updates`);
       const data = await response.json();
       
       if (data.success) {
         setUpdates(data.updates);
-        setLastUpdated(data.lastUpdated);
         setError(null);
       } else {
         setError('Failed to fetch updates');
@@ -54,40 +50,6 @@ const NewsPage = () => {
     setSelectedUpdate(null);
   };
 
-  const filteredUpdates = filterCategory === 'All' 
-    ? updates 
-    : updates.filter(update => update.category === filterCategory);
-
-  const formatDate = (dateString) => {
-    // Handle "Invalid Date" and various date formats
-    if (!dateString || dateString === 'Invalid Date' || dateString === 'Recent') {
-      return 'Recent';
-    }
-    
-    try {
-      // Try to parse the date
-      const date = new Date(dateString);
-      
-      // Check if date is valid
-      if (isNaN(date.getTime())) {
-        // If it's already in DD/MM/YYYY format, just return it
-        if (dateString.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
-          return dateString;
-        }
-        return 'Recent';
-      }
-      
-      return date.toLocaleDateString('en-IN', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    } catch (error) {
-      console.error('Date formatting error:', error);
-      return 'Recent';
-    }
-  };
-
   return (
     <div className="nta-news-page">
       <motion.div 
@@ -98,35 +60,7 @@ const NewsPage = () => {
       >
         <h1>NTA Latest Updates</h1>
         <p className="subtitle">Stay updated with National Testing Agency notifications</p>
-        <div className="header-info">
-          <div className="last-updated">
-            <span className="update-icon">🔄</span>
-            Last updated: {lastUpdated ? formatDate(lastUpdated) : 'Never'}
-          </div>
-          <button onClick={fetchUpdates} className="refresh-btn" disabled={loading}>
-            {loading ? 'Refreshing...' : 'Refresh Now'}
-          </button>
-        </div>
       </motion.div>
-
-      <div className="filter-section">
-        <div className="filter-container">
-          <div className="filter-group">
-            <h3>Filter by Category</h3>
-            <div className="filter-buttons">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  className={filterCategory === category ? 'active' : ''}
-                  onClick={() => setFilterCategory(category)}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
 
       <motion.div 
         className="news-container"
@@ -144,14 +78,14 @@ const NewsPage = () => {
             <h3>⚠️ {error}</h3>
             <button onClick={fetchUpdates} className="retry-btn">Try Again</button>
           </div>
-        ) : filteredUpdates.length === 0 ? (
+        ) : updates.length === 0 ? (
           <div className="no-results">
             <h3>No updates found</h3>
-            <p>Try changing your filter or check back later</p>
+            <p>Check back later for new updates</p>
           </div>
         ) : (
           <div className="news-grid">
-            {filteredUpdates.map((update, index) => (
+            {updates.map((update, index) => (
               <motion.div 
                 className="news-card"
                 key={update.id}
