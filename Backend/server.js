@@ -1,7 +1,10 @@
 // require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const cron = require('node-cron');
 const { google } = require('googleapis');
+const { scrapeNTAUpdates } = require('./scraper'); // Add this import
+const { parseNTARSS } = require('./rssParser');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -175,6 +178,106 @@ const getBookingCount = async () => {
     console.log(`📊 Google Sheets initialized with ${count} existing bookings`);
   }
 })();
+
+// NTA Updates Cache
+let cachedNTAUpdates = [];
+let lastNTAFetch = null;
+const NTA_CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
+
+// Categorize NTA updates
+const categorizeUpdate = (title) => {
+    const titleLower = title.toLowerCase();
+    if (titleLower.includes('result') || titleLower.includes('score')) return 'Result Updates';
+    if (titleLower.includes('admit') || titleLower.includes('hall ticket')) return 'Admit Card';
+    if (titleLower.includes('exam') || titleLower.includes('test')) return 'Exam Notifications';
+    if (titleLower.includes('date') || titleLower.includes('schedule')) return 'Important Dates';
+    return 'General';
+};
+
+// Add async function to fetch NTA updates with fallback
+async function fetchNTAUpdatesWithFallback() {
+    try {
+        // Try RSS first
+        console.log('📡 Trying RSS feeds first...');
+        const rssUpdates = await parseNTARSS();
+        
+        if (rssUpdates.length > 0) {
+            console.log(`✅ Got ${rssUpdates.length} updates from RSS`);
+            return rssUpdates;
+        }
+        
+        // Fallback to web scraping
+        console.log('🔍 RSS failed, trying web scraping...');
+        const scrapedUpdates = await scrapeNTAUpdates();
+        return scrapedUpdates;
+        
+    } catch (error) {
+        console.error('❌ All methods failed:', error.message);
+        // Return mock data as last resort
+        return scrapeNTAUpdates(); // This will return mock data internally
+    }
+}
+
+// NTA Updates API Endpoint
+app.get('/api/nta-updates', async (req, res) => {
+    try {
+        const now = Date.now();
+        
+        if (cachedNTAUpdates.length && lastNTAFetch && (now - lastNTAFetch) < NTA_CACHE_DURATION) {
+            return res.json({ 
+                success: true, 
+                updates: cachedNTAUpdates,
+                cached: true,
+                lastUpdated: new Date(lastNTAFetch).toISOString()
+            });
+        }
+        
+        console.log('📰 Fetching fresh NTA updates...');
+        const rawUpdates = await fetchNTAUpdatesWithFallback();
+        
+        const processedUpdates = rawUpdates.map((update) => ({
+            ...update,
+            category: categorizeUpdate(update.title),
+            isNew: (Date.now() - new Date(update.scrapedAt).getTime()) < 24 * 60 * 60 * 1000
+        }));
+        
+        cachedNTAUpdates = processedUpdates;
+        lastNTAFetch = now;
+        
+        res.json({ 
+            success: true, 
+            updates: processedUpdates,
+            cached: false,
+            lastUpdated: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('❌ Error fetching NTA updates:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to fetch updates',
+            updates: cachedNTAUpdates
+        });
+    }
+});
+
+// Schedule automatic NTA updates every 30 minutes
+cron.schedule('*/30 * * * *', async () => {
+    console.log('[CRON] 🔄 Running scheduled NTA update fetch...');
+    try {
+        const rawUpdates = await scrapeNTAUpdates();
+        const processedUpdates = rawUpdates.map((update) => ({
+            ...update,
+            category: categorizeUpdate(update.title),
+            isNew: (Date.now() - new Date(update.scrapedAt).getTime()) < 24 * 60 * 60 * 1000
+        }));
+        
+        cachedNTAUpdates = processedUpdates;
+        lastNTAFetch = Date.now();
+        console.log(`[CRON] ✅ Successfully fetched ${processedUpdates.length} NTA updates`);
+    } catch (error) {
+        console.error('[CRON] ❌ Error during scheduled NTA fetch:', error);
+    }
+});
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -418,3 +521,26 @@ if (require.main === module) {
     }
   });
 }
+
+
+// Add this after your server starts listening
+(async function() {
+    try {
+        await initializeSheet();
+        const count = await getBookingCount();
+        console.log(`📊 Google Sheets initialized with ${count} existing bookings`);
+        
+        // Fetch initial NTA updates on startup
+        console.log('📰 Fetching initial NTA updates...');
+        const rawUpdates = await scrapeNTAUpdates();
+        cachedNTAUpdates = rawUpdates.map(update => ({
+            ...update,
+            category: categorizeUpdate(update.title),
+            isNew: true
+        }));
+        lastNTAFetch = Date.now();
+        console.log(`✅ Initial NTA fetch complete: ${cachedNTAUpdates.length} updates loaded`);
+    } catch (error) {
+        console.error('Error during initialization:', error);
+    }
+})();

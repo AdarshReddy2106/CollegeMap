@@ -58,6 +58,7 @@ const Navbar = () => {
                     {/* <li><Link to="https://collegemap1.wordpress.com/" onClick={() => setIsMenuOpen(false)}>IIT News</Link></li> */}
                     <li><Link to="https://wa.link/lo05a1" onClick={() => setIsMenuOpen(false)}>Talk to an IITian</Link></li>
                     <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>IIT News</Link></li>
+                    <li><Link to="/news" onClick={() => setIsMenuOpen(false)}>News</Link></li>
                     {/* <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>Talk to an IITian</Link></li> */}
                     <li><Link to="/Contact-Us" onClick={() => setIsMenuOpen(false)}>Contact Us</Link></li>
                     <li><Link to="/seminar" onClick={() => setIsMenuOpen(false)}>Seminar</Link></li>

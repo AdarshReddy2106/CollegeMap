@@ -19,6 +19,7 @@ import ProtectedRoute from "./Routes/ProtectedRoute";
 import ComingSoon from "./pages/ComingSoon/ComingSoon";
 import SeminarPage from "./pages/SeminarPage/SeminarPage";
 import ResourcesPage from "./pages/ResourcesPage/ResourcesPage";
+import NewsPage from "./pages/NewsPage/NewsPage";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -72,6 +73,7 @@ function App() {
           <Route path="/ComingSoon" element={<ComingSoon />} />
           <Route path="/seminar" element={<SeminarPage />} />
           <Route path="/resources" element={<ResourcesPage />} /> {/* Add the new route here */}
+          <Route path="/news" element={<NewsPage />} />
           {/* Add other routes as needed */}
         </Routes>
       </Layout>
