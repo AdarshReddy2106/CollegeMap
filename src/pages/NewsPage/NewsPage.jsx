@@ -8,6 +8,7 @@ const NewsPage = () => {
   const [error, setError] = useState(null);
   const [selectedUpdate, setSelectedUpdate] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [expandedCards, setExpandedCards] = useState(new Set());
 
   const fetchUpdates = async () => {
     try {
@@ -48,6 +49,22 @@ const NewsPage = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedUpdate(null);
+  };
+
+  const toggleCardExpand = (updateId) => {
+    setExpandedCards(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(updateId)) {
+        newSet.delete(updateId);
+      } else {
+        newSet.add(updateId);
+      }
+      return newSet;
+    });
+  };
+
+  const shouldShowReadMore = (title) => {
+    return title && title.length > 150;
   };
 
   return (
@@ -94,36 +111,26 @@ const NewsPage = () => {
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ scale: 1.03, boxShadow: '0 10px 20px rgba(0,0,0,0.25)' }}
               >
-                <div className="news-badge">
-                  {update.isNew && <span className="new-badge">NEW</span>}
-                  <span className="category-badge">{update.category || 'General'}</span>
-                </div>
                 <div className="news-content">
-                  <h3>{update.title}</h3>
-                  <div className="news-meta">
-                    <span className="news-date">📅 {update.date || 'Recent'}</span>
-                    <span className="news-source">🔗 {update.source}</span>
-                  </div>
-                  {update.description && (
-                    <p className="news-description">
-                      {update.description.substring(0, 120)}
-                      {update.description.length > 120 && '...'}
-                    </p>
+                  <h3 className={expandedCards.has(update.id) ? 'expanded' : ''}>
+                    {update.title}
+                  </h3>
+                  {shouldShowReadMore(update.title) && (
+                    <button 
+                      className="read-more-btn"
+                      onClick={() => toggleCardExpand(update.id)}
+                    >
+                      {expandedCards.has(update.id) ? 'Show Less ↑' : 'Read More ↓'}
+                    </button>
                   )}
                   <div className="news-actions">
-                    <button 
-                      onClick={() => handleViewUpdate(update)} 
-                      className="view-button"
-                    >
-                      Read More
-                    </button>
                     <a 
                       href={update.link} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="external-link"
                     >
-                      Visit NTA Page →
+                      More Details→
                     </a>
                   </div>
                 </div>
@@ -157,11 +164,6 @@ const NewsPage = () => {
                 </button>
               </div>
               <div className="modal-body">
-                <div className="update-meta">
-                  <span className="update-date">📅 {selectedUpdate.date || 'Recent'}</span>
-                  <span className="update-source">🔗 {selectedUpdate.source}</span>
-                  <span className="update-category">{selectedUpdate.category || 'General'}</span>
-                </div>
                 <div className="update-description">
                   {selectedUpdate.description || 'No additional details available.'}
                 </div>

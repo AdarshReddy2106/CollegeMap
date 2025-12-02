@@ -323,13 +323,6 @@ export const resourcesData = [
   downloadUrl: "https://drive.google.com/file/d/1bTo70lG8yAkxvE_6-hnAb89b3kOU3WQ-/view?usp=drive_link",
 },
 {
-  id: 46,
-  title: "Conic Sections",
-  type: "Cheatsheets",
-  subject: "Mathematics",
-  downloadUrl: "https://drive.google.com/file/d/1SYTCaC9XrV41gLu2MutxfWhY-w-pD5Tx/view?usp=drive_link",
-},
-{
   id: 47,
   title: "Organic Chemistry Reactions Sheet",
   type: "Cheatsheets",

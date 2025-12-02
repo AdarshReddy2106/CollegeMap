@@ -33,7 +33,7 @@
     "react-select": "^5.10.1",
     "react-slick": "^0.30.3",
     "rss-parser": "^3.13.0",
-    "sass": "^1.94.0",
+    "sass": "^1.94.2",
     "serve": "^14.2.4",
     "slick-carousel": "^1.8.1",
     "web-vitals": "^2.1.4",
