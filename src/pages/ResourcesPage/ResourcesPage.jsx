@@ -20,6 +20,25 @@ const ResourcesPage = () => {
     setFilteredResources(resourcesData);
   }, []);
 
+  // Track resource event (silently in background)
+  const trackResourceEvent = async (resource, actionType) => {
+    try {
+      await fetch('http://localhost:4000/api/track-resource', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          resourceId: resource.id,
+          resourceTitle: resource.title,
+          actionType,
+          subject: resource.subject,
+          type: resource.type
+        })
+      });
+    } catch (error) {
+      console.error('Failed to track event:', error);
+    }
+  };
+
   // Filter resources based on selected filters
   useEffect(() => {
     let result = resources;
@@ -76,6 +95,7 @@ const ResourcesPage = () => {
   };
 
   const handleViewResource = (resource) => {
+    trackResourceEvent(resource, 'view');
     setSelectedResource(resource);
     setShowModal(true);
   };
@@ -263,7 +283,6 @@ const ResourcesPage = () => {
                 />
               </div>
               <div className="modal-footer">
-                {/* Conditionally render download button only for files (not folders/Books) */}
                 {selectedResource.type !== 'Books' && (
                   <a
                     href={getDownloadLink(selectedResource.downloadUrl)}
@@ -271,6 +290,7 @@ const ResourcesPage = () => {
                     rel="noopener noreferrer"
                     className="download-button"
                     download
+                    onClick={() => trackResourceEvent(selectedResource, 'download')}
                   >
                     Download PDF
                   </a>

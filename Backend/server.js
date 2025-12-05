@@ -1,4 +1,4 @@
-// require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const cron = require('node-cron');
@@ -25,8 +25,9 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 
 // Google Sheets Configuration
-const GOOGLE_SHEETS_ID = process.env.GOOGLE_SHEETS_ID; // From the Google Sheets URL
-const SHEET_NAME = 'Bookings'; // Name of the sheet tab
+const GOOGLE_SHEETS_ID = process.env.GOOGLE_SHEETS_ID;
+const SHEET_NAME = 'Bookings';
+const ANALYTICS_SHEET_NAME = 'ResourceAnalytics';
 
 // Initialize Google Sheets API
 const initializeGoogleSheets = () => {
@@ -482,6 +483,219 @@ const checkDuplicateBooking = async (email) => {
   }
 };
 
+// MODIFIED: Initialize Analytics Sheet with aggregated structure
+const initializeAnalyticsSheet = async () => {
+  try {
+    if (!sheets) return false;
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: GOOGLE_SHEETS_ID,
+      range: `${ANALYTICS_SHEET_NAME}!A1:G1`
+    }).catch(() => ({ data: { values: [] } }));
+
+    if (!response.data.values || response.data.values.length === 0) {
+      try {
+        await sheets.spreadsheets.batchUpdate({
+          spreadsheetId: GOOGLE_SHEETS_ID,
+          requestBody: {
+            requests: [{
+              addSheet: {
+                properties: {
+                  title: ANALYTICS_SHEET_NAME
+                }
+              }
+            }]
+          }
+        });
+        console.log(`✅ Created new sheet: ${ANALYTICS_SHEET_NAME}`);
+      } catch (error) {
+        if (!error.message.includes('already exists')) {
+          console.log(`ℹ️ Sheet ${ANALYTICS_SHEET_NAME} already exists`);
+        }
+      }
+
+      const headers = [
+        'Resource ID',
+        'Resource Title',
+        'Subject',
+        'Type',
+        'Number of Views',
+        'Number of Downloads',
+        'Last Updated'
+      ];
+
+      await sheets.spreadsheets.values.update({
+        spreadsheetId: GOOGLE_SHEETS_ID,
+        range: `${ANALYTICS_SHEET_NAME}!A1:G1`,
+        valueInputOption: 'RAW',
+        requestBody: { values: [headers] }
+      });
+
+      console.log(`✅ Headers added to ${ANALYTICS_SHEET_NAME} sheet`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error initializing analytics sheet:', error);
+    return false;
+  }
+};
+
+// MODIFIED: Track resource event with aggregation
+const trackResourceEvent = async (eventData) => {
+  try {
+    if (!sheets) {
+      throw new Error('Google Sheets not initialized');
+    }
+
+    // Get all existing analytics
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: GOOGLE_SHEETS_ID,
+      range: `${ANALYTICS_SHEET_NAME}!A2:G`
+    });
+
+    const existingData = response.data.values || [];
+    let rowIndex = -1;
+    let currentViews = 0;
+    let currentDownloads = 0;
+
+    // Find if resource already exists
+    existingData.forEach((row, index) => {
+      if (row[0] === String(eventData.resourceId)) {
+        rowIndex = index + 2; // +2 because array is 0-indexed and we skip header
+        currentViews = parseInt(row[4]) || 0;
+        currentDownloads = parseInt(row[5]) || 0;
+      }
+    });
+
+    // Update counts
+    const newViews = eventData.actionType === 'view' ? currentViews + 1 : currentViews;
+    const newDownloads = eventData.actionType === 'download' ? currentDownloads + 1 : currentDownloads;
+
+    const row = [
+      String(eventData.resourceId),
+      eventData.resourceTitle,
+      eventData.subject || 'N/A',
+      eventData.type || 'N/A',
+      newViews,
+      newDownloads,
+      new Date().toISOString()
+    ];
+
+    if (rowIndex > -1) {
+      // Update existing row
+      await sheets.spreadsheets.values.update({
+        spreadsheetId: GOOGLE_SHEETS_ID,
+        range: `${ANALYTICS_SHEET_NAME}!A${rowIndex}:G${rowIndex}`,
+        valueInputOption: 'RAW',
+        requestBody: { values: [row] }
+      });
+      console.log(`📊 Updated ${eventData.actionType} count for: ${eventData.resourceTitle}`);
+    } else {
+      // Add new row
+      await sheets.spreadsheets.values.append({
+        spreadsheetId: GOOGLE_SHEETS_ID,
+        range: `${ANALYTICS_SHEET_NAME}!A:G`,
+        valueInputOption: 'RAW',
+        insertDataOption: 'INSERT_ROWS',
+        requestBody: { values: [row] }
+      });
+      console.log(`📊 Created new analytics row for: ${eventData.resourceTitle}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error tracking resource event:', error);
+    throw error;
+  }
+};
+
+// MODIFIED: Get analytics for a specific resource
+const getResourceAnalytics = async (resourceId) => {
+  try {
+    if (!sheets) return { views: 0, downloads: 0 };
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: GOOGLE_SHEETS_ID,
+      range: `${ANALYTICS_SHEET_NAME}!A2:G`
+    });
+
+    if (!response.data.values) return { views: 0, downloads: 0 };
+
+    const resourceRow = response.data.values.find(row => row[0] === String(resourceId));
+    
+    if (!resourceRow) return { views: 0, downloads: 0 };
+
+    return {
+      resourceId,
+      resourceTitle: resourceRow[1],
+      subject: resourceRow[2],
+      type: resourceRow[3],
+      views: parseInt(resourceRow[4]) || 0,
+      downloads: parseInt(resourceRow[5]) || 0,
+      lastUpdated: resourceRow[6]
+    };
+  } catch (error) {
+    console.error('Error getting resource analytics:', error);
+    return { views: 0, downloads: 0 };
+  }
+};
+
+// MODIFIED: Get all resources analytics
+const getAllResourcesAnalytics = async () => {
+  try {
+    if (!sheets) return [];
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: GOOGLE_SHEETS_ID,
+      range: `${ANALYTICS_SHEET_NAME}!A2:G`
+    });
+
+    if (!response.data.values) return [];
+
+    return response.data.values.map(row => ({
+      resourceId: row[0],
+      resourceTitle: row[1],
+      subject: row[2],
+      type: row[3],
+      views: parseInt(row[4]) || 0,
+      downloads: parseInt(row[5]) || 0,
+      lastUpdated: row[6]
+    })).sort((a, b) => (b.views + b.downloads) - (a.views + a.downloads));
+  } catch (error) {
+    console.error('Error getting all analytics:', error);
+    return [];
+  }
+};
+
+// MODIFIED: Track resource view/download endpoint
+app.post('/api/track-resource', async (req, res) => {
+  try {
+    const { resourceId, resourceTitle, actionType, subject, type } = req.body;
+    
+    if (!resourceId || !actionType || !['view', 'download'].includes(actionType)) {
+      return res.status(400).json({ message: 'Invalid tracking data' });
+    }
+
+    await trackResourceEvent({
+      resourceId,
+      resourceTitle,
+      actionType,
+      subject,
+      type
+    });
+
+    res.status(200).json({ 
+      message: 'Tracked successfully',
+      actionType,
+      resourceId
+    });
+  } catch (error) {
+    console.error('Error tracking resource:', error);
+    res.status(500).json({ message: 'Failed to track event' });
+  }
+});
+
 // Error handling middleware
 app.use((error, req, res, next) => {
   console.error('Unhandled error:', error);
@@ -527,8 +741,10 @@ if (require.main === module) {
 (async function() {
     try {
         await initializeSheet();
+        await initializeAnalyticsSheet(); // NEW: Initialize analytics sheet
         const count = await getBookingCount();
         console.log(`📊 Google Sheets initialized with ${count} existing bookings`);
+        console.log(`📈 ResourceAnalytics sheet ready at: https://docs.google.com/spreadsheets/d/${GOOGLE_SHEETS_ID}`);
         
         // Fetch initial NTA updates on startup
         console.log('📰 Fetching initial NTA updates...');

@@ -418,7 +418,14 @@ export const resourcesData = [
     id:60,
     title: "JEE Mains Syllabus Tracker",
     type: "JEE Busters",
-    subject: "All", // Added subject field
+    subject: "All", 
     downloadUrl: "https://drive.google.com/file/d/1839JnZl1iIQhLAuTGLNkGeTXeWT5oQ3d/view?usp=drive_link",
-}
+},
+{
+    id:61,
+    title: "Top-Scoring Concepts in Mathematics",
+    type: "JEE Busters",
+    subject: "All", 
+    downloadUrl: "https://drive.google.com/file/d/1ZqNJHyn29fgs8pN0sVBzPtNe1ektpuA9/view?usp=drive_link",
+},
 ];
