@@ -19,7 +19,8 @@ app.use(cors({
     'https://collegemap.in'
   ],
   methods: ['GET', 'POST', 'OPTIONS'],
-  credentials: true
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json({ limit: '10mb' }));
@@ -32,6 +33,12 @@ const ANALYTICS_SHEET_NAME = 'ResourceAnalytics';
 // Initialize Google Sheets API
 const initializeGoogleSheets = () => {
   try {
+    // Add validation for required environment variables
+    if (!process.env.GOOGLE_PROJECT_ID || !process.env.GOOGLE_PRIVATE_KEY || !process.env.GOOGLE_CLIENT_EMAIL) {
+      console.warn('⚠️ Missing Google Sheets credentials');
+      return null;
+    }
+
     const auth = new google.auth.GoogleAuth({
       credentials: {
         type: 'service_account',
@@ -285,13 +292,16 @@ app.get('/', (req, res) => {
   res.json({ 
     message: 'CollegeMap Backend with Google Sheets Integration',
     version: '3.0.0',
+    status: 'running',
     googleSheetsEnabled: !!sheets,
     sheetsId: GOOGLE_SHEETS_ID ? 'configured' : 'missing',
     endpoints: [
       'GET /api/health',
       'POST /api/save-booking',
       'GET /api/bookings',
-      'GET /api/stats'
+      'GET /api/stats',
+      'GET /api/nta-updates',
+      'POST /api/track-resource'
     ]
   });
 });
@@ -696,6 +706,23 @@ app.post('/api/track-resource', async (req, res) => {
   }
 });
 
+// NEW: Get analytics for a specific resource
+app.get('/api/resource-analytics/:resourceId', async (req, res) => {
+  try {
+    const { resourceId } = req.params;
+    const analytics = await getResourceAnalytics(resourceId);
+    
+    res.status(200).json(analytics);
+  } catch (error) {
+    console.error('Error fetching resource analytics:', error);
+    res.status(500).json({ 
+      message: 'Failed to fetch analytics',
+      views: 0,
+      downloads: 0
+    });
+  }
+});
+
 // Error handling middleware
 app.use((error, req, res, next) => {
   console.error('Unhandled error:', error);
@@ -720,11 +747,12 @@ app.use((req, res) => {
   });
 });
 
-// Export for Vercel
+// Export for Vercel - IMPORTANT: Must be default export
 module.exports = app;
 
-// For local development
-if (require.main === module) {
+// Only run server locally, not on Vercel
+if (process.env.NODE_ENV !== 'production' && require.main === module) {
+  const PORT = process.env.PORT || 4000;
   app.listen(PORT, async () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log(`📊 Google Sheets: ${sheets ? 'Connected' : 'Disconnected'}`);
@@ -736,27 +764,32 @@ if (require.main === module) {
   });
 }
 
-
-// Add this after your server starts listening
+// Initialize on startup (works for both local and Vercel)
 (async function() {
     try {
-        await initializeSheet();
-        await initializeAnalyticsSheet(); // NEW: Initialize analytics sheet
-        const count = await getBookingCount();
-        console.log(`📊 Google Sheets initialized with ${count} existing bookings`);
-        console.log(`📈 ResourceAnalytics sheet ready at: https://docs.google.com/spreadsheets/d/${GOOGLE_SHEETS_ID}`);
+        if (sheets && GOOGLE_SHEETS_ID) {
+            await initializeSheet();
+            await initializeAnalyticsSheet();
+            const count = await getBookingCount();
+            console.log(`📊 Initialized with ${count} bookings`);
+            console.log(`📈 Analytics sheet ready: ${ANALYTICS_SHEET_NAME}`);
+            console.log(`🔗 View sheets at: https://docs.google.com/spreadsheets/d/${GOOGLE_SHEETS_ID}`);
+        } else {
+            console.warn('⚠️ Google Sheets not configured - tracking disabled');
+        }
         
-        // Fetch initial NTA updates on startup
+        // Fetch initial NTA updates
         console.log('📰 Fetching initial NTA updates...');
-        const rawUpdates = await scrapeNTAUpdates();
+        const rawUpdates = await fetchNTAUpdatesWithFallback();
         cachedNTAUpdates = rawUpdates.map(update => ({
             ...update,
             category: categorizeUpdate(update.title),
             isNew: true
         }));
         lastNTAFetch = Date.now();
-        console.log(`✅ Initial NTA fetch complete: ${cachedNTAUpdates.length} updates loaded`);
+        console.log(`✅ Loaded ${cachedNTAUpdates.length} NTA updates`);
     } catch (error) {
-        console.error('Error during initialization:', error);
+        console.error('Initialization error:', error);
+        // Don't crash - continue serving requests
     }
 })();

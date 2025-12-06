@@ -428,4 +428,12 @@ export const resourcesData = [
     subject: "All", 
     downloadUrl: "https://drive.google.com/file/d/1ZqNJHyn29fgs8pN0sVBzPtNe1ektpuA9/view?usp=drive_link",
 },
+,
+{
+    id:62,
+    title: "Top-Scoring Concepts in Physics",
+    type: "JEE Busters",
+    subject: "All", 
+    downloadUrl: "https://drive.google.com/file/d/1R8zXivnKoXbaSqJTVZeI6G_4eQHHEbIH/view?usp=drive_link",
+},
 ];

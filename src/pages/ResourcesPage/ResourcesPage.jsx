@@ -13,6 +13,7 @@ const ResourcesPage = () => {
   const [booksSelected, setBooksSelected] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
+  const [resourceAnalytics, setResourceAnalytics] = useState(null);
 
   // Simulate fetching resources from an API
   useEffect(() => {
@@ -23,9 +24,15 @@ const ResourcesPage = () => {
   // Track resource event (silently in background)
   const trackResourceEvent = async (resource, actionType) => {
     try {
-      await fetch('http://localhost:4000/api/track-resource', {
+      // Use the Vercel backend URL for production
+      const API_URL = 'https://collegemapseminarpage.vercel.app';
+        
+      const response = await fetch(`${API_URL}/api/track-resource`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify({
           resourceId: resource.id,
           resourceTitle: resource.title,
@@ -34,8 +41,13 @@ const ResourcesPage = () => {
           type: resource.type
         })
       });
+
+      if (!response.ok) {
+        console.warn(`Tracking failed: ${response.status}`);
+      }
     } catch (error) {
       console.error('Failed to track event:', error);
+      // Silently fail - don't block user experience
     }
   };
 
@@ -94,15 +106,43 @@ const ResourcesPage = () => {
     setBooksSelected(false);
   };
 
-  const handleViewResource = (resource) => {
+  // Fetch analytics for a specific resource
+  const fetchResourceAnalytics = async (resourceId) => {
+    try {
+      const API_URL = 'https://collegemapseminarpage.vercel.app';
+      const response = await fetch(`${API_URL}/api/resource-analytics/${resourceId}`, {
+        method: 'GET',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      }
+      return { views: 0, downloads: 0 };
+    } catch (error) {
+      console.error('Failed to fetch analytics:', error);
+      return { views: 0, downloads: 0 };
+    }
+  };
+
+  const handleViewResource = async (resource) => {
     trackResourceEvent(resource, 'view');
     setSelectedResource(resource);
     setShowModal(true);
+    
+    // Fetch analytics for this resource
+    const analytics = await fetchResourceAnalytics(resource.id);
+    setResourceAnalytics(analytics);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedResource(null);
+    setResourceAnalytics(null);
   };
 
   // Helper function to create a direct download link for files
@@ -275,6 +315,11 @@ const ResourcesPage = () => {
                 </button>
               </div>
               <div className="modal-body">
+                {resourceAnalytics && resourceAnalytics.views > 0 && (
+                  <div className="resource-stats">
+                    <span className="views-count">👁️ {resourceAnalytics.views} views</span>
+                  </div>
+                )}
                 <iframe
                   src={selectedResource.downloadUrl.replace('/view?usp=drive_link', '/preview').replace('/drive/folders/', '/embeddedfolderview?id=')}
                   title={selectedResource.title}
