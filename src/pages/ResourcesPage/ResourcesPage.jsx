@@ -340,7 +340,7 @@ const ResourcesPage = () => {
                     Download PDF
                   </a>
                 )}
-                <a 
+                <a
                   href={selectedResource.downloadUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
@@ -356,6 +356,5 @@ const ResourcesPage = () => {
     </div>
   );
 };
-
 
 export default ResourcesPage;

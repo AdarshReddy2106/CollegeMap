@@ -325,8 +325,8 @@ export const resourcesData = [
 {
   id: 47,
   title: "Organic Chemistry Reactions Sheet",
-  type: "Cheatsheets",
-  subject: "Chemistry",
+  type: "JEE Busters",
+  subject: "All",
   downloadUrl: "https://drive.google.com/file/d/1bYMCjB3y5pvnk_lWNefYdSgxIteN2zvK/view?usp=drive_link",
 },
 {
@@ -339,8 +339,8 @@ export const resourcesData = [
 {
   id: 49,
   title: "Physical Chemistry Formula Sheet",
-  type: "Cheatsheets",
-  subject: "Chemistry",
+  type: "JEE Busters",
+  subject: "All",
   downloadUrl: "https://drive.google.com/file/d/1ErbMjhJMHcJzEPf4iIJIeJoAMQZ10vSM/view?usp=drive_link",
 },
 {
@@ -435,5 +435,26 @@ export const resourcesData = [
     type: "JEE Busters",
     subject: "All", 
     downloadUrl: "https://drive.google.com/file/d/1R8zXivnKoXbaSqJTVZeI6G_4eQHHEbIH/view?usp=drive_link",
+},
+{
+  id: 63,
+  title: "All physics instruments",
+  type: "JEE Busters",
+  subject: "All",
+  downloadUrl: "https://drive.google.com/file/d/1MQM8gTPNx-lQz3RFnmmEijqz-p5kRuN_/view?usp=drive_link",
+},
+{
+  id: 64,
+  title: "Top Scoring Concepts in Chemistry",
+  type: "JEE Busters",
+  subject: "All",
+  downloadUrl: "https://drive.google.com/file/d/1859b57_6GL6JyxS65-zIcg75niVkrzwp/view?usp=drive_link",
+},
+{
+  id: 65,
+  title: "Modern Physics",
+  type: "Cheatsheets",
+  subject: "Physics",
+  downloadUrl: "https://drive.google.com/file/d/1UIhrFyUGGqoDmbB6e6jgTMXWD4nioUND/view?usp=drive_link",
 },
 ];

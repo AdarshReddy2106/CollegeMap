@@ -8,6 +8,7 @@ import ResultsPage from "./pages/ResultsPage/ResultsPage";
 import MobileLogin from "./pages/MobileLogin/MobileLogin";
 import EnhancedQuestions from "./pages/EnhancedQuestions/EnhancedQuestions";
 import AboutUs from "./pages/AboutUs/AboutUs";
+import AboutIITs from "./pages/AboutIITs/AboutIITs";
 import ContactUs from "./pages/ContactUs/ContactUs";
 import HowItWorks from "./pages/HowItWorks/HowItWorks";
 import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy";
@@ -64,6 +65,7 @@ function App() {
           {/* Correct placement of ProtectedRoute */}
           <Route path="/EnhancedQuestions" element={<ProtectedRoute requirePayment={false}><EnhancedQuestions /></ProtectedRoute>} />
           <Route path="/AboutUs" element={<AboutUs />} />
+          <Route path="/AboutIITs" element={<AboutIITs />} />
           <Route path="/Contact-Us" element={<ContactUs />} />
           <Route path="/HowItWorks" element={<HowItWorks />} />
           <Route path="/Privacy-Policy" element={<PrivacyPolicy />} />
