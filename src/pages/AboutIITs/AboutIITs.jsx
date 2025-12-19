@@ -1,317 +1,426 @@
-import React, { useState, useEffect } from 'react';
-import './AboutIITs.css';
+import React, { useState, useMemo } from 'react';
+import { 
+  BookOpen, 
+  Award, 
+  TrendingUp, 
+  Users, 
+  ChevronRight, 
+  Search, 
+  MapPin, 
+  Menu,
+  School,
+  ArrowRight
+} from 'lucide-react';
 import IITPalakkadImg from '../../assets/IITs/IITPalakkad.jpg';
-import IITBombayImg from '../../assets/IITs/IITBombay.jpg';
 import iitpkdData from '../../IIT DATA/iitpkd.json';
+import "./AboutIITs.css";
 
-const AboutIITs = () => {
-  const [selectedIIT, setSelectedIIT] = useState('');
-  const [iitData, setIITData] = useState(null);
-  const [loading, setLoading] = useState(false);
+// --- COMPONENTS ---
 
-  const iitDataMap = {
-    iitpkd: iitpkdData,
-  };
+const SectionTitle = ({ title, icon: Icon }) => (
+  <div className="section-title">
+    <div className="title-icon-wrapper">
+      <Icon size={24} />
+    </div>
+    <h2>{title.replace(/_/g, ' ')}</h2>
+  </div>
+);
 
-  const iitOptions = [
-    { value: 'iitpkd', label: 'IIT Palakkad', image: IITPalakkadImg },
-  ];
+const Card = ({ children, className = "" }) => (
+  <div className={`card ${className}`}>
+    {children}
+  </div>
+);
 
-  useEffect(() => {
-    if (selectedIIT) {
-      setLoading(true);
-      setTimeout(() => {
-        setIITData(iitDataMap[selectedIIT]);
-        setLoading(false);
-      }, 300);
-    }
-  }, [selectedIIT]);
+const Badge = ({ children, color = "blue" }) => {
+  return (
+    <span className={`badge badge-${color}`}>
+      {children}
+    </span>
+  );
+};
 
-  const handleIITChange = (e) => {
-    setSelectedIIT(e.target.value);
-  };
+// --- SUB-SECTIONS ---
 
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
+const OverviewSection = ({ data }) => (
+  <div className="overview-grid">
+    <Card className="overview-card">
+      <h3 className="card-header">
+        <School className="icon-blue" /> Institute Details
+      </h3>
+      <div className="details-list">
+        <div className="detail-row">
+          <span className="label">Name</span>
+          <span className="value">{data.institute}</span>
+        </div>
+        <div className="detail-row">
+          <span className="label">Program</span>
+          <span className="value">{data.program_type}</span>
+        </div>
+        <div className="detail-row">
+          <span className="label">NIRF Ranking</span>
+          <span className="value highlight-blue">{data["NIRF Engineering Rankings"]}</span>
+        </div>
+      </div>
+    </Card>
 
-  const getImageForIIT = () => {
-    const selectedOption = iitOptions.find(opt => opt.value === selectedIIT);
-    return selectedOption ? selectedOption.image : '';
-  };
-
-  const renderNavigationMenu = () => {
-    if (!iitData) return null;
-
-    const sections = [
-      { id: 'overview', label: 'Overview', key: 'institute' },
-      { id: 'courses', label: 'Courses Offered', key: 'courses_offered' },
-      { id: 'placements', label: 'Placements', key: 'placements' },
-      { id: 'seats', label: 'Seat Matrix 2025', key: 'seat_matrix_2025' },
-      { id: 'cutoffs', label: 'Cutoffs', key: 'cutoffs' },
-    ];
-
-    return (
-      <div className="navigation-menu">
-        {sections.map((section) => (
-          iitData[section.key] && (
-            <button
-              key={section.id}
-              onClick={() => scrollToSection(section.id)}
-              className="nav-button"
-            >
-              {section.label}
-            </button>
-          )
+    <Card className="overview-card">
+      <h3 className="card-header">
+        <BookOpen className="icon-blue" /> Courses Offered
+      </h3>
+      <div className="tags-container">
+        {data.courses_offered.map((course, idx) => (
+          <Badge key={idx} color="slate">{course}</Badge>
         ))}
       </div>
-    );
-  };
+    </Card>
+  </div>
+);
 
-  const renderOverview = () => (
-    <section id="overview" className="content-section">
-      <h2 className="section-title">Overview</h2>
-      <div className="overview-grid">
-        <div className="info-card">
-          <div className="info-label">Institute</div>
-          <div className="info-value">{iitData.institute}</div>
-        </div>
-        {iitData.program_type && (
-          <div className="info-card">
-            <div className="info-label">Program Type</div>
-            <div className="info-value">{iitData.program_type}</div>
-          </div>
-        )}
-        {iitData["NIRF Engineering Rankings"] && (
-          <div className="info-card">
-            <div className="info-label">NIRF Engineering Rankings</div>
-            <div className="info-value">{iitData["NIRF Engineering Rankings"]}</div>
-          </div>
-        )}
-      </div>
-    </section>
-  );
+const PlacementsSection = ({ data }) => {
+  const [selectedYear, setSelectedYear] = useState(data[0].year);
+  const currentYearData = data.find(p => p.year === selectedYear) || data[0];
 
-  const renderCourses = () => (
-    <section id="courses" className="content-section">
-      <h2 className="section-title">Courses Offered</h2>
-      <div className="courses-grid">
-        {iitData.courses_offered.map((course, index) => (
-          <div key={index} className="course-card">
-            <div className="course-icon">🎓</div>
-            <div className="course-name">{course}</div>
-          </div>
+  return (
+    <div className="placements-section">
+      <div className="year-tabs">
+        {data.map(item => (
+          <button
+            key={item.year}
+            onClick={() => setSelectedYear(item.year)}
+            className={`tab-btn ${selectedYear === item.year ? 'active' : ''}`}
+          >
+            Batch {item.year}
+          </button>
         ))}
       </div>
-    </section>
-  );
 
-  const renderPlacements = () => (
-    <section id="placements" className="content-section">
-      <h2 className="section-title">Placements</h2>
-      {iitData.placements.map((yearData, yearIndex) => (
-        <div key={yearIndex} className="placement-year-section">
-          <h3 className="year-title">
-            {yearData.year} - <span className="status">{yearData.status}</span>
-          </h3>
-          <div className="placement-grid">
-            {yearData.programs.map((program, progIndex) => (
-              <div key={progIndex} className="placement-card">
-                <h4 className="branch-name">{program.branch}</h4>
-                <div className="placement-stats">
-                  <div className="stat-row">
-                    <span className="stat-label">Participated:</span>
-                    <span className="stat-value">{program.participated}</span>
-                  </div>
-                  <div className="stat-row">
-                    <span className="stat-label">Placed:</span>
-                    <span className="stat-value">{program.placed}</span>
-                  </div>
-                  <div className="stat-row">
-                    <span className="stat-label">Placement Rate:</span>
-                    <span className="stat-value highlight">{program.placement_rate}%</span>
-                  </div>
-                  <div className="stat-row">
-                    <span className="stat-label">Average Package:</span>
-                    <span className="stat-value">₹{program.avg_package_lpa} LPA</span>
-                  </div>
-                  <div className="stat-row">
-                    <span className="stat-label">Highest Package:</span>
-                    <span className="stat-value highlight">₹{program.highest_package_lpa} LPA</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </section>
-  );
-
-  const renderSeatMatrix = () => (
-    <section id="seats" className="content-section">
-      <h2 className="section-title">Seat Matrix 2025</h2>
-      <div className="table-container">
-        <table className="seat-matrix-table">
-          <thead>
-            <tr>
-              <th>Program</th>
-              <th>Type</th>
-              <th>Total</th>
-              <th>Open</th>
-              <th>Open PWD</th>
-              <th>EWS</th>
-              <th>EWS PWD</th>
-              <th>SC</th>
-              <th>SC PWD</th>
-              <th>ST</th>
-              <th>ST PWD</th>
-              <th>OBC-NCL</th>
-              <th>OBC PWD</th>
-            </tr>
-          </thead>
-          <tbody>
-            {iitData.seat_matrix_2025.map((seat, index) => (
-              <tr key={index}>
-                <td className="program-cell">{seat.program}</td>
-                <td className="type-cell">{seat.type}</td>
-                <td className="total-cell">{seat.seats.total}</td>
-                <td>{seat.seats.open}</td>
-                <td>{seat.seats.open_pwd}</td>
-                <td>{seat.seats.gen_ews}</td>
-                <td>{seat.seats.gen_ews_pwd}</td>
-                <td>{seat.seats.sc}</td>
-                <td>{seat.seats.sc_pwd}</td>
-                <td>{seat.seats.st}</td>
-                <td>{seat.seats.st_pwd}</td>
-                <td>{seat.seats.obc_ncl}</td>
-                <td>{seat.seats.obc_ncl_pwd}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="stats-grid">
+         {currentYearData.programs.map((prog, idx) => (
+           <Card key={idx} className="stat-card">
+             <div className="branch-label">{prog.branch}</div>
+             <div className="stat-content">
+               <div className="stat-row">
+                 <span className="stat-label">Placement Rate</span>
+                 <span className="stat-value text-green">{prog.placement_rate}%</span>
+               </div>
+               <div className="progress-bar-bg">
+                  <div className="progress-bar-fill" style={{ width: `${prog.placement_rate}%` }}></div>
+               </div>
+               <div className="stat-footer">
+                 <div className="stat-box">
+                   <div className="sub-label">Avg Package</div>
+                   <div className="sub-value">{prog.avg_package_lpa} LPA</div>
+                 </div>
+                 <div className="stat-box text-right">
+                   <div className="sub-label">Highest</div>
+                   <div className="sub-value">{prog.highest_package_lpa} LPA</div>
+                 </div>
+               </div>
+             </div>
+           </Card>
+         ))}
       </div>
-    </section>
+    </div>
   );
+};
 
-  const renderCutoffs = () => (
-    <section id="cutoffs" className="content-section">
-      <h2 className="section-title">Cutoffs</h2>
-      {Object.keys(iitData.cutoffs).map((year) => (
-        <div key={year} className="cutoff-year-section">
-          <h3 className="year-title">Year {year}</h3>
-          <div className="table-container">
-            <table className="cutoff-table">
+const SeatMatrixSection = ({ data }) => {
+  const grouped = useMemo(() => {
+    const groups = {};
+    data.forEach(item => {
+      if (!groups[item.program]) groups[item.program] = [];
+      groups[item.program].push(item);
+    });
+    return groups;
+  }, [data]);
+
+  return (
+    <div className="seat-matrix-container">
+      {Object.entries(grouped).map(([program, items]) => (
+        <Card key={program} className="matrix-card">
+          <div className="matrix-header">
+            <h3>{program}</h3>
+            <span className="total-seats">Total Seats: {items.reduce((acc, curr) => acc + curr.seats.total, 0)}</span>
+          </div>
+          <div className="table-wrapper">
+            <table className="data-table">
               <thead>
                 <tr>
-                  <th>Program</th>
-                  <th>Category</th>
-                  <th>Gender</th>
-                  <th>Round 1 Opening</th>
-                  <th>Round 1 Closing</th>
-                  <th>Last Round Opening</th>
-                  <th>Last Round Closing</th>
+                  <th className="th-category">Category</th>
+                  <th>Total</th>
+                  <th>OPEN</th>
+                  <th>EWS</th>
+                  <th>OBC-NCL</th>
+                  <th>SC</th>
+                  <th>ST</th>
                 </tr>
               </thead>
               <tbody>
-                {iitData.cutoffs[year].map((cutoff, index) => (
-                  <tr key={index}>
-                    <td className="program-cell">{cutoff.program}</td>
-                    <td className="category-cell">{cutoff.category}</td>
-                    <td className="gender-cell">{cutoff.gender}</td>
-                    <td>{cutoff.round_1_opening_rank}</td>
-                    <td>{cutoff.round_1_closing_rank}</td>
-                    <td>{cutoff.last_round_opening_rank}</td>
-                    <td>{cutoff.last_round_closing_rank}</td>
+                {items.map((row, idx) => (
+                  <tr key={idx}>
+                    <td className="td-category">
+                      {row.type === 'Female-only' ? (
+                        <span className="category-tag text-pink">
+                          <Users size={14} /> Female Supernumerary
+                        </span>
+                      ) : (
+                        <span className="category-tag text-blue">
+                          <Users size={14} /> Gender Neutral
+                        </span>
+                      )}
+                    </td>
+                    <td className="td-bold">{row.seats.total}</td>
+                    <td>{row.seats.open}</td>
+                    <td>{row.seats.gen_ews}</td>
+                    <td>{row.seats.obc_ncl}</td>
+                    <td>{row.seats.sc}</td>
+                    <td>{row.seats.st}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
       ))}
-    </section>
-  );
-
-  return (
-    <div className="about-iits-container">
-      <div className="hero-section">
-        <h1 className="main-title">Explore IIT Institutes</h1>
-        <p className="subtitle">Select an IIT to view detailed information</p>
-      </div>
-
-      <div className="selection-container">
-        <div className="dropdown-wrapper">
-          <label htmlFor="iit-select" className="dropdown-label">
-            Select IIT
-          </label>
-          <select
-            id="iit-select"
-            value={selectedIIT}
-            onChange={handleIITChange}
-            className="iit-dropdown"
-          >
-            <option value="">Choose an IIT...</option>
-            {iitOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {loading && (
-        <div className="loading-container">
-          <div className="loader"></div>
-          <p>Loading IIT data...</p>
-        </div>
-      )}
-
-      {!loading && selectedIIT && iitData && (
-        <>
-          <div className="institute-header">
-            <div className="institute-image-container">
-              <img
-                src={getImageForIIT()}
-                alt={iitData.institute}
-                className="institute-image"
-              />
-            </div>
-            <div className="institute-name-container">
-              <h2 className="institute-name">{iitData.institute}</h2>
-              {iitData["NIRF Engineering Rankings"] && (
-                <p className="institute-ranking">
-                  NIRF Ranking: {iitData["NIRF Engineering Rankings"]}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {renderNavigationMenu()}
-
-          <div className="content-container">
-            {renderOverview()}
-            {iitData.courses_offered && renderCourses()}
-            {iitData.placements && renderPlacements()}
-            {iitData.seat_matrix_2025 && renderSeatMatrix()}
-            {iitData.cutoffs && renderCutoffs()}
-          </div>
-        </>
-      )}
-
-      {!loading && !selectedIIT && (
-        <div className="empty-state">
-          <div className="empty-icon">🎓</div>
-          <h3>Select an IIT to get started</h3>
-          <p>Choose an IIT from the dropdown above to view detailed information</p>
-        </div>
-      )}
     </div>
   );
 };
 
-export default AboutIITs;
+const CutoffSection = ({ data }) => {
+  const [year, setYear] = useState("2025");
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  const flatData = useMemo(() => {
+    const list = data[year] || [];
+    return list.filter(item => 
+      item.program.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [data, year, searchTerm]);
+
+  return (
+    <Card className="cutoff-card">
+      <div className="cutoff-header">
+        <div className="year-selector">
+           {Object.keys(data).sort().reverse().map(y => (
+             <button
+              key={y}
+              onClick={() => setYear(y)}
+              className={`filter-btn ${year === y ? 'active' : ''}`}
+             >
+               {y} Cutoffs
+             </button>
+           ))}
+        </div>
+        <div className="search-wrapper">
+          <Search className="search-icon" size={16} />
+          <input 
+            type="text" 
+            placeholder="Search branch or category..." 
+            className="search-input"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+      
+      <div className="table-scroll-container">
+        <table className="data-table sticky-header">
+          <thead>
+            <tr>
+              <th>Program</th>
+              <th>Category</th>
+              <th>Quota</th>
+              <th className="text-right">Opening Rank</th>
+              <th className="text-right">Closing Rank</th>
+            </tr>
+          </thead>
+          <tbody>
+            {flatData.length > 0 ? flatData.map((row, idx) => (
+              <tr key={idx}>
+                <td className="td-program">{row.program}</td>
+                <td>
+                  <Badge color={row.category.includes('OPEN') ? 'blue' : 'amber'}>{row.category}</Badge>
+                </td>
+                <td className="text-muted">{row.gender}</td>
+                <td className="text-right font-mono text-muted">{row.round_1_opening_rank}</td>
+                <td className="text-right font-mono text-blue">{row.round_1_closing_rank}</td>
+              </tr>
+            )) : (
+              <tr>
+                <td colSpan="5" className="no-data">
+                  No records found matching your search.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  );
+};
+
+// --- MAIN SCREENS ---
+
+const SelectionScreen = ({ onSelect }) => {
+  return (
+    <div className="selection-screen">
+      <div className="background-shapes">
+        <div className="shape shape-1"></div>
+        <div className="shape shape-2"></div>
+      </div>
+
+      <div className="selection-content">
+        <div className="selection-header">
+           <div className="logo-box">
+             <MapPin className="text-white" size={32} />
+           </div>
+           <h1>College Map</h1>
+           <p>By IITians for Future IITians</p>
+        </div>
+
+        <div className="selection-card">
+          <label>Select Target Institute</label>
+          <div className="select-wrapper">
+            <select 
+              onChange={(e) => onSelect(e.target.value)}
+              defaultValue=""
+            >
+              <option value="" disabled>Choose an IIT...</option>
+              <option value="iitpkd">IIT Palakkad</option>
+            </select>
+            <ChevronRight className="select-arrow" />
+          </div>
+          <p className="helper-text">
+            Select an institute to view detailed analytics, placements, and cutoffs.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CollegeDashboard = ({ data, onBack }) => {
+  const [activeSection, setActiveSection] = useState('overview');
+
+  const scrollToSection = (id) => {
+    setActiveSection(id);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const navItems = [
+    { id: 'overview', label: 'Overview', icon: School },
+    { id: 'placements', label: 'Placements', icon: TrendingUp },
+    { id: 'seats', label: 'Seat Matrix', icon: Users },
+    { id: 'cutoffs', label: 'Cutoffs', icon: Award },
+  ];
+
+  return (
+    <div className="dashboard-container">
+      {/* Navbar */}
+      <nav className="navbar">
+        <div className="navbar-inner">
+          <div className="nav-left">
+            <button onClick={onBack} className="back-btn">
+              <ArrowRight className="rotate-180" size={20} />
+            </button>
+            <div className="nav-title">
+              <span className="institute-name">{data.institute}</span>
+              <span className="nav-subtitle">College Map Explorer</span>
+            </div>
+          </div>
+          
+          <div className="nav-links">
+            {navItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className={`nav-link ${activeSection === item.id ? 'active' : ''}`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+          
+          <div className="mobile-menu-btn">
+            <Menu className="text-white" />
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Header */}
+      <div className="hero-section">
+        <div className="hero-content">
+          <div className="hero-flex">
+            <div className="college-icon-large">
+               <School size={40} />
+            </div>
+            <div className="hero-text">
+              <h1>{data.institute}</h1>
+              <div className="hero-badges">
+                <span className="hero-badge primary">
+                   Rank {data["NIRF Engineering Rankings"].split(' ')[0]}
+                </span>
+                <span className="hero-badge secondary">
+                   Kerala, India
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <main className="main-content">
+        
+        <section id="overview" className="section-block">
+          <SectionTitle title="Overview" icon={School} />
+          <OverviewSection data={data} />
+        </section>
+
+        <section id="placements" className="section-block">
+          <SectionTitle title="Placement Statistics" icon={TrendingUp} />
+          <PlacementsSection data={data.placements} />
+        </section>
+
+        <section id="seats" className="section-block">
+          <SectionTitle title="Seat Matrix (2025)" icon={Users} />
+          <SeatMatrixSection data={data.seat_matrix_2025} />
+        </section>
+
+        <section id="cutoffs" className="section-block">
+          <SectionTitle title="Opening & Closing Ranks" icon={Award} />
+          <CutoffSection data={data.cutoffs} />
+        </section>
+
+      </main>
+
+      <footer className="footer">
+        <div className="footer-content">
+          <p>© {new Date().getFullYear()} College Map. Data sourced for educational purposes.</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default function App() {
+  const [selectedCollege, setSelectedCollege] = useState(null);
+
+  return (
+    <div className="app-root">
+      {selectedCollege ? (
+        <CollegeDashboard 
+          data={iitpkdData} 
+          onBack={() => setSelectedCollege(null)} 
+        />
+      ) : (
+        <SelectionScreen onSelect={setSelectedCollege} />
+      )}
+    </div>
+  );
+}
