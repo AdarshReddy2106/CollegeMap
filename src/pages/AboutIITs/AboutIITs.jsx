@@ -379,7 +379,7 @@ const SelectionScreen = ({ onSelect }) => {
       <div className="iit-selection-content">
         <div className="iit-selection-header">
            <div className="logo-box">
-             <MapPin className="iit-text-white" size={32} />
+             
            </div>
            <h1>College Map</h1>
            <p>By IITians for Future IITians</p>
@@ -494,12 +494,6 @@ const CollegeDashboard = ({ data, onBack }) => {
         </section>
 
       </main>
-
-      <footer className="iit-footer">
-        <div className="iit-footer-content">
-          <p>© {new Date().getFullYear()} College Map. Data sourced for educational purposes.</p>
-        </div>
-      </footer>
     </div>
   );
 };

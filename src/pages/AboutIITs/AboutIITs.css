@@ -1,14 +1,14 @@
 :root {
-  --bg-dark: #0f172a;
-  --bg-darker: #020617;
-  --bg-light: #f8fafc;
+  --bg-dark: #0d4d4d;
+  --bg-darker: #073333;
+  --bg-light: #f0f4f8;
   --text-main: #1e293b;
   --text-muted: #64748b;
   --text-light: #94a3b8;
-  --primary: #2563eb;
-  --primary-light: #eff6ff;
-  --primary-dark: #1d4ed8;
-  --accent: #8b5cf6;
+  --primary: #17a2b8;
+  --primary-light: #d1f0f5;
+  --primary-dark: #138496;
+  --accent: #20c997;
   --border: #e2e8f0;
   --white: #ffffff;
   --green: #16a34a;
@@ -72,9 +72,9 @@ button {
 }
 
 .iit-badge {
-  padding: 0.125rem 0.625rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
   font-weight: 500;
   display: inline-block;
 }
@@ -204,11 +204,11 @@ button {
 }
 
 .iit-legend-registered {
-  background-color: #cbd5e1;
+  background-color: #94a3b8;
 }
 
 .iit-legend-placed {
-  background-color: #4a9eff;
+  background-color: #3b82f6;
 }
 
 .iit-placement-chart {
@@ -262,11 +262,11 @@ button {
 }
 
 .iit-bar-registered {
-  background-color: #cbd5e1;
+  background-color: #94a3b8;
 }
 
 .iit-bar-placed {
-  background-color: #4a9eff;
+  background-color: #3b82f6;
 }
 
 .iit-bar-value {
@@ -378,17 +378,26 @@ button {
 .iit-seat-matrix-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .iit-matrix-card {
   overflow: hidden;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.iit-matrix-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
 }
 
 .iit-matrix-header {
-  background-color: var(--slate-bg);
-  padding: 0.75rem 1.5rem;
-  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  padding: 1.25rem 1.5rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -396,49 +405,114 @@ button {
 
 .iit-matrix-header h3 {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-main);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 0.025em;
 }
 
-.iit-total-seats { font-size: 0.875rem; color: var(--text-muted); }
+.iit-total-seats { 
+  font-size: 0.875rem; 
+  color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 600;
+}
 
 .iit-table-wrapper {
   overflow-x: auto;
+  background-color: var(--white);
 }
 
 .iit-data-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 0.875rem;
-  text-align: left;
 }
 
 .iit-data-table th {
-  background-color: var(--white);
+  background: linear-gradient(to bottom, #f1f5f9, #e2e8f0);
   color: var(--text-main);
-  font-weight: 600;
-  font-size: 0.8125rem;
-  border-bottom: 1px solid var(--slate-bg);
-  padding: 0.75rem 1.5rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 1rem 1.25rem;
   white-space: nowrap;
   text-transform: uppercase;
-  letter-spacing: 0.025em;
+  letter-spacing: 0.05em;
+  text-align: center;
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.iit-data-table th.th-category {
+  text-align: left;
+  padding-left: 1.5rem;
 }
 
 .iit-data-table td {
-  padding: 0.75rem 1.5rem;
-  border-bottom: 1px solid var(--slate-bg);
+  padding: 1rem 1.25rem;
   color: var(--text-main);
+  text-align: center;
+  font-weight: 500;
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
 }
 
-.iit-data-table tr:hover { background-color: #f8fafc; }
-.iit-data-table tr:last-child td { border-bottom: none; }
+.iit-data-table td.td-category {
+  text-align: left;
+  padding-left: 1.5rem;
+}
 
-.iit-category-tag { display: flex; align-items: center; gap: 0.5rem; font-weight: 500; white-space: nowrap; }
-.iit-text-blue { color: var(--primary); }
-.iit-text-pink { color: var(--pink-text); }
-.iit-td-bold { font-weight: 700; color: var(--text-main); }
+.iit-data-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.iit-data-table tbody tr:hover {
+  background: linear-gradient(to right, #e0f2fe, #f1f5f9);
+  box-shadow: inset 0 0 0 1px #bfdbfe;
+}
+
+.iit-data-table tr:last-child td { 
+  border-bottom: none; 
+}
+
+.iit-category-tag { 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 0.5rem; 
+  font-weight: 600; 
+  font-size: 0.8125rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.iit-category-tag:hover {
+  transform: translateX(4px);
+}
+
+.iit-text-blue { 
+  color: var(--primary); 
+  background-color: var(--primary-light);
+}
+
+.iit-text-pink { 
+  color: var(--pink-text);
+  background-color: #fce7f3;
+}
+
+.iit-td-bold { 
+  font-weight: 700; 
+  color: var(--text-main);
+  font-size: 1rem;
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border-left: 3px solid #3b82f6;
+}
 
 /* --- Cutoffs --- */
 .iit-cutoff-card { padding: 0; }
@@ -666,7 +740,7 @@ button {
 /* --- Selection Screen --- */
 .iit-selection-screen {
   min-height: 100vh;
-  background-color: var(--bg-dark);
+  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -682,7 +756,7 @@ button {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  opacity: 0.2;
+  opacity: 0;
 }
 
 .iit-shape {
@@ -704,62 +778,69 @@ button {
 
 .iit-selection-header .logo-box {
   margin: 0 auto 1.5rem auto;
-  width: 4rem;
-  height: 4rem;
-  background-color: var(--primary);
+  width: 5rem;
+  height: 5rem;
+  background-image: url('../../assets/logo/cm_top.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
   border-radius: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 10px 30px rgba(23, 162, 184, 0.3);
 }
 
 .iit-text-white { color: var(--white); }
 
 .iit-selection-header h1 {
-  font-size: 2.25rem;
+  font-size: 2.5rem;
   font-weight: 800;
-  color: var(--white);
+  color: var(--bg-dark);
   margin: 0;
 }
 
-.iit-selection-header p { color: var(--text-light); margin-top: 0.5rem; margin-bottom: 2rem; }
+.iit-selection-header p { color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 2rem; font-size: 1.125rem; }
 
 .iit-selection-card {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--white);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
   padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
 }
 
 .iit-selection-card label {
   display: block;
   text-align: left;
   font-size: 0.875rem;
-  font-weight: 500;
-  color: #cbd5e1;
+  font-weight: 600;
+  color: var(--text-main);
   margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .iit-select-wrapper { position: relative; }
 
 .iit-select-wrapper select {
   width: 100%;
-  background-color: var(--text-main);
-  border: 1px solid #334155;
-  color: var(--white);
+  background-color: var(--white);
+  border: 2px solid var(--border);
+  color: var(--text-main);
   font-size: 1.125rem;
   border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
   appearance: none;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
 .iit-select-wrapper select:focus {
   outline: none;
-  box-shadow: 0 0 0 2px var(--primary);
+  box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.2);
+  border-color: var(--primary);
 }
 
 .iit-select-arrow {
@@ -767,14 +848,15 @@ button {
   right: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--text-muted);
+  color: var(--primary);
   pointer-events: none;
 }
 
 .iit-helper-text {
   margin-top: 1rem;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: var(--text-muted);
+  text-align: center;
 }
 
 /* --- Dashboard Structure --- */
@@ -875,7 +957,7 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.85) 50%, rgba(15, 23, 42, 0.9) 100%);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.7) 100%);
   z-index: 1;
 }
 
@@ -907,17 +989,16 @@ button {
 }
 
 .iit-college-icon-large {
-  width: 8rem;
-  height: 8rem;
+  width: 10rem;
+  height: 10rem;
   background-color: var(--white);
-  padding: 0.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #cbd5e1;
   overflow: hidden;
 }
 
@@ -928,14 +1009,14 @@ button {
 }
 
 .iit-hero-text h1 {
-  font-size: 1.875rem;
-  font-weight: 700;
+  font-size: 2.5rem;
+  font-weight: 800;
   color: var(--white);
   margin: 0 0 1rem 0;
   line-height: 1.2;
 }
 
-@media (min-width: 768px) { .iit-hero-text h1 { font-size: 3rem; } }
+@media (min-width: 768px) { .iit-hero-text h1 { font-size: 3.5rem; } }
 
 .iit-hero-badges { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 
@@ -959,21 +1040,3 @@ button {
   flex-direction: column;
   gap: 4rem;
 }
-
-/* --- Footer --- */
-.iit-footer {
-  background-color: var(--bg-dark);
-  color: var(--text-light);
-  padding: 3rem 0;
-  margin-top: 3rem;
-  border-top: 1px solid #1e293b;
-}
-
-.iit-footer-content {
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 0 1rem;
-  text-align: center;
-}
-
-.iit-footer p { font-size: 0.875rem; }
