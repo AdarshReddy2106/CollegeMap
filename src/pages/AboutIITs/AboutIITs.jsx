@@ -6,13 +6,12 @@ import {
   Users, 
   ChevronRight, 
   Search, 
-  MapPin, 
-  Menu,
+  MapPin,
   School,
   ArrowLeft
 } from 'lucide-react';
-import IITPalakkadImg from '../../assets/IITs/IITPalakkad.jpg';
 import iitpkdData from '../../IIT DATA/iitpkd.json';
+import { getImageUrl } from '../../utils/imageLoader';
 import "./AboutIITs.css";
 
 // --- COMPONENTS ---
@@ -242,15 +241,28 @@ const SeatMatrixSection = ({ data }) => {
 
 const CutoffSection = ({ data }) => {
   const [year, setYear] = useState("2025");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedBranch, setSelectedBranch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   
-  const flatData = useMemo(() => {
+  // Get unique branches and categories
+  const { branches, categories } = useMemo(() => {
     const list = data[year] || [];
-    return list.filter(item => 
-      item.program.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [data, year, searchTerm]);
+    const branchSet = new Set(list.map(item => item.program));
+    const categorySet = new Set(list.map(item => item.category));
+    return {
+      branches: Array.from(branchSet).sort(),
+      categories: Array.from(categorySet).sort()
+    };
+  }, [data, year]);
+
+  const filteredData = useMemo(() => {
+    const list = data[year] || [];
+    return list.filter(item => {
+      const branchMatch = !selectedBranch || item.program === selectedBranch;
+      const categoryMatch = !selectedCategory || item.category === selectedCategory;
+      return branchMatch && categoryMatch;
+    });
+  }, [data, year, selectedBranch, selectedCategory]);
 
   return (
     <Card className="iit-cutoff-card">
@@ -266,44 +278,84 @@ const CutoffSection = ({ data }) => {
              </button>
            ))}
         </div>
-        <div className="iit-search-wrapper">
-          <Search className="iit-search-icon" size={16} />
-          <input 
-            type="text" 
-            placeholder="Search branch or category..." 
-            className="iit-search-input"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        
+        <div className="iit-filters-row">
+          <div className="iit-filter-group">
+            <label className="iit-filter-label">Branch</label>
+            <select 
+              className="iit-filter-select"
+              value={selectedBranch}
+              onChange={(e) => setSelectedBranch(e.target.value)}
+            >
+              <option value="">All Branches</option>
+              {branches.map(branch => (
+                <option key={branch} value={branch}>{branch}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="iit-filter-group">
+            <label className="iit-filter-label">Category</label>
+            <select 
+              className="iit-filter-select"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="">All Categories</option>
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+          </div>
+          
+          {(selectedBranch || selectedCategory) && (
+            <button 
+              className="iit-clear-filters-btn"
+              onClick={() => {
+                setSelectedBranch("");
+                setSelectedCategory("");
+              }}
+            >
+              Clear Filters
+            </button>
+          )}
         </div>
       </div>
       
       <div className="iit-table-scroll-container">
-        <table className="iit-data-table iit-sticky-header">
+        <table className="iit-cutoff-table">
           <thead>
-            <tr>
-              <th>Program</th>
-              <th>Category</th>
-              <th>Quota</th>
-              <th className="iit-text-right">Opening Rank</th>
-              <th className="iit-text-right">Closing Rank</th>
+            <tr className="iit-table-main-header">
+              <th rowSpan="2">Program</th>
+              <th rowSpan="2">Category</th>
+              <th rowSpan="2">Quota</th>
+              <th colSpan="2" className="iit-round-header iit-round-1">Round 1</th>
+              <th colSpan="2" className="iit-round-header iit-round-last">Last Round</th>
+            </tr>
+            <tr className="iit-table-sub-header">
+              <th className="iit-text-right iit-sub-col">Opening</th>
+              <th className="iit-text-right iit-sub-col">Closing</th>
+              <th className="iit-text-right iit-sub-col">Opening</th>
+              <th className="iit-text-right iit-sub-col">Closing</th>
             </tr>
           </thead>
           <tbody>
-            {flatData.length > 0 ? flatData.map((row, idx) => (
-              <tr key={idx}>
+            {filteredData.length > 0 ? filteredData.map((row, idx) => (
+              <tr key={idx} className="iit-cutoff-row">
                 <td className="iit-td-program">{row.program}</td>
-                <td>
+                <td className="iit-td-category">
                   <Badge color={row.category.includes('OPEN') ? 'blue' : 'amber'}>{row.category}</Badge>
                 </td>
-                <td className="iit-text-muted">{row.gender}</td>
-                <td className="iit-text-right iit-font-mono iit-text-muted">{row.round_1_opening_rank}</td>
-                <td className="iit-text-right iit-font-mono iit-text-blue">{row.round_1_closing_rank}</td>
+                <td className="iit-td-quota">{row.gender}</td>
+                <td className="iit-text-right iit-font-mono iit-rank-cell">{row.round_1_opening_rank}</td>
+                <td className="iit-text-right iit-font-mono iit-rank-cell iit-rank-closing">{row.round_1_closing_rank}</td>
+                <td className="iit-text-right iit-font-mono iit-rank-cell">{row.last_round_opening_rank}</td>
+                <td className="iit-text-right iit-font-mono iit-rank-cell iit-rank-final">{row.last_round_closing_rank}</td>
               </tr>
             )) : (
               <tr>
-                <td colSpan="5" className="iit-no-data">
-                  No records found matching your search.
+                <td colSpan="7" className="iit-no-data">
+                  No records found matching your filters.
                 </td>
               </tr>
             )}
@@ -375,11 +427,11 @@ const CollegeDashboard = ({ data, onBack }) => {
   return (
     <div className="iit-dashboard-container">
       {/* Hero Header */}
-      <div className="iit-hero-section">
+      <div className="iit-hero-section" style={{ backgroundImage: `url(${getImageUrl(data.hero_image, 'hero')})` }}>
         <div className="iit-hero-content">
           <div className="iit-hero-flex">
             <div className="iit-college-icon-large">
-               <School size={56} />
+               <img src={getImageUrl(data.logo_image, 'logo')} alt={data.institute + ' Logo'} />
             </div>
             <div className="iit-hero-text">
               <h1>{data.institute}</h1>
