@@ -19,7 +19,6 @@ function LandingPage() {
             <IITCards />
             <WhySection />
             <Testimonials />
-            <Footer />
         </>
     );
 }

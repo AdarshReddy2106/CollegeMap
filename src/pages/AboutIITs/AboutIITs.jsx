@@ -11,6 +11,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import iitpkdData from '../../IIT DATA/iitpkd.json';
+import iitkgpData from '../../IIT DATA/iitkgp.json';
 import { getImageUrl } from '../../utils/imageLoader';
 import "./AboutIITs.css";
 
@@ -394,6 +395,7 @@ const SelectionScreen = ({ onSelect }) => {
             >
               <option value="" disabled>Choose an IIT...</option>
               <option value="iitpkd">IIT Palakkad</option>
+              <option value="iitkgp">IIT Kharagpur</option>
             </select>
             <ChevronRight className="iit-select-arrow" />
           </div>
@@ -501,12 +503,24 @@ const CollegeDashboard = ({ data, onBack }) => {
 export default function App() {
   const [selectedCollege, setSelectedCollege] = useState(null);
 
+  // Map selection to data
+  const getCollegeData = (college) => {
+    switch (college) {
+      case 'iitpkd':
+        return iitpkdData;
+      case 'iitkgp':
+        return iitkgpData;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="app-root">
       {selectedCollege ? (
-        <CollegeDashboard 
-          data={iitpkdData} 
-          onBack={() => setSelectedCollege(null)} 
+        <CollegeDashboard
+          data={getCollegeData(selectedCollege)}
+          onBack={() => setSelectedCollege(null)}
         />
       ) : (
         <SelectionScreen onSelect={setSelectedCollege} />

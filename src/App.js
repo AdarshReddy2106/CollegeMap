@@ -9,6 +9,7 @@ import MobileLogin from "./pages/MobileLogin/MobileLogin";
 import EnhancedQuestions from "./pages/EnhancedQuestions/EnhancedQuestions";
 import AboutUs from "./pages/AboutUs/AboutUs";
 import AboutIITs from "./pages/AboutIITs/AboutIITs";
+import BranchComparison from "./pages/BranchComparison/BranchComparison";
 import ContactUs from "./pages/ContactUs/ContactUs";
 import HowItWorks from "./pages/HowItWorks/HowItWorks";
 import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy";
@@ -76,6 +77,7 @@ function App() {
           <Route path="/seminar" element={<SeminarPage />} />
           <Route path="/resources" element={<ResourcesPage />} /> {/* Add the new route here */}
           <Route path="/news" element={<NewsPage />} />
+          <Route path="/branch-comparison" element={<BranchComparison />} />
           {/* Add other routes as needed */}
         </Routes>
       </Layout>
