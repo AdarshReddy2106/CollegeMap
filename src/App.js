@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import SplashScreen from "./components/SplashScreen/SplashScreen";
+// import SplashScreen from "./components/SplashScreen/SplashScreen";
 import Layout from "./components/Layout/Layout";
 import LandingPage from "./pages/LandingPage/LandingPage";
 import Questionaire from "./pages/Questionaire/Questionaire";
@@ -22,6 +22,8 @@ import ComingSoon from "./pages/ComingSoon/ComingSoon";
 import SeminarPage from "./pages/SeminarPage/SeminarPage";
 import ResourcesPage from "./pages/ResourcesPage/ResourcesPage";
 import NewsPage from "./pages/NewsPage/NewsPage";
+import CBTPortal from "./pages/CBTPortal/CBTPortal";
+import TestInterface from "./pages/CBTPortal/TestInterface";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -50,9 +52,9 @@ function App() {
     };
   }, []);
 
-  if (showSplash) {
-    return <SplashScreen />;
-  }
+  // if (showSplash) {
+  //   return <SplashScreen />;
+  // }
 
   return (
     <Router>
@@ -78,6 +80,8 @@ function App() {
           <Route path="/resources" element={<ResourcesPage />} /> {/* Add the new route here */}
           <Route path="/news" element={<NewsPage />} />
           <Route path="/branch-comparison" element={<BranchComparison />} />
+          <Route path="/cbt-portal" element={<CBTPortal />} />
+          <Route path="/cbt-portal/test/:testId" element={<TestInterface />} />
           {/* Add other routes as needed */}
         </Routes>
       </Layout>

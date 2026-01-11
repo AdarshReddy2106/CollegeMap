@@ -11,7 +11,9 @@
           "scroll-behavior",
           "scroll-behavior: smooth",
           "min-height: auto",
-          "backdrop-filter"
+          "backdrop-filter",
+          "user-select",
+          "-moz-appearance"
         ]
       }
     ]
