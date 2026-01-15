@@ -273,7 +273,7 @@ const TestInterface = () => {
 
       // Create AbortController with timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
 
       try {
         const response = await fetch('https://collegemapseminarpage.vercel.app/api/cbt/test-results', {
@@ -297,28 +297,46 @@ const TestInterface = () => {
 
         if (responseData.success) {
           console.log('✅ Test results saved successfully to Google Sheets');
+          // Don't save to localStorage if successfully saved to backend
+          return;
         } else {
-          console.error('❌ Failed to save test results:', responseData);
+          throw new Error(responseData.message || 'Failed to save');
         }
       } catch (fetchError) {
         clearTimeout(timeoutId);
         
         if (fetchError.name === 'AbortError') {
-          console.error('❌ Request timeout - Results will be saved locally only');
+          console.error('❌ Request timeout - Saving to localStorage as fallback');
         } else {
           console.error('❌ Network error:', fetchError);
         }
         
-        // Save to localStorage as fallback
-        const localResults = JSON.parse(localStorage.getItem('offlineTestResults') || '[]');
-        localResults.push({
-          ...testResultData,
-          userProfile,
-          completedAt: new Date().toISOString(),
-          synced: false
-        });
-        localStorage.setItem('offlineTestResults', JSON.stringify(localResults));
-        console.log('💾 Saved to localStorage as fallback');
+        // Save to localStorage as fallback - Only store last 5 results to prevent quota exceeded
+        try {
+          const localResults = JSON.parse(localStorage.getItem('offlineTestResults') || '[]');
+          
+          // Keep only the last 4 results + this new one = max 5 results
+          const limitedResults = localResults.slice(-4);
+          
+          limitedResults.push({
+            ...testResultData,
+            userProfile,
+            completedAt: new Date().toISOString(),
+            synced: false
+          });
+          
+          localStorage.setItem('offlineTestResults', JSON.stringify(limitedResults));
+          console.log('💾 Saved to localStorage as fallback (max 5 results kept)');
+        } catch (storageError) {
+          console.error('❌ localStorage quota exceeded, clearing old results');
+          // If still fails, clear all and save only this one
+          localStorage.setItem('offlineTestResults', JSON.stringify([{
+            ...testResultData,
+            userProfile,
+            completedAt: new Date().toISOString(),
+            synced: false
+          }]));
+        }
       }
     } catch (error) {
       console.error('❌ Error in saveTestResults:', error);

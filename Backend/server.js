@@ -1068,6 +1068,8 @@ app.post('/api/cbt/test-results', async (req, res) => {
   
   try {
     console.log('📝 [TEST SAVE] Started at', new Date().toISOString());
+    console.log('📝 [TEST SAVE] Request body:', JSON.stringify(req.body, null, 2));
+    console.log('📝 [TEST SAVE] Headers:', req.headers);
     
     const userProfileHeader = req.headers['x-user-profile'];
     
@@ -1104,7 +1106,18 @@ app.post('/api/cbt/test-results', async (req, res) => {
       userProfile
     };
 
+    console.log('📊 [TEST SAVE] Final data to save:', JSON.stringify(resultData, null, 2));
     console.log('📊 [TEST SAVE] Saving to Google Sheets...');
+    
+    // Verify sheets is initialized
+    if (!sheets) {
+      console.error('❌ [TEST SAVE] Google Sheets not initialized!');
+      return res.status(500).json({
+        message: 'Google Sheets not initialized',
+        success: false
+      });
+    }
+    
     await saveCBTTestResult(resultData);
     
     const duration = Date.now() - startTime;
@@ -1113,14 +1126,21 @@ app.post('/api/cbt/test-results', async (req, res) => {
     res.status(200).json({ 
       message: 'Test result saved successfully',
       success: true,
-      duration: `${duration}ms`
+      duration: `${duration}ms`,
+      savedData: {
+        testTitle: resultData.testTitle,
+        email: userProfile.email,
+        timestamp: new Date().toISOString()
+      }
     });
   } catch (error) {
     const duration = Date.now() - startTime;
-    console.error(`❌ [TEST SAVE] Failed after ${duration}ms:`, error.message);
+    console.error(`❌ [TEST SAVE] Failed after ${duration}ms:`, error);
+    console.error('❌ [TEST SAVE] Error stack:', error.stack);
     res.status(500).json({ 
       message: 'Failed to save test result: ' + error.message,
-      success: false 
+      success: false,
+      error: process.env.NODE_ENV === 'development' ? error.stack : error.message
     });
   }
 });

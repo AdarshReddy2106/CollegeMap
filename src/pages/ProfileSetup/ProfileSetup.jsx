@@ -43,10 +43,21 @@ const ProfileSetup = () => {
     if (!validateForm()) return;
 
     setLoading(true);
+    
+    // Always save to localStorage first
+    const profileData = {
+      name: formData.name.trim(),
+      email: formData.email.trim().toLowerCase(),
+      setupComplete: true,
+      setupDate: new Date().toISOString()
+    };
+    
+    localStorage.setItem('userProfile', JSON.stringify(profileData));
+    console.log('✅ Profile saved to localStorage:', profileData);
+    
     try {
-      console.log('Submitting profile:', { name: formData.name, email: formData.email });
+      console.log('📤 Submitting profile to backend...');
       
-      // Save profile to backend (Google Sheets)
       const response = await fetch('https://collegemapseminarpage.vercel.app/api/save-profile', {
         method: 'POST',
         headers: {
@@ -54,59 +65,26 @@ const ProfileSetup = () => {
           'Accept': 'application/json'
         },
         body: JSON.stringify({
-          name: formData.name.trim(),
-          email: formData.email.trim().toLowerCase()
+          name: profileData.name,
+          email: profileData.email
         })
       });
 
       console.log('Response status:', response.status);
       
-      let data;
-      try {
-        data = await response.json();
-        console.log('Response data:', data);
-      } catch (parseError) {
-        console.error('Failed to parse response:', parseError);
-        throw new Error('Invalid response from server');
-      }
-
-      if (response.ok && data.success) {
-        // Save to localStorage
-        localStorage.setItem('userProfile', JSON.stringify({
-          name: formData.name.trim(),
-          email: formData.email.trim().toLowerCase(),
-          setupComplete: true,
-          setupDate: new Date().toISOString()
-        }));
-
-        console.log('Profile saved successfully, navigating...');
-
-        // Navigate directly to test without login
-        if (testId) {
-          navigate(`/cbt-portal/test/${testId}`);
-        } else if (redirectTo) {
-          navigate(redirectTo);
-        } else {
-          navigate('/cbt-portal');
-        }
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Profile saved to backend:', data);
       } else {
-        console.error('Save failed:', data);
-        setError(data.message || 'Failed to save profile. Please try again.');
+        console.warn('⚠️ Backend save failed, but continuing with localStorage profile');
       }
     } catch (error) {
-      console.error('Error saving profile:', error);
+      console.error('⚠️ Network error saving to backend:', error);
+      console.log('Continuing with localStorage profile...');
+    } finally {
+      setLoading(false);
       
-      // Fallback: Save locally even if backend fails
-      localStorage.setItem('userProfile', JSON.stringify({
-        name: formData.name.trim(),
-        email: formData.email.trim().toLowerCase(),
-        setupComplete: true,
-        setupDate: new Date().toISOString()
-      }));
-      
-      console.log('Profile saved locally as fallback');
-      
-      // Still proceed to test
+      // Navigate regardless of backend save status
       if (testId) {
         navigate(`/cbt-portal/test/${testId}`);
       } else if (redirectTo) {
@@ -114,8 +92,6 @@ const ProfileSetup = () => {
       } else {
         navigate('/cbt-portal');
       }
-    } finally {
-      setLoading(false);
     }
   };
 

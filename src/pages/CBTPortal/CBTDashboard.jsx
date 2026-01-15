@@ -41,7 +41,7 @@ const CBTDashboard = () => {
         return;
       }
 
-      // Try to sync offline results first
+      // Try to sync offline results first (but don't remove them yet)
       await syncOfflineResults(userProfile);
 
       // Create AbortController with timeout
@@ -62,12 +62,42 @@ const CBTDashboard = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log('✅ Test results received:', data);
+          console.log('✅ Test results received from server:', data);
           
-          // After successful fetch, only use server results (offline results already synced)
-          setTestHistory(data.testResults || []);
+          // Merge server results with offline results
+          const offlineResults = JSON.parse(localStorage.getItem('offlineTestResults') || '[]');
+          const serverResults = data.testResults || [];
+          
+          // Combine both arrays
+          const allResults = [...serverResults, ...offlineResults];
+          
+          // Remove duplicates based on testId and timestamp (keep offline version if exists)
+          const uniqueResults = [];
+          const seenKeys = new Set();
+          
+          allResults.forEach(result => {
+            // Create unique key from testId + rounded timestamp (within 30 seconds = same test)
+            const timestamp = new Date(result.completedAt).getTime();
+            const roundedTimestamp = Math.floor(timestamp / 30000); // 30 second buckets
+            const key = `${result.testId}-${roundedTimestamp}`;
+            
+            if (!seenKeys.has(key)) {
+              seenKeys.add(key);
+              uniqueResults.push(result);
+            }
+          });
+          
+          // Sort by date (most recent first)
+          uniqueResults.sort((a, b) => 
+            new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
+          );
+          
+          console.log(`📊 Displaying ${uniqueResults.length} total results (${serverResults.length} from server, ${offlineResults.length} offline)`);
+          setTestHistory(uniqueResults);
+          
+          // DON'T clear localStorage - keep offline results for offline viewing
         } else {
-          console.error('Failed to fetch test history');
+          console.error('Failed to fetch test history, using offline only');
           const offlineResults = JSON.parse(localStorage.getItem('offlineTestResults') || '[]');
           setTestHistory(offlineResults);
         }
@@ -86,7 +116,7 @@ const CBTDashboard = () => {
     }
   };
 
-  // NEW: Sync offline results with server
+  // MODIFIED: Sync offline results without clearing them
   const syncOfflineResults = async (userProfile) => {
     const offlineResults = JSON.parse(localStorage.getItem('offlineTestResults') || '[]');
     const unsyncedResults = offlineResults.filter(r => !r.synced);
@@ -98,6 +128,7 @@ const CBTDashboard = () => {
 
     console.log(`📤 Syncing ${unsyncedResults.length} offline results...`);
 
+    let syncedCount = 0;
     for (const result of unsyncedResults) {
       try {
         const response = await fetch('https://collegemapseminarpage.vercel.app/api/cbt/test-results', {
@@ -122,22 +153,18 @@ const CBTDashboard = () => {
 
         if (response.ok) {
           console.log(`✅ Synced result: ${result.testTitle}`);
-          // Mark as synced
-          result.synced = true;
+          syncedCount++;
+          result.synced = true; // Mark as synced but keep in localStorage
         }
       } catch (error) {
         console.error(`❌ Failed to sync result: ${result.testTitle}`, error);
       }
     }
 
-    // Update localStorage with synced status
-    localStorage.setItem('offlineTestResults', JSON.stringify(offlineResults));
-    
-    // Clear synced results after successful sync
-    const remainingOffline = offlineResults.filter(r => !r.synced);
-    if (remainingOffline.length < offlineResults.length) {
-      console.log(`🗑️ Cleared ${offlineResults.length - remainingOffline.length} synced offline results`);
-      localStorage.setItem('offlineTestResults', JSON.stringify(remainingOffline));
+    if (syncedCount > 0) {
+      // Update localStorage with synced status but DON'T remove them
+      localStorage.setItem('offlineTestResults', JSON.stringify(offlineResults));
+      console.log(`✅ Marked ${syncedCount} results as synced (kept in localStorage for offline viewing)`);
     }
   };
 

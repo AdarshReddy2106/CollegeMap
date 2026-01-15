@@ -53,18 +53,18 @@ const Navbar = () => {
             <div className="navbar-right">
                 <div className={`nav-links ${isMenuOpen ? "open" : ""}`} ref={menuRef}>
                     <li><Link to="/HowItWorks" onClick={() => setIsMenuOpen(false)}>How It Works?</Link></li>
-                    <li><Link to="/AboutUs" onClick={() => setIsMenuOpen(false)}>About Us</Link></li>
+                    {/* <li><Link to="/AboutUs" onClick={() => setIsMenuOpen(false)}>About Us</Link></li> */}
                     {/* <li><Link to="/AboutIITs" onClick={() => setIsMenuOpen(false)}>About IITs</Link></li>
                     <li><Link to="/branch-comparison" onClick={() => setIsMenuOpen(false)}>Branch Comparison</Link></li> */}
                     <li><Link to="/resources" onClick={() => setIsMenuOpen(false)}>Resources</Link></li>
                     <li><Link to="/cbt-portal" onClick={() => setIsMenuOpen(false)}>CBT Portal</Link></li>
                     {/* <li><Link to="https://collegemap1.wordpress.com/" onClick={() => setIsMenuOpen(false)}>IIT News</Link></li> */}
                     <li><Link to="https://wa.link/lo05a1" onClick={() => setIsMenuOpen(false)}>Talk to an IITian</Link></li>
-                    <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>IIT News</Link></li>
-                    <li><Link to="/news" onClick={() => setIsMenuOpen(false)}>News</Link></li>
+                    {/* <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>IIT News</Link></li> */}
+                    <li><Link to="/news" onClick={() => setIsMenuOpen(false)}>Exam Updates</Link></li>
                     {/* <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>Talk to an IITian</Link></li> */}
                     <li><Link to="/Contact-Us" onClick={() => setIsMenuOpen(false)}>Contact Us</Link></li>
-                    <li><Link to="/seminar" onClick={() => setIsMenuOpen(false)}>Seminar</Link></li>
+                    {/* <li><Link to="/seminar" onClick={() => setIsMenuOpen(false)}>Seminar</Link></li> */}
 
                     {isLoggedIn ? (
                         <button className="cta logout login-size" onClick={() => { handleLogout(); setIsMenuOpen(false); }}>Sign Out</button>
@@ -85,7 +85,7 @@ const Navbar = () => {
                 </div>
 
                 <div className="nav-actions">
-                    <Link to="/seminar" className="cta">Seminar</Link>
+                    <Link to="/cbt-portal" className="cta">Try Online test!</Link>
 
                     <div className={`hamburger ${isMenuOpen ? "open" : ""}`} onClick={toggleMenu} ref={hamburgerRef}>
                         <span></span>
