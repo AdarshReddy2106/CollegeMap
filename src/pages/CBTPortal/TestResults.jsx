@@ -179,6 +179,12 @@ const TestResults = ({ results, testData }) => {
             View Question Breakdown
           </button>
           <button
+            className="action-button dashboard"
+            onClick={() => navigate('/cbt-portal/dashboard')}
+          >
+            View Dashboard
+          </button>
+          <button
             className="action-button primary"
             onClick={() => navigate('/cbt-portal')}
           >

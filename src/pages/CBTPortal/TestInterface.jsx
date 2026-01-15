@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext';
 import './TestInterface.scss';
 import { availableTests } from './TestData';
 import TestResults from './TestResults';
@@ -8,6 +9,7 @@ import TestResults from './TestResults';
 const TestInterface = () => {
   const { testId } = useParams();
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
   const [testData, setTestData] = useState(null);
   const [currentSection, setCurrentSection] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -242,7 +244,88 @@ const TestInterface = () => {
     return calculateResultsWithTime(questionTimeSpent);
   }, [calculateResultsWithTime, questionTimeSpent]);
 
-  const handleAutoSubmit = useCallback(() => {
+  // Save test results to backend
+  const saveTestResults = useCallback(async (results) => {
+    try {
+      const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+      
+      if (!userProfile.email) {
+        console.warn('User profile not found, skipping test result save');
+        return;
+      }
+
+      console.log('Saving test results with user profile:', userProfile);
+
+      const testResultData = {
+        testId: testId,
+        testTitle: testData?.paperTitle || 'Test',
+        totalMarks: results.totalMarks,
+        totalQuestions: results.totalQuestions,
+        correctAnswers: results.correctAnswers,
+        incorrectAnswers: results.incorrectAnswers,
+        unattempted: results.unattempted,
+        percentage: parseFloat(results.percentage),
+        totalTestDuration: results.totalTestDuration,
+        sectionWiseResults: results.sectionWiseResults
+      };
+
+      console.log('Test result data being sent:', testResultData);
+
+      // Create AbortController with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+      try {
+        const response = await fetch('https://collegemapseminarpage.vercel.app/api/cbt/test-results', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-User-Profile': JSON.stringify(userProfile)
+          },
+          body: JSON.stringify(testResultData),
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        console.log('✅ Backend response:', responseData);
+
+        if (responseData.success) {
+          console.log('✅ Test results saved successfully to Google Sheets');
+        } else {
+          console.error('❌ Failed to save test results:', responseData);
+        }
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        
+        if (fetchError.name === 'AbortError') {
+          console.error('❌ Request timeout - Results will be saved locally only');
+        } else {
+          console.error('❌ Network error:', fetchError);
+        }
+        
+        // Save to localStorage as fallback
+        const localResults = JSON.parse(localStorage.getItem('offlineTestResults') || '[]');
+        localResults.push({
+          ...testResultData,
+          userProfile,
+          completedAt: new Date().toISOString(),
+          synced: false
+        });
+        localStorage.setItem('offlineTestResults', JSON.stringify(localResults));
+        console.log('💾 Saved to localStorage as fallback');
+      }
+    } catch (error) {
+      console.error('❌ Error in saveTestResults:', error);
+    }
+  }, [testId, testData]);
+
+  const handleAutoSubmit = useCallback(async () => {
     // Save time spent on current question
     let updatedQuestionTime = { ...questionTimeSpent };
     if (previousQuestionIdRef.current && questionStartTime !== null) {
@@ -267,11 +350,21 @@ const TestInterface = () => {
       if (isFullscreenActive()) {
         exitFullscreen();
       }
+      
+      // Save test results to backend
+      await saveTestResults(results);
     }
-  }, [questionTimeSpent, questionStartTime, calculateResultsWithTime]);
+  }, [questionTimeSpent, questionStartTime, calculateResultsWithTime, saveTestResults]);
 
   useEffect(() => {
-    // Find test data
+    // Check if profile exists first
+    const userProfile = localStorage.getItem('userProfile');
+    if (!userProfile) {
+      navigate('/profile-setup', { state: { testId } });
+      return;
+    }
+
+    // Profile exists, proceed with test loading
     const test = availableTests.find(t => t.id === testId);
     if (test && test.paperData) {
       // Shuffle questions and options
@@ -518,7 +611,7 @@ const TestInterface = () => {
     setShowSubmitConfirm(true);
   };
 
-  const confirmSubmit = () => {
+  const confirmSubmit = async () => {
     // Save time spent on current question
     let updatedQuestionTime = { ...questionTimeSpent };
     if (previousQuestionIdRef.current && questionStartTime !== null) {
@@ -544,6 +637,9 @@ const TestInterface = () => {
         exitFullscreen();
       }
       setShowSubmitConfirm(false);
+      
+      // Save test results to backend
+      await saveTestResults(results);
     }
   };
 
@@ -670,7 +766,9 @@ const TestInterface = () => {
               <div className="detail-row">
                 <span className="detail-label">Candidate Name</span>
                 <span className="detail-separator">:</span>
-                <span className="detail-value">[Your Name]</span>
+                <span className="detail-value">
+                  {JSON.parse(localStorage.getItem('userProfile') || '{}').name || '[Your Name]'}
+                </span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">Exam Name</span>

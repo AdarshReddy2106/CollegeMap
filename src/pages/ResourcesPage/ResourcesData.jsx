@@ -492,4 +492,18 @@ export const resourcesData = [
   subject: "Chemistry",
   downloadUrl: "https://drive.google.com/file/d/1TgSBwyVz3KI3mhvY3WA9nfnhFf1AxO2h/view?usp=drive_link",
 },
+{
+  id: 73,
+  title: "Fluid Mechanics",
+  type: "Cheatsheets",
+  subject: "Physics",
+  downloadUrl: "https://drive.google.com/file/d/11jiQ-ZMpKcw9plXD7RN5hGt-I1tSFURE/view?usp=drive_link",
+},
+{
+  id: 74,
+  title: "Top Chapters for Class 11",
+  type: "JEE Busters",
+  subject: "All",
+  downloadUrl: "https://drive.google.com/file/d/1yES42ZZ75w2bEgF6Jbjv5aH975vtq6I-/view?usp=drive_link",
+}
 ];

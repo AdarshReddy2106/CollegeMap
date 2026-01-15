@@ -5,8 +5,6 @@ import {
   TrendingUp, 
   Users, 
   ChevronRight, 
-  Search, 
-  MapPin,
   School,
   ArrowLeft
 } from 'lucide-react';
@@ -146,7 +144,6 @@ const PlacementsSection = ({ data }) => {
               .filter(w => w.toLowerCase() !== 'and')
               .map(w => w[0].toUpperCase())
               .join('');
-            const placementPercent = Math.round((prog.placed / prog.participated) * 100);
             
             return (
               <div key={idx} className="iit-chart-bar-group">

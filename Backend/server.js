@@ -20,7 +20,7 @@ app.use(cors({
   ],
   methods: ['GET', 'POST', 'OPTIONS'],
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-User-Profile']
 }));
 
 app.use(express.json({ limit: '10mb' }));
@@ -29,6 +29,9 @@ app.use(express.json({ limit: '10mb' }));
 const GOOGLE_SHEETS_ID = process.env.GOOGLE_SHEETS_ID;
 const SHEET_NAME = 'Bookings';
 const ANALYTICS_SHEET_NAME = 'ResourceAnalytics';
+const USER_REGISTRATIONS_SHEET_NAME = 'UserRegistrations';
+const USER_PROFILES_SHEET_NAME = 'UserProfiles';
+const CBT_TEST_RESULTS_SHEET_NAME = 'CBTTestResults';
 
 // Initialize Google Sheets API
 const initializeGoogleSheets = () => {
@@ -298,10 +301,13 @@ app.get('/', (req, res) => {
     endpoints: [
       'GET /api/health',
       'POST /api/save-booking',
+      'POST /api/save-profile',
+      'POST /api/user-registration',
       'GET /api/bookings',
       'GET /api/stats',
       'GET /api/nta-updates',
-      'POST /api/track-resource'
+      'POST /api/track-resource',
+      'GET /api/resource-analytics/:resourceId'
     ]
   });
 });
@@ -376,6 +382,77 @@ app.post('/api/save-booking', async (req, res) => {
       message: 'Failed to save booking.',
       error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     });
+  }
+});
+
+// NEW: Save profile endpoint
+app.post('/api/save-profile', async (req, res) => {
+  try {
+    console.log('Received profile save request:', req.body);
+    
+    const { name, email } = req.body;
+    
+    if (!name || !email) {
+      console.log('Validation failed: missing name or email');
+      return res.status(400).json({ 
+        message: 'Name and email are required',
+        success: false 
+      });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      console.log('Validation failed: invalid email format');
+      return res.status(400).json({ 
+        message: 'Valid email is required',
+        success: false 
+      });
+    }
+
+    console.log('Saving profile to Google Sheets...');
+    await saveUserProfile({ name, email });
+    console.log('Profile saved successfully');
+
+    res.status(200).json({ 
+      message: 'Profile saved successfully',
+      success: true
+    });
+  } catch (error) {
+    console.error('Error in /api/save-profile:', error);
+    res.status(500).json({ 
+      message: 'Failed to save profile: ' + error.message,
+      success: false 
+    });
+  }
+});
+
+// User Registration endpoint
+app.post('/api/user-registration', async (req, res) => {
+  try {
+    const { name, email, mobile_number } = req.body;
+    
+    if (!name || !email || !mobile_number) {
+      return res.status(400).json({ message: 'Name, email, and mobile number are required' });
+    }
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Invalid email format' });
+    }
+
+    // Validate mobile number (basic validation, can be improved)
+    if (mobile_number.length < 10) {
+      return res.status(400).json({ message: 'Mobile number must be at least 10 digits' });
+    }
+
+    // Save to Google Sheets
+    await saveUserRegistration({ name, email, mobile_number });
+
+    res.status(200).json({ message: 'Registration successful' });
+  } catch (error) {
+    console.error('Error during user registration:', error);
+    res.status(500).json({ message: 'Registration failed' });
   }
 });
 
@@ -678,47 +755,431 @@ const getAllResourcesAnalytics = async () => {
   }
 };
 
-// MODIFIED: Track resource view/download endpoint
-app.post('/api/track-resource', async (req, res) => {
+// User Registration Sheet Functions
+const initializeUserRegistrationsSheet = async () => {
   try {
-    const { resourceId, resourceTitle, actionType, subject, type } = req.body;
-    
-    if (!resourceId || !actionType || !['view', 'download'].includes(actionType)) {
-      return res.status(400).json({ message: 'Invalid tracking data' });
+    if (!sheets) return false;
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: GOOGLE_SHEETS_ID,
+      range: `${USER_REGISTRATIONS_SHEET_NAME}!A1:D1`
+    }).catch(() => ({ data: { values: [] } }));
+
+    if (!response.data.values || response.data.values.length === 0) {
+      try {
+        await sheets.spreadsheets.batchUpdate({
+          spreadsheetId: GOOGLE_SHEETS_ID,
+          requestBody: {
+            requests: [{
+              addSheet: {
+                properties: {
+                  title: USER_REGISTRATIONS_SHEET_NAME
+                }
+              }
+            }]
+          }
+        });
+        console.log(`✅ Created new sheet: ${USER_REGISTRATIONS_SHEET_NAME}`);
+      } catch (error) {
+        if (!error.message.includes('already exists')) {
+          console.log(`ℹ️ Sheet ${USER_REGISTRATIONS_SHEET_NAME} already exists`);
+        }
+      }
+
+      const headers = [
+        'Timestamp',
+        'Name',
+        'Email',
+        'Mobile Number'
+      ];
+
+      await sheets.spreadsheets.values.update({
+        spreadsheetId: GOOGLE_SHEETS_ID,
+        range: `${USER_REGISTRATIONS_SHEET_NAME}!A1:D1`,
+        valueInputOption: 'RAW',
+        requestBody: { values: [headers] }
+      });
+
+      console.log(`✅ Headers added to ${USER_REGISTRATIONS_SHEET_NAME} sheet`);
     }
 
-    await trackResourceEvent({
-      resourceId,
-      resourceTitle,
-      actionType,
-      subject,
-      type
+    return true;
+  } catch (error) {
+    console.error('Error initializing user registrations sheet:', error);
+    return false;
+  }
+};
+
+const saveUserRegistration = async (userData) => {
+  try {
+    if (!sheets) {
+      throw new Error('Google Sheets not initialized');
+    }
+
+    const row = [
+      new Date().toISOString(),
+      userData.name || 'N/A',
+      userData.email || 'N/A',
+      userData.mobile_number || 'N/A'
+    ];
+
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: GOOGLE_SHEETS_ID,
+      range: `${USER_REGISTRATIONS_SHEET_NAME}!A:D`,
+      valueInputOption: 'RAW',
+      insertDataOption: 'INSERT_ROWS',
+      requestBody: { values: [row] }
     });
 
+    console.log(`👤 User registration saved: ${userData.name || userData.mobile_number}`);
+    return true;
+  } catch (error) {
+    console.error('Error saving user registration:', error);
+    throw error;
+  }
+};
+
+// Initialize User Profiles Sheet
+const initializeUserProfilesSheet = async () => {
+  try {
+    if (!sheets) return false;
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: GOOGLE_SHEETS_ID,
+      range: `${USER_PROFILES_SHEET_NAME}!A1:C1`
+    }).catch(() => ({ data: { values: [] } }));
+
+    if (!response.data.values || response.data.values.length === 0) {
+      try {
+        await sheets.spreadsheets.batchUpdate({
+          spreadsheetId: GOOGLE_SHEETS_ID,
+          requestBody: {
+            requests: [{
+              addSheet: {
+                properties: {
+                  title: USER_PROFILES_SHEET_NAME
+                }
+              }
+            }]
+          }
+        });
+        console.log(`✅ Created new sheet: ${USER_PROFILES_SHEET_NAME}`);
+      } catch (error) {
+        if (!error.message.includes('already exists')) {
+          console.log(`ℹ️ Sheet ${USER_PROFILES_SHEET_NAME} already exists`);
+        }
+      }
+
+      const headers = [
+        'Timestamp',
+        'Name',
+        'Email'
+      ];
+
+      await sheets.spreadsheets.values.update({
+        spreadsheetId: GOOGLE_SHEETS_ID,
+        range: `${USER_PROFILES_SHEET_NAME}!A1:C1`,
+        valueInputOption: 'RAW',
+        requestBody: { values: [headers] }
+      });
+
+      console.log(`✅ Headers added to ${USER_PROFILES_SHEET_NAME} sheet`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error initializing user profiles sheet:', error);
+    return false;
+  }
+};
+
+const saveUserProfile = async (profileData) => {
+  try {
+    if (!sheets) {
+      throw new Error('Google Sheets not initialized');
+    }
+
+    const row = [
+      new Date().toISOString(),
+      profileData.name || 'N/A',
+      profileData.email || 'N/A'
+    ];
+
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: GOOGLE_SHEETS_ID,
+      range: `${USER_PROFILES_SHEET_NAME}!A:C`,
+      valueInputOption: 'RAW',
+      insertDataOption: 'INSERT_ROWS',
+      requestBody: { values: [row] }
+    });
+
+    console.log(`👤 User profile saved: ${profileData.name}`);
+    return true;
+  } catch (error) {
+    console.error('Error saving user profile:', error);
+    throw error;
+  }
+};
+
+// Initialize CBT Test Results Sheet
+const initializeCBTTestResultsSheet = async () => {
+  try {
+    if (!sheets) return false;
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: GOOGLE_SHEETS_ID,
+      range: `${CBT_TEST_RESULTS_SHEET_NAME}!A1:M1`
+    }).catch(() => ({ data: { values: [] } }));
+
+    if (!response.data.values || response.data.values.length === 0) {
+      try {
+        await sheets.spreadsheets.batchUpdate({
+          spreadsheetId: GOOGLE_SHEETS_ID,
+          requestBody: {
+            requests: [{
+              addSheet: {
+                properties: {
+                  title: CBT_TEST_RESULTS_SHEET_NAME
+                }
+              }
+            }]
+          }
+        });
+        console.log(`✅ Created new sheet: ${CBT_TEST_RESULTS_SHEET_NAME}`);
+      } catch (error) {
+        if (!error.message.includes('already exists')) {
+          console.log(`ℹ️ Sheet ${CBT_TEST_RESULTS_SHEET_NAME} already exists`);
+        }
+      }
+
+      const headers = [
+        'Timestamp',
+        'User Name',
+        'User Email',
+        'Test ID',
+        'Test Title',
+        'Total Marks',
+        'Total Questions',
+        'Correct Answers',
+        'Incorrect Answers',
+        'Unattempted',
+        'Percentage',
+        'Time Taken (seconds)',
+        'Section Wise Details'
+      ];
+
+      await sheets.spreadsheets.values.update({
+        spreadsheetId: GOOGLE_SHEETS_ID,
+        range: `${CBT_TEST_RESULTS_SHEET_NAME}!A1:M1`,
+        valueInputOption: 'RAW',
+        requestBody: { values: [headers] }
+      });
+
+      console.log(`✅ Headers added to ${CBT_TEST_RESULTS_SHEET_NAME} sheet`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error initializing CBT test results sheet:', error);
+    return false;
+  }
+};
+
+const saveCBTTestResult = async (resultData) => {
+  try {
+    if (!sheets) {
+      throw new Error('Google Sheets not initialized');
+    }
+
+    const userProfile = resultData.userProfile || {};
+    const sectionWiseJSON = JSON.stringify(resultData.sectionWiseResults || {});
+
+    const row = [
+      new Date().toISOString(),
+      userProfile.name || 'N/A',
+      userProfile.email || 'N/A',
+      resultData.testId || 'N/A',
+      resultData.testTitle || 'N/A',
+      resultData.totalMarks || 0,
+      resultData.totalQuestions || 0,
+      resultData.correctAnswers || 0,
+      resultData.incorrectAnswers || 0,
+      resultData.unattempted || 0,
+      resultData.percentage || 0,
+      resultData.totalTestDuration || 0,
+      sectionWiseJSON
+    ];
+
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: GOOGLE_SHEETS_ID,
+      range: `${CBT_TEST_RESULTS_SHEET_NAME}!A:M`,
+      valueInputOption: 'RAW',
+      insertDataOption: 'INSERT_ROWS',
+      requestBody: { values: [row] }
+    });
+
+    console.log(`📝 CBT Test result saved: ${resultData.testTitle} - ${userProfile.name}`);
+    return true;
+  } catch (error) {
+    console.error('Error saving CBT test result:', error);
+    throw error;
+  }
+};
+
+const getCBTTestResultsByEmail = async (email) => {
+  try {
+    if (!sheets) return [];
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: GOOGLE_SHEETS_ID,
+      range: `${CBT_TEST_RESULTS_SHEET_NAME}!A2:M`
+    });
+
+    if (!response.data.values) return [];
+
+    const results = response.data.values
+      .filter(row => row[2]?.toLowerCase() === email.toLowerCase())
+      .map((row, index) => ({
+        id: `test-${index + 1}`,
+        completedAt: row[0],
+        testId: row[3],
+        testTitle: row[4],
+        totalMarks: parseFloat(row[5]) || 0,
+        totalQuestions: parseInt(row[6]) || 0,
+        correctAnswers: parseInt(row[7]) || 0,
+        incorrectAnswers: parseInt(row[8]) || 0,
+        unattempted: parseInt(row[9]) || 0,
+        percentage: parseFloat(row[10]) || 0,
+        totalTestDuration: parseInt(row[11]) || 0,
+        sectionWiseResults: row[12] ? JSON.parse(row[12]) : {}
+      }))
+      .reverse(); // Most recent first
+
+    return results;
+  } catch (error) {
+    console.error('Error getting CBT test results:', error);
+    return [];
+  }
+};
+
+// Save CBT test result endpoint
+app.post('/api/cbt/test-results', async (req, res) => {
+  const startTime = Date.now();
+  
+  try {
+    console.log('📝 [TEST SAVE] Started at', new Date().toISOString());
+    
+    const userProfileHeader = req.headers['x-user-profile'];
+    
+    if (!userProfileHeader) {
+      console.error('❌ [TEST SAVE] Missing X-User-Profile header');
+      return res.status(400).json({ 
+        message: 'User profile header is required',
+        success: false 
+      });
+    }
+    
+    let userProfile = {};
+    try {
+      userProfile = JSON.parse(userProfileHeader);
+      console.log('✅ [TEST SAVE] Parsed profile:', { name: userProfile.name, email: userProfile.email });
+    } catch (parseError) {
+      console.error('❌ [TEST SAVE] Parse error:', parseError.message);
+      return res.status(400).json({ 
+        message: 'Invalid user profile format',
+        success: false 
+      });
+    }
+    
+    if (!userProfile.email) {
+      console.error('❌ [TEST SAVE] No email in profile');
+      return res.status(400).json({ 
+        message: 'User email is required',
+        success: false 
+      });
+    }
+    
+    const resultData = {
+      ...req.body,
+      userProfile
+    };
+
+    console.log('📊 [TEST SAVE] Saving to Google Sheets...');
+    await saveCBTTestResult(resultData);
+    
+    const duration = Date.now() - startTime;
+    console.log(`✅ [TEST SAVE] Completed in ${duration}ms`);
+
     res.status(200).json({ 
-      message: 'Tracked successfully',
-      actionType,
-      resourceId
+      message: 'Test result saved successfully',
+      success: true,
+      duration: `${duration}ms`
     });
   } catch (error) {
-    console.error('Error tracking resource:', error);
-    res.status(500).json({ message: 'Failed to track event' });
+    const duration = Date.now() - startTime;
+    console.error(`❌ [TEST SAVE] Failed after ${duration}ms:`, error.message);
+    res.status(500).json({ 
+      message: 'Failed to save test result: ' + error.message,
+      success: false 
+    });
   }
 });
 
-// NEW: Get analytics for a specific resource
-app.get('/api/resource-analytics/:resourceId', async (req, res) => {
+// Get CBT test results by email
+app.get('/api/cbt/test-results', async (req, res) => {
+  const startTime = Date.now();
+  
   try {
-    const { resourceId } = req.params;
-    const analytics = await getResourceAnalytics(resourceId);
+    console.log('📊 [TEST FETCH] Started at', new Date().toISOString());
     
-    res.status(200).json(analytics);
+    const userProfileHeader = req.headers['x-user-profile'];
+    
+    if (!userProfileHeader) {
+      console.error('❌ [TEST FETCH] Missing X-User-Profile header');
+      return res.status(400).json({ 
+        message: 'User profile header is required',
+        testResults: []
+      });
+    }
+    
+    let userProfile = {};
+    try {
+      userProfile = JSON.parse(userProfileHeader);
+      console.log('✅ [TEST FETCH] Parsed profile:', { email: userProfile.email });
+    } catch (parseError) {
+      console.error('❌ [TEST FETCH] Parse error:', parseError.message);
+      return res.status(400).json({ 
+        message: 'Invalid user profile format',
+        testResults: []
+      });
+    }
+    
+    if (!userProfile.email) {
+      console.error('❌ [TEST FETCH] No email in profile');
+      return res.status(400).json({ 
+        message: 'User email is required',
+        testResults: []
+      });
+    }
+
+    console.log(`📊 [TEST FETCH] Fetching for: ${userProfile.email}`);
+    const results = await getCBTTestResultsByEmail(userProfile.email);
+    
+    const duration = Date.now() - startTime;
+    console.log(`✅ [TEST FETCH] Found ${results.length} results in ${duration}ms`);
+
+    res.status(200).json({ 
+      message: 'Test results fetched successfully',
+      testResults: results,
+      count: results.length,
+      duration: `${duration}ms`
+    });
   } catch (error) {
-    console.error('Error fetching resource analytics:', error);
+    const duration = Date.now() - startTime;
+    console.error(`❌ [TEST FETCH] Failed after ${duration}ms:`, error.message);
     res.status(500).json({ 
-      message: 'Failed to fetch analytics',
-      views: 0,
-      downloads: 0
+      message: 'Failed to fetch test results: ' + error.message,
+      testResults: []
     });
   }
 });
@@ -732,17 +1193,24 @@ app.use((error, req, res, next) => {
   });
 });
 
-// 404 handler
+// 404 handler - MUST BE LAST
 app.use((req, res) => {
+  console.log('404 - Endpoint not found:', req.method, req.path);
   res.status(404).json({
     message: 'Endpoint not found',
+    requestedPath: req.path,
+    method: req.method,
     availableEndpoints: [
       'GET /',
       'GET /api/health', 
       'POST /api/save-booking',
+      'POST /api/save-profile',
+      'POST /api/user-registration',
       'GET /api/bookings',
       'GET /api/stats',
-      'GET /api/search?query=...'
+      'GET /api/search?query=...',
+      'POST /api/track-resource',
+      'GET /api/resource-analytics/:resourceId'
     ]
   });
 });
@@ -770,9 +1238,15 @@ if (process.env.NODE_ENV !== 'production' && require.main === module) {
         if (sheets && GOOGLE_SHEETS_ID) {
             await initializeSheet();
             await initializeAnalyticsSheet();
+            await initializeUserRegistrationsSheet();
+            await initializeUserProfilesSheet();
+            await initializeCBTTestResultsSheet();
             const count = await getBookingCount();
             console.log(`📊 Initialized with ${count} bookings`);
             console.log(`📈 Analytics sheet ready: ${ANALYTICS_SHEET_NAME}`);
+            console.log(`👤 User registrations sheet ready: ${USER_REGISTRATIONS_SHEET_NAME}`);
+            console.log(`👤 User profiles sheet ready: ${USER_PROFILES_SHEET_NAME}`);
+            console.log(`📝 CBT test results sheet ready: ${CBT_TEST_RESULTS_SHEET_NAME}`);
             console.log(`🔗 View sheets at: https://docs.google.com/spreadsheets/d/${GOOGLE_SHEETS_ID}`);
         } else {
             console.warn('⚠️ Google Sheets not configured - tracking disabled');

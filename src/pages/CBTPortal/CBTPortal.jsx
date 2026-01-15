@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './CBTPortal.scss';
 import { availableTests } from './TestData';
+import ProfileIcon from '../../components/ProfileIcon/ProfileIcon';
 
 const CBTPortal = () => {
   const [tests, setTests] = useState([]);
@@ -11,12 +13,21 @@ const CBTPortal = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
     setTests(availableTests);
   }, []);
 
   const handleStartTest = (testId) => {
+    // Check if profile is set up first
+    const userProfile = localStorage.getItem('userProfile');
+    if (!userProfile) {
+      navigate('/profile-setup', { state: { testId } });
+      return;
+    }
+    
+    // Profile exists, proceed directly to test guidelines
     const test = availableTests.find(t => t.id === testId);
     if (test) {
       setSelectedTest(test);
@@ -45,8 +56,22 @@ const CBTPortal = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1>CBT Portal</h1>
-        <p>Computer Based Test Portal - Practice with timed mock tests</p>
+        <div className="header-left">
+          <h1>CBT Portal</h1>
+          <p>Computer Based Test Portal - Practice with timed mock tests</p>
+        </div>
+        <div className="header-right">
+          <ProfileIcon />
+          <motion.button
+            className="dashboard-button"
+            onClick={() => navigate('/cbt-portal/dashboard')}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            📊 View My Dashboard
+          </motion.button>
+        </div>
       </motion.div>
       
       <motion.div 

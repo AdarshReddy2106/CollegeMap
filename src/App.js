@@ -24,6 +24,8 @@ import ResourcesPage from "./pages/ResourcesPage/ResourcesPage";
 import NewsPage from "./pages/NewsPage/NewsPage";
 import CBTPortal from "./pages/CBTPortal/CBTPortal";
 import TestInterface from "./pages/CBTPortal/TestInterface";
+import ProfileSetup from "./pages/ProfileSetup/ProfileSetup";
+import CBTDashboard from "./pages/CBTPortal/CBTDashboard";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -81,7 +83,9 @@ function App() {
           <Route path="/news" element={<NewsPage />} />
           <Route path="/branch-comparison" element={<BranchComparison />} />
           <Route path="/cbt-portal" element={<CBTPortal />} />
+          <Route path="/profile-setup" element={<ProfileSetup />} />
           <Route path="/cbt-portal/test/:testId" element={<TestInterface />} />
+          <Route path="/cbt-portal/dashboard" element={<CBTDashboard />} />
           {/* Add other routes as needed */}
         </Routes>
       </Layout>
