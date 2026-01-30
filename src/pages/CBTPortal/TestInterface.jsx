@@ -3,8 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import './TestInterface.scss';
-import { availableTests } from './TestData';
+import { loadImageBasedTest, resolveImageUrl } from './testLoader';
 import TestResults from './TestResults';
+// PDF feature disabled - dormant
+// import { downloadTestAnalysisPDF } from './pdfGenerator';
 
 const TestInterface = () => {
   const { testId } = useParams();
@@ -24,10 +26,17 @@ const TestInterface = () => {
   const [testSubmitted, setTestSubmitted] = useState(false);
   const [testResults, setTestResults] = useState(null);
   const [showExitWarning, setShowExitWarning] = useState(false);
+  const [fullscreenExitCount, setFullscreenExitCount] = useState(0);
   const [showCalculator, setShowCalculator] = useState(false);
+  const [imageUrls, setImageUrls] = useState({}); // Cache resolved image URLs
+  const [loadingImages, setLoadingImages] = useState(false);
+  const imageErrorAttempts = useRef({}); // Track error attempts per question to prevent infinite loops
   const timerRef = useRef(null);
   const questionTimerRef = useRef(null);
   const previousQuestionIdRef = useRef(null);
+  const timeRemainingRef = useRef(10800); // Keep ref in sync with state
+  const questionTimeSpentRef = useRef({});
+  const questionStartTimeRef = useRef(null);
 
   const isFullscreenActive = () => {
     return !!(
@@ -66,39 +75,43 @@ const TestInterface = () => {
     return shuffled;
   };
 
-  // Shuffle questions and option texts (but keep A, B, C, D order)
-  const shuffleTestData = (paperData) => {
-    const shuffledData = JSON.parse(JSON.stringify(paperData)); // Deep clone
+  // Reorder questions: single correct first, then integer questions (no shuffling)
+  const reorderTestData = (paperData) => {
+    const reorderedData = JSON.parse(JSON.stringify(paperData)); // Deep clone
 
-    shuffledData.sections.forEach((section, sectionIndex) => {
-      // Shuffle questions within each section
-      section.questions = shuffleArray(section.questions);
+    reorderedData.sections.forEach((section, sectionIndex) => {
+      // Separate questions by type
+      const singleCorrectQuestions = [];
+      const integerQuestions = [];
+      const otherQuestions = [];
       
-      // Renumber questions after shuffling
+      section.questions.forEach(question => {
+        if (question.questionType === 'integer') {
+          integerQuestions.push(question);
+        } else if (question.questionType === 'single-correct' || 
+                   (!question.questionType && question.options && question.options.length > 0 && 
+                    (!question.correctAnswer || (Array.isArray(question.correctAnswer) && question.correctAnswer.length === 1)))) {
+          // Single correct: has questionType 'single-correct' OR has options and single correct answer
+          singleCorrectQuestions.push(question);
+        } else {
+          // Multiple correct or other types
+          otherQuestions.push(question);
+        }
+      });
+      
+      // Reorder: single correct first, then integer, then others
+      section.questions = [...singleCorrectQuestions, ...integerQuestions, ...otherQuestions];
+      
+      // Renumber questions after reordering
       section.questions.forEach((q, index) => {
         q.questionNumber = index + 1;
       });
 
-      // Shuffle option texts but keep optionIds (A, B, C, D) in order
-      section.questions.forEach(question => {
-        const originalOptions = [...question.options];
-        
-        // Shuffle the option objects (which contain optionKey, optionText)
-        const shuffledOptions = shuffleArray(originalOptions);
-        
-        // Reassign optionIds to maintain A, B, C, D order
-        const optionIds = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']; // Support up to 8 options
-        question.options = shuffledOptions.map((option, index) => ({
-          ...option,
-          optionId: optionIds[index] // Keep A, B, C, D order
-        }));
-        
-        // correctAnswerKeys remain the same (they reference unique keys, not positions)
-        // No need to update them since they're tied to optionKey, not optionId
-      });
+      // Keep options in original order (no shuffling)
+      // Options remain as they are in the original data
     });
 
-    return shuffledData;
+    return reorderedData;
   };
 
   const calculateResultsWithTime = useCallback((timeData) => {
@@ -236,26 +249,21 @@ const TestInterface = () => {
       sectionWiseResults,
       questionDetails,
       totalTestDuration,
-      percentage: ((totalMarks / (totalQuestions * 4)) * 100).toFixed(2)
+      percentage: ((totalMarks / (totalQuestions * 4)) * 100).toFixed(2),
+      fullscreenExitCount: fullscreenExitCount
     };
-  }, [testData, answers, testStartTime]);
+  }, [testData, answers, testStartTime, fullscreenExitCount]);
 
   const calculateResults = useCallback(() => {
     return calculateResultsWithTime(questionTimeSpent);
   }, [calculateResultsWithTime, questionTimeSpent]);
 
-  // Save test results to backend
+  // Save test results to backend - MODIFIED: No localStorage limit, direct save to sheets
   const saveTestResults = useCallback(async (results) => {
     try {
       const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
       
-      if (!userProfile.email) {
-        console.warn('User profile not found, skipping test result save');
-        return;
-      }
-
-      console.log('Saving test results with user profile:', userProfile);
-
+      // Prepare test result data
       const testResultData = {
         testId: testId,
         testTitle: testData?.paperTitle || 'Test',
@@ -266,14 +274,28 @@ const TestInterface = () => {
         unattempted: results.unattempted,
         percentage: parseFloat(results.percentage),
         totalTestDuration: results.totalTestDuration,
-        sectionWiseResults: results.sectionWiseResults
+        sectionWiseResults: results.sectionWiseResults,
+        fullscreenExitCount: results.fullscreenExitCount || 0,
+        questionDetails: results.questionDetails || [],
+        completedAt: new Date().toISOString()
       };
 
-      console.log('Test result data being sent:', testResultData);
+      // ALWAYS save locally first (organized by email)
+      const { saveTestResultLocally } = await import('./backend/localStorageManager');
+      saveTestResultLocally(testResultData, userProfile);
+      
+      if (!userProfile.email) {
+        console.warn('⚠️ User profile not found, saved locally only');
+        return;
+      }
 
-      // Create AbortController with timeout
+      // Try to save to Google Sheets (optional - local storage is primary)
+      console.log('💾 Attempting to save to Google Sheets (local storage already saved)...');
+      console.log('📝 User:', userProfile.email, '| Test:', testData?.paperTitle);
+
+      // Create AbortController with 30s timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
 
       try {
         const response = await fetch('https://collegemapseminarpage.vercel.app/api/cbt/test-results', {
@@ -293,12 +315,17 @@ const TestInterface = () => {
         }
 
         const responseData = await response.json();
-        console.log('✅ Backend response:', responseData);
+        console.log('✅ Test results saved to Google Sheets:', responseData);
 
         if (responseData.success) {
-          console.log('✅ Test results saved successfully to Google Sheets');
-          // Don't save to localStorage if successfully saved to backend
-          return;
+          console.log('✅ Successfully saved to backend - No localStorage needed');
+          // Store Google Sheets link if provided
+          if (responseData.sheetUrl || responseData.url) {
+            const sheetUrl = responseData.sheetUrl || responseData.url;
+            localStorage.setItem('lastTestSheetUrl', sheetUrl);
+            console.log('📊 Google Sheets URL stored:', sheetUrl);
+          }
+          return responseData; // Return response data for use in PDF download
         } else {
           throw new Error(responseData.message || 'Failed to save');
         }
@@ -306,37 +333,13 @@ const TestInterface = () => {
         clearTimeout(timeoutId);
         
         if (fetchError.name === 'AbortError') {
-          console.error('❌ Request timeout - Saving to localStorage as fallback');
+          console.error('❌ Request timeout (30s) - Saving to pending queue');
         } else {
-          console.error('❌ Network error:', fetchError);
+          console.error('❌ Network error:', fetchError.message);
         }
         
-        // Save to localStorage as fallback - Only store last 5 results to prevent quota exceeded
-        try {
-          const localResults = JSON.parse(localStorage.getItem('offlineTestResults') || '[]');
-          
-          // Keep only the last 4 results + this new one = max 5 results
-          const limitedResults = localResults.slice(-4);
-          
-          limitedResults.push({
-            ...testResultData,
-            userProfile,
-            completedAt: new Date().toISOString(),
-            synced: false
-          });
-          
-          localStorage.setItem('offlineTestResults', JSON.stringify(limitedResults));
-          console.log('💾 Saved to localStorage as fallback (max 5 results kept)');
-        } catch (storageError) {
-          console.error('❌ localStorage quota exceeded, clearing old results');
-          // If still fails, clear all and save only this one
-          localStorage.setItem('offlineTestResults', JSON.stringify([{
-            ...testResultData,
-            userProfile,
-            completedAt: new Date().toISOString(),
-            synced: false
-          }]));
-        }
+        // Already saved locally, just mark as not synced to Google Sheets
+        console.log('💾 Saved locally - Will sync to Google Sheets when online');
       }
     } catch (error) {
       console.error('❌ Error in saveTestResults:', error);
@@ -344,6 +347,9 @@ const TestInterface = () => {
   }, [testId, testData]);
 
   const handleAutoSubmit = useCallback(async () => {
+    // Prevent multiple simultaneous submissions
+    if (testSubmitted) return;
+    
     // Save time spent on current question
     let updatedQuestionTime = { ...questionTimeSpent };
     if (previousQuestionIdRef.current && questionStartTime !== null) {
@@ -360,7 +366,6 @@ const TestInterface = () => {
     }
     
     // Calculate results with updated time data
-    setQuestionTimeSpent(updatedQuestionTime);
     const results = calculateResultsWithTime(updatedQuestionTime);
     if (results) {
       setTestResults(results);
@@ -370,9 +375,22 @@ const TestInterface = () => {
       }
       
       // Save test results to backend
-      await saveTestResults(results);
+      const saveResponse = await saveTestResults(results);
+      
+      // PDF feature disabled - dormant
+      // Auto-download PDF analysis
+      // setTimeout(async () => {
+      //   try {
+      //     const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+      //     console.log('📄 Auto-generating PDF...');
+      //     await downloadTestAnalysisPDF(results, testData, imageUrls, userProfile);
+      //     console.log('✅ PDF auto-downloaded successfully');
+      //   } catch (error) {
+      //     console.error('❌ Error auto-downloading PDF:', error);
+      //   }
+      // }, 1500);
     }
-  }, [questionTimeSpent, questionStartTime, calculateResultsWithTime, saveTestResults]);
+  }, [testSubmitted, questionTimeSpent, questionStartTime, calculateResultsWithTime, saveTestResults, testData, imageUrls]);
 
   useEffect(() => {
     // Check if profile exists first
@@ -382,81 +400,384 @@ const TestInterface = () => {
       return;
     }
 
-    // Profile exists, proceed with test loading
-    const test = availableTests.find(t => t.id === testId);
-    if (test && test.paperData) {
-      // Shuffle questions and options
-      const shuffledData = shuffleTestData(test.paperData);
-      setTestData(shuffledData);
-      setTimeRemaining(shuffledData.duration);
-      setTestStartTime(Date.now());
-      
-      // Initialize answers object
-      const initialAnswers = {};
-      const initialMarkedForReview = {};
-      const initialVisited = {};
-      const initialQuestionTime = {};
-      shuffledData.sections.forEach(section => {
-        section.questions.forEach(q => {
-          initialAnswers[q.questionId] = [];
-          initialMarkedForReview[q.questionId] = false;
-          initialVisited[q.questionId] = false;
-          initialQuestionTime[q.questionId] = 0;
-        });
-      });
-      setAnswers(initialAnswers);
-      setMarkedForReview(initialMarkedForReview);
-      setVisitedQuestions(initialVisited);
-      setQuestionTimeSpent(initialQuestionTime);
-    } else {
-      navigate('/cbt-portal');
+    // Check if test was auto-submitted due to page refresh
+    const lastTestResults = localStorage.getItem('lastTestResults');
+    if (lastTestResults) {
+      try {
+        const savedData = JSON.parse(lastTestResults);
+        // Check if it's for the current test and was auto-submitted
+        if (savedData.autoSubmitted && savedData.testData && savedData.results) {
+          // Show the results immediately
+          setTestResults(savedData.results);
+          setTestData(savedData.testData);
+          setTestSubmitted(true);
+          setImageUrls(savedData.imageUrls || {});
+          // Clear the saved results
+          localStorage.removeItem('lastTestResults');
+          return;
+        }
+      } catch (error) {
+        console.error('Error parsing saved test results:', error);
+        localStorage.removeItem('lastTestResults');
+      }
     }
+
+    // Profile exists, proceed with test loading
+    // Load image-based test directly using testId (which is the folder name)
+    loadImageBasedTest(testId)
+      .then(loadedData => {
+        // Reorder questions: single correct first, then integer (no shuffling)
+        const shuffledData = reorderTestData(loadedData);
+        
+        // Find first section with questions
+        const firstValidSectionIndex = shuffledData.sections.findIndex(s => s.questions && s.questions.length > 0);
+        if (firstValidSectionIndex === -1) {
+          throw new Error('No questions found in test');
+        }
+        
+        const initialDuration = shuffledData.duration || 10800;
+        setTestData(shuffledData);
+        setCurrentSection(firstValidSectionIndex);
+        setCurrentQuestion(0);
+        setTimeRemaining(initialDuration);
+        timeRemainingRef.current = initialDuration;
+        setTestStartTime(Date.now());
+        
+        // Initialize answers object
+        const initialAnswers = {};
+        const initialMarkedForReview = {};
+        const initialVisited = {};
+        const initialQuestionTime = {};
+        shuffledData.sections.forEach(section => {
+          if (section.questions && section.questions.length > 0) {
+            section.questions.forEach(q => {
+              initialAnswers[q.questionId] = [];
+              initialMarkedForReview[q.questionId] = false;
+              initialVisited[q.questionId] = false;
+              initialQuestionTime[q.questionId] = 0;
+            });
+          }
+        });
+        setAnswers(initialAnswers);
+        setMarkedForReview(initialMarkedForReview);
+        setVisitedQuestions(initialVisited);
+        setQuestionTimeSpent(initialQuestionTime);
+        
+        // Lazy loading - images will load on-demand when questions are viewed
+        // No preloading to save memory/disk space
+      })
+      .catch(error => {
+        console.error('Error loading test:', error);
+        navigate('/cbt-portal');
+      });
   }, [testId, navigate]);
 
-  // Timer effect
-  useEffect(() => {
-    if (timeRemaining > 0 && !testSubmitted) {
-      timerRef.current = setInterval(() => {
-        setTimeRemaining(prev => {
-          if (prev <= 1) {
-            handleAutoSubmit();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+  // Lazy load image for current question only - saves memory/disk space
+  const loadCurrentQuestionImage = useCallback(async (question) => {
+    if (!question || !question.questionImage) return;
+    
+    const questionId = question.questionId;
+    
+    // If already loaded, don't reload
+    if (imageUrls[questionId]) {
+      return;
     }
+    
+    setLoadingImages(true);
+    
+    try {
+      // Try .png first since all images are .png
+      const extensions = ['.png', '.jpg', '.jpeg'];
+      let found = false;
+      
+      for (const ext of extensions) {
+        const testUrl = `${question.questionImage}${ext}`;
+        try {
+          const response = await fetch(testUrl, { method: 'HEAD' });
+          if (response.ok) {
+            setImageUrls(prev => ({
+              ...prev,
+              [questionId]: testUrl
+            }));
+            console.log(`✅ Loaded: ${question.sectionName || 'Question'} Q${question.questionNumber} (${ext})`);
+            found = true;
+            break;
+          }
+        } catch (e) {
+          // Continue to next extension
+        }
+      }
+      
+      if (!found) {
+        // Try resolveImageUrl as fallback
+        const resolvedUrl = await resolveImageUrl(question.questionImage);
+        if (resolvedUrl) {
+          setImageUrls(prev => ({
+            ...prev,
+            [questionId]: resolvedUrl
+          }));
+          console.log(`✅ Resolved: ${question.sectionName || 'Question'} Q${question.questionNumber}`);
+        } else {
+          console.warn(`⚠️ Image not found: Q${question.questionNumber} - ${question.questionImage}`);
+        }
+      }
+    } catch (error) {
+      console.error(`❌ Error loading image for Q${question.questionNumber}:`, error);
+    } finally {
+      setLoadingImages(false);
+    }
+  }, [imageUrls]);
+  
+  // Unload images for questions not currently being viewed (keep only current and previous 2)
+  const cleanupOldImages = useCallback(() => {
+    if (!testData) return;
+    
+    // Keep current question and previous 2 questions in cache
+    const questionsToKeep = new Set();
+    
+    // Get current section data
+    const currentSectionData = testData.sections[currentSection];
+    if (!currentSectionData || !currentSectionData.questions) return;
+    
+    // Add current question
+    const safeQuestionIndex = Math.min(currentQuestion, currentSectionData.questions.length - 1);
+    const currentQ = currentSectionData.questions[safeQuestionIndex];
+    if (currentQ) {
+      questionsToKeep.add(currentQ.questionId);
+    }
+    
+    // Add previous 2 questions from current section
+    if (currentQuestion > 0) {
+      for (let i = Math.max(0, currentQuestion - 2); i < currentQuestion; i++) {
+        if (currentSectionData.questions[i]) {
+          questionsToKeep.add(currentSectionData.questions[i].questionId);
+        }
+      }
+    }
+    
+    // Remove images not in the keep list
+    setImageUrls(prev => {
+      const cleaned = {};
+      questionsToKeep.forEach(qId => {
+        if (prev[qId]) {
+          cleaned[qId] = prev[qId];
+        }
+      });
+      
+      const removed = Object.keys(prev).length - Object.keys(cleaned).length;
+      if (removed > 0) {
+        console.log(`🧹 Cleaned up ${removed} old images from cache`);
+      }
+      
+      return cleaned;
+    });
+  }, [testData, currentSection, currentQuestion]);
+
+  // Keep refs in sync with state for timer
+  useEffect(() => {
+    timeRemainingRef.current = timeRemaining;
+  }, [timeRemaining]);
+
+  useEffect(() => {
+    questionTimeSpentRef.current = questionTimeSpent;
+  }, [questionTimeSpent]);
+
+  useEffect(() => {
+    questionStartTimeRef.current = questionStartTime;
+  }, [questionStartTime]);
+
+  // Timer effect - FIXED: Countdown timer that auto-submits at 0
+  useEffect(() => {
+    if (testSubmitted) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      return;
+    }
+
+    // Only start timer if we have test data loaded
+    if (!testData) {
+      return;
+    }
+
+    // Clear any existing timer before starting a new one
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    // Start the countdown timer - runs every second
+    timerRef.current = setInterval(() => {
+      setTimeRemaining(prev => {
+        // Update ref to keep it in sync
+        timeRemainingRef.current = prev;
+        
+        // If already at 0 or below, don't decrement further
+        if (prev <= 0) {
+          return 0;
+        }
+        
+        const newTime = prev - 1;
+        timeRemainingRef.current = newTime;
+        
+        // When timer hits 0, auto-submit
+        if (newTime <= 0) {
+          // Clear the interval first
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
+          
+          // Auto-submit the test
+          (async () => {
+            let updatedQuestionTime = { ...questionTimeSpentRef.current };
+            if (previousQuestionIdRef.current && questionStartTimeRef.current !== null) {
+              const timeElapsed = Math.floor((Date.now() - questionStartTimeRef.current) / 1000);
+              updatedQuestionTime[previousQuestionIdRef.current] = 
+                (updatedQuestionTime[previousQuestionIdRef.current] || 0) + timeElapsed;
+            }
+            
+            const results = calculateResultsWithTime(updatedQuestionTime);
+            if (results) {
+              setTestResults(results);
+              setTestSubmitted(true);
+              if (isFullscreenActive()) {
+                exitFullscreen();
+              }
+              await saveTestResults(results);
+            }
+          })();
+          
+          return 0;
+        }
+        
+        return newTime;
+      });
+    }, 1000);
 
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
+        timerRef.current = null;
       }
     };
-  }, [timeRemaining, testSubmitted, handleAutoSubmit]);
+  }, [testSubmitted, testData]);
 
   // Fullscreen on mount
   useEffect(() => {
-    if (testData && !testSubmitted) {
+    if (testData && !testSubmitted && validSections.length > 0) {
       enterFullscreen();
     }
   }, [testData, testSubmitted]);
 
-  // Detect fullscreen exit
+  // Auto-submit on page refresh/close
+  useEffect(() => {
+    if (!testData || testSubmitted) return;
+
+    const handlePageUnload = (e) => {
+      // Auto-submit the test when page is being refreshed or closed
+      if (testSubmitted) return;
+      
+      // Save time spent on current question
+      let updatedQuestionTime = { ...questionTimeSpentRef.current };
+      if (previousQuestionIdRef.current && questionStartTimeRef.current !== null) {
+        const timeElapsed = Math.floor((Date.now() - questionStartTimeRef.current) / 1000);
+        updatedQuestionTime[previousQuestionIdRef.current] = 
+          (updatedQuestionTime[previousQuestionIdRef.current] || 0) + timeElapsed;
+      }
+      
+      // Calculate results synchronously
+      const results = calculateResultsWithTime(updatedQuestionTime);
+      if (results) {
+        try {
+          const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+          const testResultData = {
+            testId: testId,
+            testTitle: testData?.paperTitle || 'Test',
+            totalMarks: results.totalMarks,
+            totalQuestions: results.totalQuestions,
+            correctAnswers: results.correctAnswers,
+            incorrectAnswers: results.incorrectAnswers,
+            unattempted: results.unattempted,
+            percentage: parseFloat(results.percentage),
+            totalTestDuration: results.totalTestDuration,
+            sectionWiseResults: results.sectionWiseResults,
+            fullscreenExitCount: results.fullscreenExitCount || 0,
+            completedAt: new Date().toISOString(),
+            autoSubmitted: true,
+            reason: 'page_refresh'
+          };
+
+          // Save to localStorage (synchronous, reliable)
+          const pendingResults = JSON.parse(localStorage.getItem('pendingTestResults') || '[]');
+          pendingResults.push({
+            ...testResultData,
+            userProfile,
+            synced: false
+          });
+          localStorage.setItem('pendingTestResults', JSON.stringify(pendingResults));
+          
+          // Save complete results for immediate display on reload
+          localStorage.setItem('lastTestResults', JSON.stringify({
+            results,
+            testData,
+            imageUrls,
+            timestamp: Date.now(),
+            autoSubmitted: true
+          }));
+
+          // Try sendBeacon for async server save (non-blocking)
+          if (navigator.sendBeacon && userProfile.email) {
+            try {
+              const blob = new Blob(
+                [JSON.stringify(testResultData)],
+                { type: 'application/json' }
+              );
+              // Note: sendBeacon doesn't support custom headers, so we'll save to pending queue
+              // The pending queue will be synced later
+            } catch (beaconError) {
+              // Fallback: already saved to pendingResults
+            }
+          }
+        } catch (error) {
+          console.error('Error saving on page unload:', error);
+        }
+      }
+    };
+
+    const handleBeforeUnload = (e) => {
+      // Show browser warning and prepare for auto-submit
+      e.preventDefault();
+      e.returnValue = 'Your test will be automatically submitted if you leave this page.';
+      handlePageUnload(e);
+      return e.returnValue;
+    };
+
+    // Use pagehide for more reliable detection (fires after beforeunload)
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handlePageUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handlePageUnload);
+    };
+  }, [testData, testSubmitted, testId, calculateResultsWithTime]);
+
+  // Detect fullscreen exit - track count and show warning (no auto-submit)
   useEffect(() => {
     if (!testData || testSubmitted) return;
 
     const handleFullscreenChange = () => {
       if (!isFullscreenActive() && !testSubmitted) {
+        // Increment exit count
+        setFullscreenExitCount(prev => prev + 1);
+        // Show warning modal
         setShowExitWarning(true);
-        // Auto-submit after showing warning
-        setTimeout(() => {
-          const results = calculateResults();
-          if (results) {
-            setTestResults(results);
-            setTestSubmitted(true);
-            setShowExitWarning(false);
-          }
-        }, 2000);
+        // Note: Timer continues running, no auto-submit
+      } else if (isFullscreenActive() && showExitWarning) {
+        // If fullscreen is re-entered, hide the warning
+        setShowExitWarning(false);
       }
     };
 
@@ -471,16 +792,21 @@ const TestInterface = () => {
       document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
       document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
     };
-  }, [testData, testSubmitted, calculateResults]);
+  }, [testData, testSubmitted, showExitWarning]);
 
-  const enterFullscreen = () => {
+  const enterFullscreen = async () => {
     const elem = document.documentElement;
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) {
-      elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) {
-      elem.msRequestFullscreen();
+    try {
+      if (elem.requestFullscreen) {
+        await elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        await elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        await elem.msRequestFullscreen();
+      }
+    } catch (error) {
+      console.warn('Fullscreen permission denied or not supported:', error);
+      // Continue without fullscreen - don't block the test
     }
   };
 
@@ -515,27 +841,37 @@ const TestInterface = () => {
 
   const handleNextQuestion = () => {
     if (!testData) return;
-    const section = testData.sections[currentSection];
+    const validSections = testData.sections.filter(s => s.questions && s.questions.length > 0);
+    const sectionIndex = validSections.findIndex(s => s.sectionId === testData.sections[currentSection].sectionId);
+    
+    if (sectionIndex === -1) return;
+    
+    const section = validSections[sectionIndex];
+    const questionIndex = section.questions.findIndex(q => q.questionId === currentQuestionData?.questionId);
+    
+    if (questionIndex === -1) return;
+    
     // Mark current question as visited before moving
-    const currentQ = section.questions[currentQuestion];
+    const currentQ = section.questions[questionIndex];
     setVisitedQuestions(prev => ({
       ...prev,
       [currentQ.questionId]: true
     }));
     
-    if (currentQuestion < section.questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+    if (questionIndex < section.questions.length - 1) {
+      setCurrentQuestion(questionIndex + 1);
       // Mark next question as visited
-      const nextQ = section.questions[currentQuestion + 1];
+      const nextQ = section.questions[questionIndex + 1];
       setVisitedQuestions(prev => ({
         ...prev,
         [nextQ.questionId]: true
       }));
-    } else if (currentSection < testData.sections.length - 1) {
-      setCurrentSection(currentSection + 1);
+    } else if (sectionIndex < validSections.length - 1) {
+      const nextSection = validSections[sectionIndex + 1];
+      const originalNextIndex = testData.sections.findIndex(s => s.sectionId === nextSection.sectionId);
+      setCurrentSection(originalNextIndex);
       setCurrentQuestion(0);
       // Mark first question of next section as visited
-      const nextSection = testData.sections[currentSection + 1];
       if (nextSection.questions.length > 0) {
         setVisitedQuestions(prev => ({
           ...prev,
@@ -547,25 +883,35 @@ const TestInterface = () => {
 
   const handlePreviousQuestion = () => {
     if (!testData) return;
+    const validSections = testData.sections.filter(s => s.questions && s.questions.length > 0);
+    const sectionIndex = validSections.findIndex(s => s.sectionId === testData.sections[currentSection].sectionId);
+    
+    if (sectionIndex === -1) return;
+    
+    const section = validSections[sectionIndex];
+    const questionIndex = section.questions.findIndex(q => q.questionId === currentQuestionData?.questionId);
+    
+    if (questionIndex === -1) return;
+    
     // Mark current question as visited before moving
-    const currentSectionData = testData.sections[currentSection];
-    const currentQ = currentSectionData.questions[currentQuestion];
+    const currentQ = section.questions[questionIndex];
     setVisitedQuestions(prev => ({
       ...prev,
       [currentQ.questionId]: true
     }));
     
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
+    if (questionIndex > 0) {
+      setCurrentQuestion(questionIndex - 1);
       // Mark previous question as visited
-      const prevQ = currentSectionData.questions[currentQuestion - 1];
+      const prevQ = section.questions[questionIndex - 1];
       setVisitedQuestions(prev => ({
         ...prev,
         [prevQ.questionId]: true
       }));
-    } else if (currentSection > 0) {
-      setCurrentSection(currentSection - 1);
-      const prevSection = testData.sections[currentSection - 1];
+    } else if (sectionIndex > 0) {
+      const prevSection = validSections[sectionIndex - 1];
+      const originalPrevIndex = testData.sections.findIndex(s => s.sectionId === prevSection.sectionId);
+      setCurrentSection(originalPrevIndex);
       setCurrentQuestion(prevSection.questions.length - 1);
       // Mark last question of previous section as visited
       const lastQ = prevSection.questions[prevSection.questions.length - 1];
@@ -578,18 +924,31 @@ const TestInterface = () => {
 
   const handleSectionChange = (sectionIndex) => {
     if (!testData) return;
+    
+    const newSection = testData.sections[sectionIndex];
+    if (!newSection || !newSection.questions || newSection.questions.length === 0) {
+      return; // Don't switch to empty section
+    }
+    
     // Mark current question as visited
-    const currentSectionData = testData.sections[currentSection];
-    const currentQ = currentSectionData.questions[currentQuestion];
-    setVisitedQuestions(prev => ({
-      ...prev,
-      [currentQ.questionId]: true
-    }));
+    const validSections = testData.sections.filter(s => s.questions && s.questions.length > 0);
+    const currentSectionIndex = validSections.findIndex(s => s.sectionId === testData.sections[currentSection]?.sectionId);
+    
+    if (currentSectionIndex !== -1) {
+      const currentSectionData = validSections[currentSectionIndex];
+      const questionIndex = currentSectionData.questions.findIndex(q => q.questionId === currentQuestionData?.questionId);
+      if (questionIndex !== -1) {
+        const currentQ = currentSectionData.questions[questionIndex];
+        setVisitedQuestions(prev => ({
+          ...prev,
+          [currentQ.questionId]: true
+        }));
+      }
+    }
     
     setCurrentSection(sectionIndex);
     setCurrentQuestion(0);
     // Mark first question of new section as visited
-    const newSection = testData.sections[sectionIndex];
     if (newSection.questions.length > 0) {
       setVisitedQuestions(prev => ({
         ...prev,
@@ -657,7 +1016,20 @@ const TestInterface = () => {
       setShowSubmitConfirm(false);
       
       // Save test results to backend
-      await saveTestResults(results);
+      const saveResponse = await saveTestResults(results);
+      
+      // PDF feature disabled - dormant
+      // Auto-download PDF analysis
+      // setTimeout(async () => {
+      //   try {
+      //     const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+      //     console.log('📄 Auto-generating PDF...');
+      //     await downloadTestAnalysisPDF(results, testData, imageUrls, userProfile);
+      //     console.log('✅ PDF auto-downloaded successfully');
+      //   } catch (error) {
+      //     console.error('❌ Error auto-downloading PDF:', error);
+      //   }
+      // }, 1500);
     }
   };
 
@@ -730,49 +1102,117 @@ const TestInterface = () => {
     return { answered, notAnswered, notVisited, marked, total };
   }, [testData, answers, visitedQuestions, markedForReview]);
 
-  // Mark current question as visited and track time spent
+  // Mark current question as visited, track time spent, and load image lazily
   useEffect(() => {
     if (!testData || testSubmitted) return;
     
-    if (testData.sections[currentSection] && testData.sections[currentSection].questions[currentQuestion]) {
-      const question = testData.sections[currentSection].questions[currentQuestion];
-      
-      // Save time spent on previous question before switching
-      if (previousQuestionIdRef.current && questionStartTime !== null) {
-        const timeElapsed = Math.floor((Date.now() - questionStartTime) / 1000);
-        setQuestionTimeSpent(prev => ({
-          ...prev,
-          [previousQuestionIdRef.current]: (prev[previousQuestionIdRef.current] || 0) + timeElapsed
-        }));
-      }
-
-      // Mark question as visited
-      setVisitedQuestions(prev => ({
-        ...prev,
-        [question.questionId]: true
-      }));
-
-      // Update previous question reference and start time tracking
-      previousQuestionIdRef.current = question.questionId;
-      setQuestionStartTime(Date.now());
+    const currentSectionData = testData.sections[currentSection];
+    if (!currentSectionData || !currentSectionData.questions || currentSectionData.questions.length === 0) {
+      return;
     }
-  }, [currentSection, currentQuestion, testData, testSubmitted, questionStartTime]);
+    
+    // Ensure currentQuestion is within bounds
+    const safeQuestionIndex = Math.min(currentQuestion, currentSectionData.questions.length - 1);
+    const question = currentSectionData.questions[safeQuestionIndex];
+    
+    if (!question) return;
+    
+    // Save time spent on previous question before switching
+    if (previousQuestionIdRef.current && questionStartTime !== null) {
+      const timeElapsed = Math.floor((Date.now() - questionStartTime) / 1000);
+      setQuestionTimeSpent(prev => ({
+        ...prev,
+        [previousQuestionIdRef.current]: (prev[previousQuestionIdRef.current] || 0) + timeElapsed
+      }));
+    }
+
+    // Mark question as visited
+    setVisitedQuestions(prev => ({
+      ...prev,
+      [question.questionId]: true
+    }));
+
+    // Update previous question reference and start time tracking
+    previousQuestionIdRef.current = question.questionId;
+    setQuestionStartTime(Date.now());
+    
+    // Load image for current question only (lazy loading)
+    loadCurrentQuestionImage(question);
+    
+    // Clean up old images (keep only current and previous 2)
+    cleanupOldImages();
+    
+    // Sync currentQuestion if it was out of bounds
+    if (safeQuestionIndex !== currentQuestion) {
+      setCurrentQuestion(safeQuestionIndex);
+    }
+  }, [currentSection, currentQuestion, testData, testSubmitted, questionStartTime, loadCurrentQuestionImage, cleanupOldImages]);
 
   if (!testData) {
     return <div className="loading">Loading test...</div>;
   }
 
   if (testSubmitted && testResults) {
-    return <TestResults results={testResults} testData={testData} />;
+    return <TestResults results={testResults} testData={testData} imageUrls={imageUrls} />;
   }
 
-  const currentSectionData = testData.sections[currentSection];
-  const currentQuestionData = currentSectionData.questions[currentQuestion];
+  // Filter out sections with no questions
+  const validSections = testData.sections.filter(section => section.questions && section.questions.length > 0);
+  
+  if (validSections.length === 0) {
+    return (
+      <div className="loading">
+        <h3>No questions available</h3>
+        <p>This test does not have any questions configured yet.</p>
+        <button onClick={() => navigate('/cbt-portal')}>Back to Portal</button>
+      </div>
+    );
+  }
+
+  // Find the current section in validSections
+  const currentSectionDataOriginal = testData.sections[currentSection];
+  let currentSectionData = currentSectionDataOriginal;
+  let safeSectionIndex = validSections.findIndex(s => s.sectionId === currentSectionDataOriginal?.sectionId);
+  
+  // If current section has no questions, use first valid section
+  if (safeSectionIndex === -1 || !currentSectionDataOriginal || !currentSectionDataOriginal.questions || currentSectionDataOriginal.questions.length === 0) {
+    safeSectionIndex = 0;
+    currentSectionData = validSections[0];
+    // Update state to point to valid section
+    const originalIndex = testData.sections.findIndex(s => s.sectionId === currentSectionData.sectionId);
+    if (originalIndex !== -1 && originalIndex !== currentSection) {
+      setCurrentSection(originalIndex);
+      setCurrentQuestion(0);
+    }
+  } else {
+    currentSectionData = validSections[safeSectionIndex];
+  }
+  
+  // Ensure currentQuestion is valid
+  const safeQuestionIndex = Math.min(currentQuestion, currentSectionData.questions.length - 1);
+  const currentQuestionData = currentSectionData.questions[safeQuestionIndex];
+  
+  // Sync question index if needed
+  if (safeQuestionIndex !== currentQuestion && currentSectionData === currentSectionDataOriginal) {
+    setCurrentQuestion(safeQuestionIndex);
+  }
+  
+  // Safety check - if still undefined, show error
+  if (!currentQuestionData) {
+    return (
+      <div className="loading">
+        <h3>Error loading question</h3>
+        <p>Unable to load the current question. Please try again.</p>
+        <button onClick={() => navigate('/cbt-portal')}>Back to Portal</button>
+      </div>
+    );
+  }
+
   const currentAnswer = answers[currentQuestionData.questionId] || [];
   const questionStats = getQuestionStatistics();
 
   return (
-    <div className="test-interface jee-style nta-official">
+    <div className={`test-interface jee-style nta-official ${showExitWarning ? 'blurred' : ''}`}>
       {/* NTA JEE Mains Header */}
       <div className="jee-test-header">
         <div className="header-top-bar">
@@ -815,15 +1255,19 @@ const TestInterface = () => {
         </div>
         
         <div className="header-tabs">
-          {testData.sections.map((section, index) => (
-            <button
-              key={section.sectionId}
-              className={`subject-tab ${currentSection === index ? 'active' : ''}`}
-              onClick={() => handleSectionChange(index)}
-            >
-              {section.sectionName}
-            </button>
-          ))}
+          {validSections.map((section, index) => {
+            // Find original index in testData.sections
+            const originalIndex = testData.sections.findIndex(s => s.sectionId === section.sectionId);
+            return (
+              <button
+                key={section.sectionId}
+                className={`subject-tab ${safeSectionIndex === index ? 'active' : ''}`}
+                onClick={() => handleSectionChange(originalIndex)}
+              >
+                {section.sectionName}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -835,17 +1279,56 @@ const TestInterface = () => {
           </div>
 
           <div className="question-content-area">
-            <div className="question-text-display">
-              {currentQuestionData.questionText}
-            </div>
-
+            {/* Image-based questions - no text display */}
             {currentQuestionData.questionImage && (
               <div className="question-image-wrapper">
-                <img 
-                  src={currentQuestionData.questionImage} 
-                  alt="Question" 
-                  className="question-image"
-                />
+                {loadingImages ? (
+                  <div className="image-loading">Loading question image...</div>
+                ) : (
+                  <img 
+                    src={imageUrls[currentQuestionData.questionId] || 
+                         `${currentQuestionData.questionImage}.jpg`} 
+                    alt={`Question ${currentQuestionData.questionNumber}`} 
+                    className="question-image"
+                    onError={(e) => {
+                      // Try all extensions systematically
+                      const basePath = currentQuestionData.questionImage;
+                      const extensions = ['.jpg', '.jpeg', '.png'];
+                      const currentSrc = e.target.src;
+                      
+                      // Find which extension we tried
+                      let currentExtIndex = -1;
+                      for (let i = 0; i < extensions.length; i++) {
+                        if (currentSrc.includes(extensions[i])) {
+                          currentExtIndex = i;
+                          break;
+                        }
+                      }
+                      
+                      // Try next extension
+                      if (currentExtIndex < extensions.length - 1) {
+                        const nextExt = extensions[currentExtIndex + 1];
+                        e.target.src = `${basePath}${nextExt}`;
+                        console.log(`🔄 Trying ${nextExt} for Q${currentQuestionData.questionNumber}`);
+                      } else {
+                        // Try first extension again (cycle)
+                        e.target.src = `${basePath}${extensions[0]}`;
+                        console.log(`🔄 Cycling back to ${extensions[0]} for Q${currentQuestionData.questionNumber}`);
+                      }
+                    }}
+                    onLoad={(e) => {
+                      // Image loaded successfully, cache it
+                      const loadedUrl = e.target.src;
+                      if (!imageUrls[currentQuestionData.questionId]) {
+                        setImageUrls(prev => ({
+                          ...prev,
+                          [currentQuestionData.questionId]: loadedUrl
+                        }));
+                        console.log(`✅ Cached image for Q${currentQuestionData.questionNumber}: ${loadedUrl}`);
+                      }
+                    }}
+                  />
+                )}
               </div>
             )}
 
@@ -892,16 +1375,16 @@ const TestInterface = () => {
             <button
               className="jee-btn save-next"
               onClick={handleNextQuestion}
-              disabled={currentSection === testData.sections.length - 1 && 
-                       currentQuestion === currentSectionData.questions.length - 1}
+              disabled={safeSectionIndex === validSections.length - 1 && 
+                       safeQuestionIndex === currentSectionData.questions.length - 1}
             >
               SAVE & NEXT
             </button>
             <button
               className="jee-btn save-mark"
               onClick={handleMarkForReviewAndNext}
-              disabled={currentSection === testData.sections.length - 1 && 
-                       currentQuestion === currentSectionData.questions.length - 1}
+              disabled={safeSectionIndex === validSections.length - 1 && 
+                       safeQuestionIndex === currentSectionData.questions.length - 1}
             >
               SAVE & MARK FOR REVIEW
             </button>
@@ -919,8 +1402,8 @@ const TestInterface = () => {
             <button
               className="jee-btn mark-review-next"
               onClick={handleMarkForReviewAndNext}
-              disabled={currentSection === testData.sections.length - 1 && 
-                       currentQuestion === currentSectionData.questions.length - 1}
+              disabled={safeSectionIndex === validSections.length - 1 && 
+                       safeQuestionIndex === currentSectionData.questions.length - 1}
             >
               MARK FOR REVIEW & NEXT
             </button>
@@ -938,8 +1421,8 @@ const TestInterface = () => {
             <button
               className="mobile-nav-btn"
               onClick={handleNextQuestion}
-              disabled={currentSection === testData.sections.length - 1 && 
-                       currentQuestion === currentSectionData.questions.length - 1}
+              disabled={safeSectionIndex === validSections.length - 1 && 
+                       safeQuestionIndex === currentSectionData.questions.length - 1}
             >
               NEXT &gt;&gt;
             </button>
@@ -950,7 +1433,7 @@ const TestInterface = () => {
         <div className="jee-question-navigator">
           <div className="navigator-content">
             <div className="question-grid">
-              {testData.sections[currentSection].questions.map((q, qIndex) => {
+              {currentSectionData.questions.map((q, qIndex) => {
                 const answer = answers[q.questionId];
                 const isVisited = visitedQuestions[q.questionId] || false;
                 let isAnswered = false;
@@ -981,7 +1464,11 @@ const TestInterface = () => {
                   <button
                     key={q.questionId}
                     className={`question-num-btn ${statusClass} ${isCurrent ? 'current' : ''}`}
-                    onClick={() => handleQuestionJump(currentSection, qIndex)}
+                    onClick={() => {
+                      // Find original section index
+                      const originalSectionIndex = testData.sections.findIndex(s => s.sectionId === currentSectionData.sectionId);
+                      handleQuestionJump(originalSectionIndex, qIndex);
+                    }}
                   >
                     {q.questionNumber}
                   </button>
@@ -1059,11 +1546,28 @@ const TestInterface = () => {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="warning-icon">⚠️</div>
               <h3>Fullscreen Exited</h3>
-              <p>You have exited fullscreen mode. The test will be automatically submitted in 2 seconds.</p>
-              <p className="warning-message">Please do not exit fullscreen during the test.</p>
+              <p>You have exited fullscreen mode.</p>
+              <p className="warning-message">
+                <strong>Warning:</strong> If you exit fullscreen <strong>3 times</strong>, the test will be automatically submitted.
+              </p>
+              <p className="exit-count">
+                Fullscreen exits: <strong>{fullscreenExitCount}</strong> / 3
+              </p>
+              <div className="modal-actions">
+                <button 
+                  className="enter-fullscreen-btn" 
+                  onClick={async () => {
+                    await enterFullscreen();
+                    setShowExitWarning(false);
+                  }}
+                >
+                  Enter Fullscreen Again
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

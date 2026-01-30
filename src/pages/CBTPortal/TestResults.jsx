@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import './TestResults.scss';
+import { downloadTestAnalysisPDF } from './pdfGenerator';
+import { resolveImageUrl } from './testLoader';
 
-const TestResults = ({ results, testData }) => {
+const TestResults = ({ results, testData, imageUrls = {} }) => {
   const navigate = useNavigate();
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const [resolvedImageUrls, setResolvedImageUrls] = useState({});
+  const [googleSheetsUrl, setGoogleSheetsUrl] = useState(null);
 
   const formatTime = (seconds) => {
     if (!seconds) return '0s';
@@ -27,6 +31,64 @@ const TestResults = ({ results, testData }) => {
     return Math.floor(totalTime / results.questionDetails.length);
   };
 
+  // Get Google Sheets URL from localStorage
+  React.useEffect(() => {
+    const sheetUrl = localStorage.getItem('lastTestSheetUrl');
+    if (sheetUrl) {
+      setGoogleSheetsUrl(sheetUrl);
+    }
+  }, []);
+
+  // Resolve image URLs for display
+  React.useEffect(() => {
+    const resolveImages = async () => {
+      const resolved = {};
+      for (const question of results.questionDetails || []) {
+        if (question.questionImage) {
+          // Try to get from imageUrls first, then resolve
+          let resolvedUrl = imageUrls[question.questionId];
+          if (!resolvedUrl) {
+            resolvedUrl = await resolveImageUrl(question.questionImage);
+          }
+          if (resolvedUrl) {
+            resolved[question.questionId] = resolvedUrl;
+          } else {
+            // Fallback to original path with extensions
+            const basePath = question.questionImage;
+            const extensions = ['.jpg', '.jpeg', '.png'];
+            for (const ext of extensions) {
+              const testUrl = `${basePath}${ext}`;
+              try {
+                const response = await fetch(testUrl, { method: 'HEAD' });
+                if (response.ok) {
+                  resolved[question.questionId] = testUrl;
+                  break;
+                }
+              } catch (e) {
+                // Continue to next extension
+              }
+            }
+          }
+        }
+      }
+      setResolvedImageUrls(resolved);
+    };
+    resolveImages();
+  }, [results.questionDetails, imageUrls]);
+
+  const handleDownloadPDF = async () => {
+    try {
+      console.log('📄 Generating PDF...');
+      const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+      const allImageUrls = { ...imageUrls, ...resolvedImageUrls };
+      await downloadTestAnalysisPDF(results, testData, allImageUrls, userProfile);
+      console.log('✅ PDF downloaded successfully');
+    } catch (error) {
+      console.error('❌ Error downloading PDF:', error);
+      alert('Failed to download PDF. Please check the console for details.');
+    }
+  };
+
   return (
     <div className="test-results">
       <motion.div
@@ -38,6 +100,18 @@ const TestResults = ({ results, testData }) => {
         <div className="results-header">
           <h1>Test Results</h1>
           <p>{testData.paperTitle}</p>
+          {googleSheetsUrl && (
+            <div className="google-sheets-link">
+              <a 
+                href={googleSheetsUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="sheets-link-button"
+              >
+                📊 View Results in Google Sheets
+              </a>
+            </div>
+          )}
         </div>
 
         <div className="results-summary">
@@ -89,11 +163,11 @@ const TestResults = ({ results, testData }) => {
             animate={{ scale: 1 }}
             transition={{ delay: 0.5 }}
           >
-            <div className="card-icon">⏭️</div>
+            <div className="card-icon">🚪</div>
             <div className="card-content">
-              <h3>Unattempted</h3>
-              <p className="big-number">{results.unattempted}</p>
-              <p className="sub-text">out of {results.totalQuestions}</p>
+              <h3>Fullscreen Exits</h3>
+              <p className="big-number">{results.fullscreenExitCount || 0}</p>
+              <p className="sub-text">times exited</p>
             </div>
           </motion.div>
 
@@ -173,6 +247,12 @@ const TestResults = ({ results, testData }) => {
 
         <div className="results-actions">
           <button
+            className="action-button download-pdf"
+            onClick={handleDownloadPDF}
+          >
+            📥 Download Test Analysis PDF
+          </button>
+          <button
             className="action-button breakdown"
             onClick={() => setShowBreakdown(true)}
           >
@@ -235,9 +315,47 @@ const TestResults = ({ results, testData }) => {
                     {question.questionImage && (
                       <div className="question-image-container">
                         <img 
-                          src={question.questionImage} 
-                          alt="Question" 
+                          src={resolvedImageUrls[question.questionId] || imageUrls[question.questionId] || question.questionImage} 
+                          alt={`Question ${question.questionNumber}`} 
                           className="question-image"
+                          onError={(e) => {
+                            // Try different extensions if current fails
+                            const basePath = question.questionImage;
+                            const extensions = ['.jpg', '.jpeg', '.png'];
+                            let currentExt = 0;
+                            
+                            const tryNextExtension = () => {
+                              if (currentExt < extensions.length) {
+                                const testUrl = `${basePath}${extensions[currentExt]}`;
+                                const testImg = new Image();
+                                testImg.onload = () => {
+                                  e.target.src = testUrl;
+                                  setResolvedImageUrls(prev => ({
+                                    ...prev,
+                                    [question.questionId]: testUrl
+                                  }));
+                                };
+                                testImg.onerror = () => {
+                                  currentExt++;
+                                  tryNextExtension();
+                                };
+                                testImg.src = testUrl;
+                              } else {
+                                // Try resolveImageUrl as last resort
+                                resolveImageUrl(question.questionImage).then(url => {
+                                  if (url) {
+                                    e.target.src = url;
+                                    setResolvedImageUrls(prev => ({
+                                      ...prev,
+                                      [question.questionId]: url
+                                    }));
+                                  }
+                                });
+                              }
+                            };
+                            
+                            tryNextExtension();
+                          }}
                         />
                       </div>
                     )}
@@ -266,7 +384,9 @@ const TestResults = ({ results, testData }) => {
                       <div className="answer-row">
                         <span className="answer-label">Correct Answer:</span>
                         <span className="answer-value correct-answer">
-                          {question.correctAnswer}
+                          {question.questionType === 'integer' 
+                            ? (question.correctAnswer || question.correctIntegerAnswer || 'N/A')
+                            : (question.correctAnswer || 'N/A')}
                         </span>
                       </div>
                       <div className="answer-row">

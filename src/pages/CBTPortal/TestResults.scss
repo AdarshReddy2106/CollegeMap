@@ -254,6 +254,42 @@
             transform: translateY(-2px);
           }
         }
+
+        &.download-pdf {
+          background: #10c3bc;
+          color: white;
+          border: 2px solid #10c3bc;
+
+          &:hover {
+            background: #0ea39d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 195, 188, 0.3);
+          }
+        }
+      }
+    }
+
+    .google-sheets-link {
+      margin-top: 15px;
+      text-align: center;
+
+      .sheets-link-button {
+        display: inline-block;
+        padding: 12px 24px;
+        background: #10c3bc;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(16, 195, 188, 0.3);
+
+        &:hover {
+          background: #0ea39d;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(16, 195, 188, 0.4);
+        }
       }
     }
   }

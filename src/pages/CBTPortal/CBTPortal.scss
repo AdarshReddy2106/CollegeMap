@@ -8,58 +8,73 @@
   min-height: 100vh;
   
   .cbt-portal-header {
-    text-align: center;
     margin-bottom: 20px;
-    padding: 50px 20px;
+    padding: 35px 30px 20px;
     background: linear-gradient(135deg, #0d9488, #10c3bc);
     border-radius: 15px;
     color: white;
     box-shadow: 0 8px 30px rgba(16, 195, 188, 0.4);
     
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 15px;
-      font-weight: bold;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    .header-title-section {
+      text-align: center;
+      margin-bottom: 25px;
+      
+      .header-portal-title {
+        font-size: 3.2rem;
+        font-weight: 700;
+        color: white;
+        margin: 0 0 10px 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      
+      .header-portal-subtitle {
+        font-size: 1.4rem;
+        font-weight: 500;
+        color: white;
+        margin: 0;
+        opacity: 0.95;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      }
     }
     
-    p {
-      font-size: 1.2rem;
-      opacity: 0.95;
-      max-width: 800px;
-      margin: 0 auto 20px auto;
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
     }
 
-    .guidelines-button {
-      padding: 12px 24px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 2px solid white;
-      border-radius: 8px;
-      color: white;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin-top: 10px;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    .header-left {
+      display: flex;
+      align-items: center;
+      
+      .user-name {
+        font-size: 1.4rem;
+        font-weight: 500;
+        color: white;
+        opacity: 0.95;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
       }
     }
 
+    .header-right {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .update-details-button,
     .dashboard-button {
-      padding: 12px 24px;
+      padding: 10px 20px;
       background: rgba(255, 255, 255, 0.2);
       border: 2px solid white;
       border-radius: 8px;
       color: white;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
-      margin-top: 10px;
+      white-space: nowrap;
 
       &:hover {
         background: rgba(255, 255, 255, 0.3);
@@ -202,17 +217,45 @@
 
   @media (max-width: 768px) {
     .cbt-portal-header {
-      padding: 30px 15px;
+      padding: 25px 20px 15px;
       
-      h1 {
-        font-size: 2.2rem;
+      .header-title-section {
+        margin-bottom: 20px;
+        
+        .header-portal-title {
+          font-size: 2.5rem;
+          margin-bottom: 8px;
+        }
+        
+        .header-portal-subtitle {
+          font-size: 1.2rem;
+        }
       }
       
-      p {
-        font-size: 1rem;
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .header-right {
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .header-left {
+        .user-name {
+          font-size: 1.2rem;
+        }
+      }
+
+      .update-details-button,
+      .dashboard-button {
+        padding: 8px 16px;
+        font-size: 0.9rem;
       }
     }
-    
+
     .tests-container {
       .tests-grid {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -224,17 +267,31 @@
     padding: 15px;
     
     .cbt-portal-header {
-      h1 {
-        font-size: 1.8rem;
-      }
-      
-      p {
-        font-size: 0.9rem;
+      padding: 20px 15px 12px;
+
+      .header-title-section {
+        margin-bottom: 15px;
+        
+        .header-portal-title {
+          font-size: 2rem;
+          margin-bottom: 6px;
+        }
+        
+        .header-portal-subtitle {
+          font-size: 1rem;
+        }
       }
 
-      .guidelines-button {
-        padding: 10px 20px;
-        font-size: 0.9rem;
+      .header-left {
+        .user-name {
+          font-size: 1.1rem;
+        }
+      }
+
+      .update-details-button,
+      .dashboard-button {
+        padding: 8px 12px;
+        font-size: 0.85rem;
       }
     }
     

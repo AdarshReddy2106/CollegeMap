@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './CBTPortal.scss';
-import { availableTests } from './TestData';
+import { discoverTests, getTestById } from './testDiscovery';
 import ProfileIcon from '../../components/ProfileIcon/ProfileIcon';
 
 const CBTPortal = () => {
@@ -16,7 +16,15 @@ const CBTPortal = () => {
   const { isLoggedIn } = useAuth();
 
   useEffect(() => {
-    setTests(availableTests);
+    // Discover tests dynamically from public/tests folder
+    discoverTests()
+      .then(discoveredTests => {
+        setTests(discoveredTests);
+      })
+      .catch(error => {
+        console.error('Error discovering tests:', error);
+        setTests([]);
+      });
   }, []);
 
   const handleStartTest = (testId) => {
@@ -28,12 +36,21 @@ const CBTPortal = () => {
     }
     
     // Profile exists, proceed directly to test guidelines
-    const test = availableTests.find(t => t.id === testId);
-    if (test) {
-      setSelectedTest(test);
-      setShowGuidelines(true);
-      setTermsAccepted(false); // Reset checkbox when opening guidelines
-    }
+    getTestById(testId)
+      .then(test => {
+        if (test) {
+          setSelectedTest(test);
+          setShowGuidelines(true);
+          setTermsAccepted(false); // Reset checkbox when opening guidelines
+        } else {
+          console.error('Test not found:', testId);
+          navigate('/cbt-portal');
+        }
+      })
+      .catch(error => {
+        console.error('Error loading test:', error);
+        navigate('/cbt-portal');
+      });
   };
 
   const handleConfirmStartTest = () => {
@@ -56,21 +73,36 @@ const CBTPortal = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="header-left">
-          <h1>CBT Portal</h1>
-          <p>Computer Based Test Portal - Practice with timed mock tests</p>
+        <div className="header-title-section">
+          <h1 className="header-portal-title">CBT Portal</h1>
+          <p className="header-portal-subtitle">Practice with timed mock tests</p>
         </div>
-        <div className="header-right">
-          <ProfileIcon />
-          <motion.button
-            className="dashboard-button"
-            onClick={() => navigate('/cbt-portal/dashboard')}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            📊 View My Dashboard
-          </motion.button>
+        <div className="header-content">
+          <div className="header-left">
+            <span className="user-name">
+              {JSON.parse(localStorage.getItem('userProfile') || '{}').name || 'User'}
+            </span>
+          </div>
+          <div className="header-right">
+            <motion.button
+              className="update-details-button"
+              onClick={() => navigate('/profile-setup')}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              Update Details
+            </motion.button>
+            <motion.button
+              className="dashboard-button"
+              onClick={() => navigate('/cbt-portal/dashboard')}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              View Dashboard
+            </motion.button>
+          </div>
         </div>
       </motion.div>
       

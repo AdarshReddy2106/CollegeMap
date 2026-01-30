@@ -14,6 +14,24 @@
   overflow: hidden;
   font-family: Arial, sans-serif;
 
+  // Blur only the content areas, not the modals
+  &.blurred {
+    .jee-test-header,
+    .jee-test-body {
+      filter: blur(5px);
+      pointer-events: none;
+      user-select: none;
+      transition: filter 0.3s ease;
+    }
+
+    // Keep modals clear and interactive
+    .submit-modal-overlay,
+    .exit-warning-overlay {
+      filter: none !important;
+      pointer-events: auto !important;
+    }
+  }
+
   // NTA JEE Mains Header
   .jee-test-header {
     background: white;
@@ -580,6 +598,7 @@
     align-items: center;
     justify-content: center;
     z-index: 10002;
+    pointer-events: auto; // Allow clicks on overlay and modal
   }
 
   .submit-modal,
@@ -614,11 +633,27 @@
       font-weight: 600;
     }
 
+    .exit-count {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 4px;
+      padding: 10px 15px;
+      margin: 15px 0;
+      text-align: center;
+      color: #856404;
+      font-size: 1rem;
+
+      strong {
+        font-size: 1.2rem;
+        color: #d32f2f;
+      }
+    }
+
     .modal-actions {
       display: flex;
       gap: 15px;
       margin-top: 25px;
-      justify-content: flex-end;
+      justify-content: center;
 
       button {
         padding: 10px 24px;
@@ -643,6 +678,23 @@
 
           &:hover {
             background: #da190b;
+          }
+        }
+
+        &.enter-fullscreen-btn {
+          background: #2196f3;
+          color: white;
+          padding: 12px 30px;
+          font-size: 1rem;
+
+          &:hover {
+            background: #1976d2;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+          }
+
+          &:active {
+            transform: translateY(0);
           }
         }
       }

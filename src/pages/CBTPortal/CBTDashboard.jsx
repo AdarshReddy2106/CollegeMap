@@ -4,12 +4,17 @@ import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import './CBTDashboard.scss';
 import ProfileIcon from '../../components/ProfileIcon/ProfileIcon';
+import { downloadTestAnalysisPDF } from './pdfGenerator';
+import { loadImageBasedTest, resolveImageUrl } from './testLoader';
 
 const CBTDashboard = () => {
   const [testHistory, setTestHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTest, setSelectedTest] = useState(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [showQuestionBreakdown, setShowQuestionBreakdown] = useState(false);
+  const [breakdownTestData, setBreakdownTestData] = useState(null);
+  const [resolvedImageUrls, setResolvedImageUrls] = useState({});
   const navigate = useNavigate();
   const { isLoggedIn, user } = useAuth();
 
@@ -31,24 +36,32 @@ const CBTDashboard = () => {
       setLoading(true);
       const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
       
-      console.log('Fetching test history for user:', userProfile);
+      console.log('📊 [DASHBOARD] Fetching test history for:', userProfile.email);
+      
+      // ALWAYS fetch from local storage first (organized by email)
+      const { getTestResultsByEmail } = await import('./backend/localStorageManager');
+      const localResults = getTestResultsByEmail(userProfile.email || null);
+      console.log(`📊 [DASHBOARD] Found ${localResults.length} local test results`);
       
       if (!userProfile.email) {
-        console.warn('No user profile found');
-        const offlineResults = JSON.parse(localStorage.getItem('offlineTestResults') || '[]');
-        setTestHistory(offlineResults);
+        console.warn('⚠️ [DASHBOARD] No user profile found, showing local results only');
+        setTestHistory(localResults);
         setLoading(false);
         return;
       }
 
-      // Try to sync offline results first (but don't remove them yet)
-      await syncOfflineResults(userProfile);
+      // First, try to sync any pending results to Google Sheets (optional)
+      await syncPendingResults(userProfile);
 
-      // Create AbortController with timeout
+      // Fetch ALL results from Google Sheets (no pagination, no limits)
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
 
       try {
+        console.log('📊 [DASHBOARD] Making fetch request...');
+        console.log('📊 [DASHBOARD] URL:', 'https://collegemapseminarpage.vercel.app/api/cbt/test-results');
+        console.log('📊 [DASHBOARD] Profile:', userProfile);
+        
         const response = await fetch('https://collegemapseminarpage.vercel.app/api/cbt/test-results', {
           method: 'GET',
           headers: {
@@ -60,77 +73,105 @@ const CBTDashboard = () => {
 
         clearTimeout(timeoutId);
 
+        console.log('📊 [DASHBOARD] Response status:', response.status);
+        console.log('📊 [DASHBOARD] Response ok:', response.ok);
+
         if (response.ok) {
           const data = await response.json();
-          console.log('✅ Test results received from server:', data);
+          console.log('✅ [DASHBOARD] Fetched data:', data);
+          console.log(`✅ [DASHBOARD] Fetched ${data.testResults?.length || 0} results from Google Sheets`);
           
-          // Merge server results with offline results
-          const offlineResults = JSON.parse(localStorage.getItem('offlineTestResults') || '[]');
-          const serverResults = data.testResults || [];
+          // Combine server results with local results
+          const allResults = [...(data.testResults || []), ...localResults];
           
-          // Combine both arrays
-          const allResults = [...serverResults, ...offlineResults];
-          
-          // Remove duplicates based on testId and timestamp (keep offline version if exists)
-          const uniqueResults = [];
-          const seenKeys = new Set();
-          
-          allResults.forEach(result => {
-            // Create unique key from testId + rounded timestamp (within 30 seconds = same test)
-            const timestamp = new Date(result.completedAt).getTime();
-            const roundedTimestamp = Math.floor(timestamp / 30000); // 30 second buckets
-            const key = `${result.testId}-${roundedTimestamp}`;
-            
-            if (!seenKeys.has(key)) {
-              seenKeys.add(key);
-              uniqueResults.push(result);
-            }
-          });
-          
-          // Sort by date (most recent first)
-          uniqueResults.sort((a, b) => 
-            new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
+          // Remove duplicates based on testId and completedAt
+          const uniqueResults = allResults.filter((result, index, self) =>
+            index === self.findIndex((r) => 
+              r.testId === result.testId && 
+              r.completedAt === result.completedAt
+            )
           );
           
-          console.log(`📊 Displaying ${uniqueResults.length} total results (${serverResults.length} from server, ${offlineResults.length} offline)`);
-          setTestHistory(uniqueResults);
+          // Sort by date (most recent first)
+          const sortedResults = sortTestsByDate(uniqueResults);
           
-          // DON'T clear localStorage - keep offline results for offline viewing
+          setTestHistory(sortedResults);
         } else {
-          console.error('Failed to fetch test history, using offline only');
-          const offlineResults = JSON.parse(localStorage.getItem('offlineTestResults') || '[]');
-          setTestHistory(offlineResults);
+          let errorText = '';
+          try {
+            errorText = await response.text();
+            try {
+              const errorData = JSON.parse(errorText);
+              console.error('❌ [DASHBOARD] Failed to fetch from server:', response.status, errorData);
+            } catch (parseError) {
+              console.error('❌ [DASHBOARD] Failed to fetch from server:', response.status, errorText);
+            }
+          } catch (e) {
+            console.error('❌ [DASHBOARD] Failed to read error response:', e);
+          }
+          
+          // Fallback to local results only
+          console.log('📊 [DASHBOARD] Server error - Using local results only:', localResults.length);
+          setTestHistory(localResults);
         }
       } catch (fetchError) {
         clearTimeout(timeoutId);
-        console.error('❌ Network error:', fetchError);
-        const offlineResults = JSON.parse(localStorage.getItem('offlineTestResults') || '[]');
-        setTestHistory(offlineResults);
+        
+        if (fetchError.name === 'AbortError') {
+          console.error('❌ [DASHBOARD] Request timeout - Using pending results');
+        } else {
+          console.error('❌ [DASHBOARD] Network error:', fetchError.message);
+          console.error('❌ [DASHBOARD] Error stack:', fetchError.stack);
+        }
+        
+        // Use local results as fallback
+        console.log('📊 [DASHBOARD] Network error - Using local results:', localResults.length);
+        setTestHistory(localResults);
       }
     } catch (error) {
-      console.error('Error fetching test history:', error);
-      const offlineResults = JSON.parse(localStorage.getItem('offlineTestResults') || '[]');
-      setTestHistory(offlineResults);
+      console.error('❌ [DASHBOARD] Error fetching test history:', error);
+      console.error('❌ [DASHBOARD] Error stack:', error.stack);
+      
+      // Final fallback to local results
+      try {
+        const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+        const { getTestResultsByEmail } = await import('./backend/localStorageManager');
+        const localResults = getTestResultsByEmail(userProfile.email || null);
+        console.log('📊 [DASHBOARD] Error - Using local results as final fallback:', localResults.length);
+        setTestHistory(localResults);
+      } catch (fallbackError) {
+        console.error('❌ [DASHBOARD] Error in fallback:', fallbackError);
+        setTestHistory([]);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // MODIFIED: Sync offline results without clearing them
-  const syncOfflineResults = async (userProfile) => {
-    const offlineResults = JSON.parse(localStorage.getItem('offlineTestResults') || '[]');
-    const unsyncedResults = offlineResults.filter(r => !r.synced);
+  // MODIFIED: Sync pending results (from localStorage queue)
+  const syncPendingResults = async (userProfile) => {
+    const pendingResults = JSON.parse(localStorage.getItem('pendingTestResults') || '[]');
+    const unsyncedResults = pendingResults.filter(r => !r.synced);
 
     if (unsyncedResults.length === 0) {
-      console.log('✅ No offline results to sync');
+      console.log('✅ No pending results to sync');
       return;
     }
 
-    console.log(`📤 Syncing ${unsyncedResults.length} offline results...`);
+    console.log(`📤 Syncing ${unsyncedResults.length} pending results...`);
 
     let syncedCount = 0;
-    for (const result of unsyncedResults) {
+    const remainingPending = [];
+
+    for (const result of pendingResults) {
+      if (result.synced) {
+        continue; // Already synced, skip
+      }
+
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
         const response = await fetch('https://collegemapseminarpage.vercel.app/api/cbt/test-results', {
           method: 'POST',
           headers: {
@@ -147,25 +188,36 @@ const CBTDashboard = () => {
             unattempted: result.unattempted,
             percentage: result.percentage,
             totalTestDuration: result.totalTestDuration,
-            sectionWiseResults: result.sectionWiseResults
-          })
+            sectionWiseResults: result.sectionWiseResults,
+            fullscreenExitCount: result.fullscreenExitCount || 0,
+            questionDetails: result.questionDetails || []
+          }),
+          signal: controller.signal
         });
 
+        clearTimeout(timeoutId);
+
         if (response.ok) {
-          console.log(`✅ Synced result: ${result.testTitle}`);
+          console.log(`✅ Synced: ${result.testTitle}`);
           syncedCount++;
-          result.synced = true; // Mark as synced but keep in localStorage
+          // Don't add to remainingPending - it's synced
+        } else {
+          console.warn(`⚠️ Failed to sync ${result.testTitle}: ${response.status}`);
+          remainingPending.push(result); // Keep for retry
         }
       } catch (error) {
-        console.error(`❌ Failed to sync result: ${result.testTitle}`, error);
+        if (error.name === 'AbortError') {
+          console.warn(`⏱️ Sync timeout for: ${result.testTitle}`);
+        } else {
+          console.error(`❌ Failed to sync: ${result.testTitle}`, error.message);
+        }
+        remainingPending.push(result); // Keep for retry
       }
     }
 
-    if (syncedCount > 0) {
-      // Update localStorage with synced status but DON'T remove them
-      localStorage.setItem('offlineTestResults', JSON.stringify(offlineResults));
-      console.log(`✅ Marked ${syncedCount} results as synced (kept in localStorage for offline viewing)`);
-    }
+    // Update localStorage with only unsynced results
+    localStorage.setItem('pendingTestResults', JSON.stringify(remainingPending));
+    console.log(`✅ Synced ${syncedCount} results, ${remainingPending.length} remaining in queue`);
   };
 
   const formatTime = (seconds) => {
@@ -200,11 +252,86 @@ const CBTDashboard = () => {
     }
   };
 
+  // Helper function to sort tests by date (most recent first)
+  const sortTestsByDate = (tests) => {
+    return [...tests].sort((a, b) => {
+      const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
+      const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
+      return dateB - dateA; // Most recent first
+    });
+  };
+
   const getPerformanceColor = (percentage) => {
     const percent = parseFloat(percentage) || 0;
     if (percent >= 75) return '#10c3bc';
     if (percent >= 50) return '#ffa500';
     return '#ff4444';
+  };
+
+  const handleDownloadReport = async (test) => {
+    try {
+      console.log('📄 Generating PDF report for:', test.testTitle);
+      
+      // Show loading message
+      const loadingMsg = document.createElement('div');
+      loadingMsg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#10c3bc;color:white;padding:20px 40px;border-radius:10px;z-index:99999;font-size:18px;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+      loadingMsg.textContent = '📄 Generating PDF... Please wait...';
+      document.body.appendChild(loadingMsg);
+
+      try {
+        // Load test data
+        const testData = await loadImageBasedTest(test.testId);
+        
+        // Reconstruct results object from stored test data
+        const results = {
+          totalMarks: test.totalMarks || 0,
+          totalQuestions: test.totalQuestions || 0,
+          correctAnswers: test.correctAnswers || 0,
+          incorrectAnswers: test.incorrectAnswers || 0,
+          unattempted: test.unattempted || 0,
+          percentage: test.percentage || '0',
+          totalTestDuration: test.totalTestDuration || 0,
+          sectionWiseResults: test.sectionWiseResults || {},
+          questionDetails: test.questionDetails || [], // May not be available
+          fullscreenExitCount: test.fullscreenExitCount || 0
+        };
+
+        // Resolve image URLs for questions
+        const imageUrls = {};
+        if (results.questionDetails && results.questionDetails.length > 0) {
+          for (const question of results.questionDetails) {
+            if (question.questionImage) {
+              try {
+                const resolvedUrl = await resolveImageUrl(question.questionImage);
+                if (resolvedUrl) {
+                  imageUrls[question.questionId] = resolvedUrl;
+                }
+              } catch (error) {
+                console.warn('Failed to resolve image for question:', question.questionId);
+              }
+            }
+          }
+        }
+
+        const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+        
+        // Generate and download PDF
+        await downloadTestAnalysisPDF(results, testData, imageUrls, userProfile);
+        
+        // Remove loading message
+        document.body.removeChild(loadingMsg);
+        console.log('✅ PDF downloaded successfully');
+      } catch (error) {
+        // Remove loading message
+        if (document.body.contains(loadingMsg)) {
+          document.body.removeChild(loadingMsg);
+        }
+        throw error;
+      }
+    } catch (error) {
+      console.error('❌ Error downloading PDF:', error);
+      alert('Failed to download PDF. The test data may not be fully available. Please try again or contact support.');
+    }
   };
 
   if (loading) {
@@ -373,7 +500,127 @@ const CBTDashboard = () => {
                         setShowAnalysis(true);
                       }}
                     >
-                      View Full Analysis
+                      📊 View Analysis
+                    </button>
+                    <button
+                      className="view-breakdown-button"
+                      onClick={async () => {
+                        try {
+                          // Show loading
+                          const loadingMsg = document.createElement('div');
+                          loadingMsg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#8b5cf6;color:white;padding:20px 40px;border-radius:10px;z-index:99999;font-size:18px;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+                          loadingMsg.textContent = '📋 Loading question breakdown...';
+                          document.body.appendChild(loadingMsg);
+
+                          // Load test data for question breakdown
+                          const testData = await loadImageBasedTest(test.testId);
+                          
+                          // Merge questionDetails from stored results with actual test data
+                          const enrichedQuestionDetails = [];
+                          if (test.questionDetails && test.questionDetails.length > 0 && testData) {
+                            for (const storedQuestion of test.questionDetails) {
+                              // Find matching question in testData
+                              let actualQuestion = null;
+                              for (const section of testData.sections || []) {
+                                actualQuestion = (section.questions || []).find(
+                                  q => q.questionId === storedQuestion.questionId || 
+                                       (q.questionNumber === storedQuestion.questionNumber && 
+                                        section.sectionId === storedQuestion.sectionId)
+                                );
+                                if (actualQuestion) break;
+                              }
+
+                              // Merge stored data with actual question data
+                              const mergedQuestion = {
+                                ...storedQuestion,
+                                questionText: actualQuestion?.questionText || storedQuestion.questionText || 'Question text not available',
+                                questionImage: actualQuestion?.questionImage || storedQuestion.questionImage,
+                                options: actualQuestion?.options || storedQuestion.options || [],
+                                questionType: actualQuestion?.questionType || storedQuestion.questionType
+                              };
+                              
+                              // For integer questions, ensure correctAnswer is set from correctIntegerAnswer if missing
+                              if (mergedQuestion.questionType === 'integer' && !mergedQuestion.correctAnswer && actualQuestion?.correctIntegerAnswer) {
+                                mergedQuestion.correctAnswer = actualQuestion.correctIntegerAnswer.toString();
+                              }
+                              
+                              enrichedQuestionDetails.push(mergedQuestion);
+                            }
+                          }
+
+                          // Update test with enriched question details
+                          const enrichedTest = {
+                            ...test,
+                            questionDetails: enrichedQuestionDetails.length > 0 ? enrichedQuestionDetails : test.questionDetails
+                          };
+                          
+                          setBreakdownTestData(testData);
+                          setSelectedTest(enrichedTest);
+                          
+                          // Resolve image URLs with retry logic
+                          const resolved = {};
+                          if (enrichedTest.questionDetails && enrichedTest.questionDetails.length > 0) {
+                            for (const question of enrichedTest.questionDetails) {
+                              if (question.questionImage) {
+                                try {
+                                  // Try resolveImageUrl first
+                                  let url = await resolveImageUrl(question.questionImage);
+                                  
+                                  // If that fails, try extensions
+                                  if (!url) {
+                                    const extensions = ['.png', '.jpg', '.jpeg'];
+                                    for (const ext of extensions) {
+                                      const testUrl = `${question.questionImage}${ext}`;
+                                      try {
+                                        const response = await fetch(testUrl, { method: 'HEAD' });
+                                        if (response.ok) {
+                                          url = testUrl;
+                                          break;
+                                        }
+                                      } catch (e) {
+                                        // Continue to next extension
+                                      }
+                                    }
+                                  }
+                                  
+                                  if (url) {
+                                    resolved[question.questionId] = url;
+                                  }
+                                } catch (e) {
+                                  console.warn('Failed to resolve image:', question.questionId, e);
+                                }
+                              }
+                            }
+                          }
+                          
+                          setResolvedImageUrls(resolved);
+                          setShowQuestionBreakdown(true);
+                          
+                          // Remove loading message
+                          if (document.body.contains(loadingMsg)) {
+                            document.body.removeChild(loadingMsg);
+                          }
+                        } catch (error) {
+                          console.error('Error loading test data:', error);
+                          // Remove loading message if exists
+                          const loadingMsg = document.querySelector('div[style*="z-index:99999"]');
+                          if (loadingMsg) document.body.removeChild(loadingMsg);
+                          
+                          alert('Failed to load test data for breakdown. Some details may not be available.');
+                          setSelectedTest(test);
+                          setShowQuestionBreakdown(true);
+                        }
+                      }}
+                    >
+                      📋 Question Breakdown
+                    </button>
+                    <button
+                      className="download-report-button"
+                      onClick={async () => {
+                        await handleDownloadReport(test);
+                      }}
+                    >
+                      📥 Download PDF
                     </button>
                   </div>
                 </motion.div>
@@ -382,6 +629,156 @@ const CBTDashboard = () => {
           </motion.div>
         </>
       )}
+
+      {/* Question Breakdown Modal */}
+      <AnimatePresence>
+        {showQuestionBreakdown && selectedTest && (
+          <motion.div
+            className="breakdown-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowQuestionBreakdown(false)}
+          >
+            <motion.div
+              className="breakdown-modal-content"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="breakdown-header">
+                <h2>Question Breakdown - {selectedTest?.testTitle || 'Test'}</h2>
+                <button
+                  className="close-button"
+                  onClick={() => setShowQuestionBreakdown(false)}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="breakdown-content">
+                {selectedTest?.questionDetails && selectedTest.questionDetails.length > 0 ? (
+                  selectedTest.questionDetails.map((question, index) => (
+                    <div key={question.questionId || index} className="breakdown-question-item">
+                      <div className="question-header-breakdown">
+                        <span className="section-badge">{question.sectionName || 'Section'}</span>
+                        <span className="question-number-badge">Q{question.questionNumber}</span>
+                        <span className={`status-badge ${question.isCorrect ? 'correct' : question.userAnswer !== 'Not Attempted' ? 'incorrect' : 'unattempted'}`}>
+                          {question.isCorrect ? '✓ Correct' : question.userAnswer !== 'Not Attempted' ? '✗ Incorrect' : '○ Unattempted'}
+                        </span>
+                        <span className="time-badge">⏱️ {formatTime(question.timeSpent || 0)}</span>
+                      </div>
+
+                      {question.questionImage && (
+                        <div className="question-image-container">
+                          <img 
+                            src={resolvedImageUrls[question.questionId] || question.questionImage} 
+                            alt={`Question ${question.questionNumber}`} 
+                            className="question-image"
+                            onError={(e) => {
+                              // Try different extensions if current fails
+                              const basePath = question.questionImage;
+                              const extensions = ['.png', '.jpg', '.jpeg'];
+                              const currentSrc = e.target.src;
+                              
+                              // Find which extension we tried
+                              let currentExtIndex = -1;
+                              for (let i = 0; i < extensions.length; i++) {
+                                if (currentSrc.includes(extensions[i])) {
+                                  currentExtIndex = i;
+                                  break;
+                                }
+                              }
+                              
+                              // Try next extension
+                              if (currentExtIndex < extensions.length - 1) {
+                                const nextExt = extensions[currentExtIndex + 1];
+                                e.target.src = `${basePath}${nextExt}`;
+                                console.log(`🔄 Trying ${nextExt} for Q${question.questionNumber}`);
+                              } else if (currentExtIndex === -1) {
+                                // First attempt, try .png
+                                e.target.src = `${basePath}.png`;
+                              } else {
+                                // All extensions failed, try resolveImageUrl
+                                resolveImageUrl(question.questionImage).then(url => {
+                                  if (url) {
+                                    e.target.src = url;
+                                    setResolvedImageUrls(prev => ({
+                                      ...prev,
+                                      [question.questionId]: url
+                                    }));
+                                  } else {
+                                    console.warn(`⚠️ Could not load image for Q${question.questionNumber}`);
+                                  }
+                                }).catch(() => {
+                                  console.warn(`⚠️ Could not resolve image for Q${question.questionNumber}`);
+                                });
+                              }
+                            }}
+                            onLoad={() => {
+                              console.log(`✅ Loaded image for Q${question.questionNumber}`);
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      {question.questionText && question.questionText.trim() !== '' && question.questionText !== 'Question text not available' && (
+                        <div className="question-text-breakdown">
+                          <div dangerouslySetInnerHTML={{ __html: question.questionText }} />
+                        </div>
+                      )}
+                      
+                      {(!question.questionText || question.questionText.trim() === '' || question.questionText === 'Question text not available') && !question.questionImage && (
+                        <div className="no-question-text">
+                          <p className="warning-text">⚠️ Question image not available for this question.</p>
+                        </div>
+                      )}
+
+                      {question.questionType !== 'integer' && question.options && question.options.length > 0 && (
+                        <div className="options-breakdown">
+                          {question.options.map((option, optIndex) => (
+                            <div key={option.optionKey || option.optionId || optIndex} className="option-item">
+                              <strong>{option.optionId}.</strong> {option.optionText || option.optionText}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="answer-comparison">
+                        <div className="answer-row">
+                          <span className="answer-label">Your Answer:</span>
+                          <span className={`answer-value ${question.isCorrect ? 'correct' : question.userAnswer !== 'Not Attempted' ? 'incorrect' : 'unattempted'}`}>
+                            {question.userAnswer || 'Not Attempted'}
+                          </span>
+                        </div>
+                        <div className="answer-row">
+                          <span className="answer-label">Correct Answer:</span>
+                          <span className="answer-value correct">
+                            {question.questionType === 'integer' 
+                              ? (question.correctAnswer || question.correctIntegerAnswer || 'N/A')
+                              : (question.correctAnswer || 'N/A')}
+                          </span>
+                        </div>
+                        <div className="answer-row">
+                          <span className="answer-label">Marks:</span>
+                          <span className={`answer-value ${question.marks >= 0 ? 'positive' : 'negative'}`}>
+                            {question.marks >= 0 ? '+' : ''}{question.marks}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="no-breakdown-data">
+                    <p>Question breakdown data is not available for this test.</p>
+                    <p className="sub-text">This may be an older test result. New tests will include detailed breakdown.</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Analysis Modal */}
       <AnimatePresence>

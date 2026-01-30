@@ -1010,11 +1010,12 @@ const saveCBTTestResult = async (resultData) => {
       sectionWiseJSON
     ];
 
+    // NO LIMIT - appends to sheet indefinitely
     await sheets.spreadsheets.values.append({
       spreadsheetId: GOOGLE_SHEETS_ID,
       range: `${CBT_TEST_RESULTS_SHEET_NAME}!A:M`,
       valueInputOption: 'RAW',
-      insertDataOption: 'INSERT_ROWS',
+      insertDataOption: 'INSERT_ROWS', // Always insert new rows
       requestBody: { values: [row] }
     });
 
@@ -1026,180 +1027,132 @@ const saveCBTTestResult = async (resultData) => {
   }
 };
 
-const getCBTTestResultsByEmail = async (email) => {
-  try {
-    if (!sheets) return [];
-
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: GOOGLE_SHEETS_ID,
-      range: `${CBT_TEST_RESULTS_SHEET_NAME}!A2:M`
-    });
-
-    if (!response.data.values) return [];
-
-    const results = response.data.values
-      .filter(row => row[2]?.toLowerCase() === email.toLowerCase())
-      .map((row, index) => ({
-        id: `test-${index + 1}`,
-        completedAt: row[0],
-        testId: row[3],
-        testTitle: row[4],
-        totalMarks: parseFloat(row[5]) || 0,
-        totalQuestions: parseInt(row[6]) || 0,
-        correctAnswers: parseInt(row[7]) || 0,
-        incorrectAnswers: parseInt(row[8]) || 0,
-        unattempted: parseInt(row[9]) || 0,
-        percentage: parseFloat(row[10]) || 0,
-        totalTestDuration: parseInt(row[11]) || 0,
-        sectionWiseResults: row[12] ? JSON.parse(row[12]) : {}
-      }))
-      .reverse(); // Most recent first
-
-    return results;
-  } catch (error) {
-    console.error('Error getting CBT test results:', error);
-    return [];
-  }
-};
-
-// Save CBT test result endpoint
+// POST endpoint - No filtering or limits
 app.post('/api/cbt/test-results', async (req, res) => {
   const startTime = Date.now();
   
   try {
-    console.log('📝 [TEST SAVE] Started at', new Date().toISOString());
-    console.log('📝 [TEST SAVE] Request body:', JSON.stringify(req.body, null, 2));
-    console.log('📝 [TEST SAVE] Headers:', req.headers);
+    console.log('💾 [SAVE TEST RESULT] Request received at', new Date().toISOString());
     
     const userProfileHeader = req.headers['x-user-profile'];
     
     if (!userProfileHeader) {
-      console.error('❌ [TEST SAVE] Missing X-User-Profile header');
+      console.error('❌ [SAVE TEST RESULT] Missing X-User-Profile header');
       return res.status(400).json({ 
         message: 'User profile header is required',
-        success: false 
+        success: false
       });
     }
     
     let userProfile = {};
     try {
       userProfile = JSON.parse(userProfileHeader);
-      console.log('✅ [TEST SAVE] Parsed profile:', { name: userProfile.name, email: userProfile.email });
+      console.log('✅ [SAVE TEST RESULT] Parsed profile:', { 
+        email: userProfile.email,
+        name: userProfile.name 
+      });
     } catch (parseError) {
-      console.error('❌ [TEST SAVE] Parse error:', parseError.message);
+      console.error('❌ [SAVE TEST RESULT] Parse error:', parseError.message);
       return res.status(400).json({ 
         message: 'Invalid user profile format',
-        success: false 
+        success: false
       });
     }
-    
-    if (!userProfile.email) {
-      console.error('❌ [TEST SAVE] No email in profile');
-      return res.status(400).json({ 
-        message: 'User email is required',
-        success: false 
-      });
-    }
-    
+
     const resultData = {
       ...req.body,
       userProfile
     };
 
-    console.log('📊 [TEST SAVE] Final data to save:', JSON.stringify(resultData, null, 2));
-    console.log('📊 [TEST SAVE] Saving to Google Sheets...');
-    
-    // Verify sheets is initialized
-    if (!sheets) {
-      console.error('❌ [TEST SAVE] Google Sheets not initialized!');
-      return res.status(500).json({
-        message: 'Google Sheets not initialized',
-        success: false
-      });
-    }
-    
+    console.log(`📝 [SAVE TEST RESULT] Saving for: ${userProfile.email} | Test: ${resultData.testTitle}`);
     await saveCBTTestResult(resultData);
     
     const duration = Date.now() - startTime;
-    console.log(`✅ [TEST SAVE] Completed in ${duration}ms`);
-
+    console.log(`✅ [SAVE TEST RESULT] Saved successfully in ${duration}ms`);
+    
     res.status(200).json({ 
       message: 'Test result saved successfully',
       success: true,
-      duration: `${duration}ms`,
-      savedData: {
-        testTitle: resultData.testTitle,
-        email: userProfile.email,
-        timestamp: new Date().toISOString()
-      }
+      duration: `${duration}ms`
     });
   } catch (error) {
     const duration = Date.now() - startTime;
-    console.error(`❌ [TEST SAVE] Failed after ${duration}ms:`, error);
-    console.error('❌ [TEST SAVE] Error stack:', error.stack);
+    console.error(`❌ [SAVE TEST RESULT] Failed after ${duration}ms:`, error.message);
+    console.error('❌ [SAVE TEST RESULT] Stack:', error.stack);
+    
     res.status(500).json({ 
       message: 'Failed to save test result: ' + error.message,
-      success: false,
-      error: process.env.NODE_ENV === 'development' ? error.stack : error.message
+      success: false
     });
   }
 });
 
-// Get CBT test results by email
+// Get CBT test results by email - ENSURE THIS EXISTS
 app.get('/api/cbt/test-results', async (req, res) => {
   const startTime = Date.now();
   
   try {
-    console.log('📊 [TEST FETCH] Started at', new Date().toISOString());
+    console.log('📊 [GET TEST RESULTS] Request received at', new Date().toISOString());
+    console.log('📊 [GET TEST RESULTS] Headers:', req.headers);
     
     const userProfileHeader = req.headers['x-user-profile'];
     
     if (!userProfileHeader) {
-      console.error('❌ [TEST FETCH] Missing X-User-Profile header');
+      console.error('❌ [GET TEST RESULTS] Missing X-User-Profile header');
       return res.status(400).json({ 
         message: 'User profile header is required',
-        testResults: []
+        testResults: [],
+        success: false
       });
     }
     
     let userProfile = {};
     try {
       userProfile = JSON.parse(userProfileHeader);
-      console.log('✅ [TEST FETCH] Parsed profile:', { email: userProfile.email });
+      console.log('✅ [GET TEST RESULTS] Parsed profile:', { 
+        email: userProfile.email,
+        name: userProfile.name 
+      });
     } catch (parseError) {
-      console.error('❌ [TEST FETCH] Parse error:', parseError.message);
+      console.error('❌ [GET TEST RESULTS] Parse error:', parseError.message);
       return res.status(400).json({ 
         message: 'Invalid user profile format',
-        testResults: []
+        testResults: [],
+        success: false
       });
     }
     
     if (!userProfile.email) {
-      console.error('❌ [TEST FETCH] No email in profile');
+      console.error('❌ [GET TEST RESULTS] No email in profile');
       return res.status(400).json({ 
         message: 'User email is required',
-        testResults: []
+        testResults: [],
+        success: false
       });
     }
 
-    console.log(`📊 [TEST FETCH] Fetching for: ${userProfile.email}`);
+    console.log(`📊 [GET TEST RESULTS] Fetching results for: ${userProfile.email}`);
     const results = await getCBTTestResultsByEmail(userProfile.email);
     
     const duration = Date.now() - startTime;
-    console.log(`✅ [TEST FETCH] Found ${results.length} results in ${duration}ms`);
+    console.log(`✅ [GET TEST RESULTS] Returned ${results.length} results in ${duration}ms`);
 
     res.status(200).json({ 
       message: 'Test results fetched successfully',
       testResults: results,
       count: results.length,
-      duration: `${duration}ms`
+      duration: `${duration}ms`,
+      success: true
     });
   } catch (error) {
     const duration = Date.now() - startTime;
-    console.error(`❌ [TEST FETCH] Failed after ${duration}ms:`, error.message);
+    console.error(`❌ [GET TEST RESULTS] Failed after ${duration}ms:`, error.message);
+    console.error('❌ [GET TEST RESULTS] Stack:', error.stack);
+    
     res.status(500).json({ 
       message: 'Failed to fetch test results: ' + error.message,
-      testResults: []
+      testResults: [],
+      success: false
     });
   }
 });
