@@ -112,6 +112,30 @@ const CBTPortal = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
+        {/* Custom Test Builder Card */}
+        <motion.div 
+          className="custom-test-builder-card"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          whileHover={{ scale: 1.02, boxShadow: '0 10px 30px rgba(13, 148, 136, 0.3)' }}
+          onClick={() => navigate('/cbt-portal/custom-test')}
+        >
+          <div className="builder-card-content">
+            <div className="builder-icon">📝</div>
+            <div className="builder-info">
+              <h3>Build Custom Test</h3>
+              <p>Choose your subject, topic, difficulty & number of questions to create a personalized practice test from 750+ JEE Main questions</p>
+            </div>
+            <div className="builder-features">
+              <span className="feature-tag">🎯 By Topic</span>
+              <span className="feature-tag">📊 By Difficulty</span>
+              <span className="feature-tag">🔢 Custom Count</span>
+            </div>
+            <button className="builder-start-btn">Build Your Test →</button>
+          </div>
+        </motion.div>
+
         {tests.length === 0 ? (
           <div className="no-tests">
             <h3>No tests available</h3>

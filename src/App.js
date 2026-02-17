@@ -24,6 +24,7 @@ import ResourcesPage from "./pages/ResourcesPage/ResourcesPage";
 import NewsPage from "./pages/NewsPage/NewsPage";
 import CBTPortal from "./pages/CBTPortal/CBTPortal";
 import TestInterface from "./pages/CBTPortal/TestInterface";
+import CustomTestBuilder from "./pages/CBTPortal/CustomTestBuilder";
 import ProfileSetup from "./pages/ProfileSetup/ProfileSetup";
 import CBTDashboard from "./pages/CBTPortal/CBTDashboard";
 import HomePage from "./pages/Home/HomePage";
@@ -85,6 +86,7 @@ function App() {
           <Route path="/news" element={<NewsPage />} />
           <Route path="/branch-comparison" element={<BranchComparison />} />
           <Route path="/cbt-portal" element={<CBTPortal />} />
+          <Route path="/cbt-portal/custom-test" element={<CustomTestBuilder />} />
           <Route path="/profile-setup" element={<ProfileSetup />} />
           <Route path="/cbt-portal/test/:testId" element={<TestInterface />} />
           <Route path="/cbt-portal/dashboard" element={<CBTDashboard />} />

@@ -4,6 +4,19 @@
  */
 
 import { getDifficultyTestOptions } from './difficultyTestGenerator';
+import { isCustomTest } from './customTestGenerator';
+
+// 2025 tests with metadata JSONs but no answerKey.json
+const NEW_TEST_FOLDERS = [
+  { folder: 'jee-main-2025-22-jan-shift-1', jsonFile: 'jee-main-2025-22-jan-shift-1.json' },
+  { folder: 'jee-main-2025-22-jan-shift-2', jsonFile: 'jee-main-2025-22-jan-shift-2.json' },
+  { folder: 'jee-main-2025-23rd-jan-shift-1', jsonFile: 'jee-main-2025-23rd-jan-shift-1.json' },
+  { folder: 'jee-main-2025-24th-jan-shift-2', jsonFile: 'jee-main-2025-24th-jan-shift-2.json' },
+  { folder: 'jee-main-2025-28th-jan-shift-1', jsonFile: 'jee-main-2025-28th-jan-shift-1.json' },
+  { folder: 'JEE Main 2025 (28 Jan Shift 2)', jsonFile: 'jee-main-2025-28th-jan-shift-2.json' },
+  { folder: 'JEE Main 2025 (29 Jan Shift 1)', jsonFile: 'jee-main-2025-29th-jan-shift-1.json' },
+  { folder: 'JEE Main 2025 (29 Jan Shift 2)', jsonFile: 'jee-main-2025-29th-jan-shift-2.json' }
+];
 
 /**
  * Discover all available tests from the tests folder
@@ -47,6 +60,33 @@ export const discoverTests = async () => {
       } catch (error) {
         console.warn(`Failed to load test ${testFolder}:`, error);
         // Continue to next test
+      }
+    }
+
+    // Add 2025 tests (metadata-based, no answer keys but with question images)
+    for (const testInfo of NEW_TEST_FOLDERS) {
+      try {
+        const response = await fetch(`/tests/${encodeURI(testInfo.folder)}/${testInfo.jsonFile}`);
+        if (response.ok) {
+          const metadata = await response.json();
+          const totalQ = Object.values(metadata.sections || {}).reduce(
+            (sum, section) => sum + Object.keys(section).length, 0
+          );
+          tests.push({
+            id: testInfo.folder,
+            title: metadata.paperTitle || formatTestName(testInfo.folder),
+            type: 'JEE Main 2025',
+            duration: '3 hours',
+            totalQuestions: totalQ || 75,
+            subjects: ['Physics', 'Chemistry', 'Mathematics'],
+            description: `Practice paper from JEE Main 2025 (no auto-scoring)`,
+            testFolder: testInfo.folder,
+            isDifficultyBased: false,
+            isPracticeOnly: true
+          });
+        }
+      } catch (error) {
+        console.warn(`Failed to load 2025 test ${testInfo.folder}:`, error);
       }
     }
     
@@ -115,25 +155,65 @@ const formatDuration = (seconds) => {
  * @returns {Promise<Object|null>} Test metadata or null
  */
 export const getTestById = async (testId) => {
+  // Check if it's a custom test
+  if (isCustomTest(testId)) {
+    // Custom tests are loaded from sessionStorage in TestInterface
+    return {
+      id: testId,
+      title: 'Custom Practice Test',
+      type: 'Custom Practice',
+      duration: 'Variable',
+      totalQuestions: 0,
+      subjects: ['Physics', 'Chemistry', 'Mathematics'],
+      description: 'Custom practice test built by student',
+      isCustomTest: true
+    };
+  }
+
   // Check if it's a difficulty-based test
   if (testId && testId.startsWith('difficulty-')) {
     const difficultyTests = getDifficultyTestOptions();
     return difficultyTests.find(test => test.id === testId) || null;
   }
   
-  // Regular test
+  // Regular test with answer key
   const metadata = await loadTestMetadata(testId);
-  if (!metadata) return null;
-  
-  return {
-    id: testId,
-    title: metadata.paperTitle || formatTestName(testId),
-    type: metadata.paperType || 'JEE Main',
-    duration: formatDuration(metadata.duration),
-    totalQuestions: metadata.totalQuestions || 0,
-    subjects: metadata.sections?.map(s => s.sectionName) || ['Physics', 'Chemistry', 'Mathematics'],
-    description: `Full-length test from ${testId}`,
-    testFolder: testId,
-    isDifficultyBased: false
-  };
+  if (metadata) {
+    return {
+      id: testId,
+      title: metadata.paperTitle || formatTestName(testId),
+      type: metadata.paperType || 'JEE Main',
+      duration: formatDuration(metadata.duration),
+      totalQuestions: metadata.totalQuestions || 0,
+      subjects: metadata.sections?.map(s => s.sectionName) || ['Physics', 'Chemistry', 'Mathematics'],
+      description: `Full-length test from ${testId}`,
+      testFolder: testId,
+      isDifficultyBased: false
+    };
+  }
+
+  // Could be a 2025 test without answer key - try loading its metadata JSON
+  for (const testInfo of NEW_TEST_FOLDERS) {
+    if (testInfo.folder === testId) {
+      try {
+        const response = await fetch(`/tests/${encodeURI(testInfo.folder)}/${testInfo.jsonFile}`);
+        if (response.ok) {
+          const meta = await response.json();
+          return {
+            id: testId,
+            title: meta.paperTitle || formatTestName(testId),
+            type: 'JEE Main 2025',
+            duration: '3 hours',
+            totalQuestions: 75,
+            subjects: ['Physics', 'Chemistry', 'Mathematics'],
+            description: 'Practice paper from JEE Main 2025',
+            testFolder: testId,
+            isPracticeOnly: true
+          };
+        }
+      } catch (e) { /* not found */ }
+    }
+  }
+
+  return null;
 };

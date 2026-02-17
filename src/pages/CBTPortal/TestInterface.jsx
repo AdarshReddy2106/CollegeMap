@@ -122,15 +122,18 @@ const TestInterface = () => {
     let correctAnswers = 0;
     let incorrectAnswers = 0;
     let unattempted = 0;
+    let unscoredCount = 0;
     const sectionWiseResults = {};
     const questionDetails = [];
     const totalTestDuration = testStartTime ? Math.floor((Date.now() - testStartTime) / 1000) : 0;
+    const isPracticeTest = testData.isPracticeOnly || testData.isCustomTest;
 
     testData.sections.forEach((section, sectionIndex) => {
       let sectionMarks = 0;
       let sectionCorrect = 0;
       let sectionIncorrect = 0;
       let sectionUnattempted = 0;
+      let sectionUnscored = 0;
       let sectionTimeSpent = 0;
 
       section.questions.forEach(question => {
@@ -140,7 +143,14 @@ const TestInterface = () => {
         sectionTimeSpent += timeSpent;
         
         let isCorrect = false;
+        let isUnscored = false;
         let userAnswerDisplay = '';
+
+        // Check if this question has scoring data
+        const hasScoring = question.hasAnswerKey !== false && (
+          (question.questionType === 'integer' && question.correctIntegerAnswer !== null && question.correctIntegerAnswer !== undefined) ||
+          (question.questionType !== 'integer' && (question.correctAnswerKeys?.length > 0 || question.correctAnswer?.length > 0))
+        );
         
         if (question.questionType === 'integer') {
           // Integer type question
@@ -151,6 +161,11 @@ const TestInterface = () => {
           if (userInteger === null || userInteger === undefined || isNaN(userInteger)) {
             unattempted++;
             sectionUnattempted++;
+          } else if (!hasScoring) {
+            // No correct answer available - practice mode
+            isUnscored = true;
+            unscoredCount++;
+            sectionUnscored++;
           } else if (typeof correctAnswer === 'object' && correctAnswer.min !== undefined) {
             // Range answer
             if (userInteger >= correctAnswer.min && userInteger <= correctAnswer.max) {
@@ -170,6 +185,16 @@ const TestInterface = () => {
             unattempted++;
             sectionUnattempted++;
             userAnswerDisplay = 'Not Attempted';
+          } else if (!hasScoring) {
+            // No correct answer available - practice mode
+            const selectedOptions = question.options
+              .filter(opt => userAnswer.includes(opt.optionKey || opt.optionId))
+              .map(opt => opt.optionId)
+              .join(', ');
+            userAnswerDisplay = selectedOptions || userAnswer.join(', ');
+            isUnscored = true;
+            unscoredCount++;
+            sectionUnscored++;
           } else {
             // Map option keys to option IDs for display
             const selectedOptions = question.options
@@ -184,7 +209,9 @@ const TestInterface = () => {
           }
         }
         
-        if (isCorrect) {
+        if (isUnscored) {
+          // Don't add or deduct marks for unscored questions
+        } else if (isCorrect) {
           correctAnswers++;
           sectionCorrect++;
           sectionMarks += question.marks;
@@ -198,7 +225,9 @@ const TestInterface = () => {
 
         // Store question details for breakdown
         let correctAnswerDisplay = '';
-        if (question.questionType === 'integer') {
+        if (!hasScoring) {
+          correctAnswerDisplay = 'Answer key not available';
+        } else if (question.questionType === 'integer') {
           if (typeof question.correctIntegerAnswer === 'object' && question.correctIntegerAnswer.min !== undefined) {
             correctAnswerDisplay = `${question.correctIntegerAnswer.min} - ${question.correctIntegerAnswer.max}`;
           } else {
@@ -224,8 +253,9 @@ const TestInterface = () => {
           userAnswer: userAnswerDisplay,
           correctAnswer: correctAnswerDisplay,
           isCorrect,
+          isUnscored: isUnscored,
           timeSpent,
-          marks: isCorrect ? question.marks : (userAnswer.length > 0 || (question.questionType === 'integer' && userAnswer[0])) ? question.negativeMarks : 0
+          marks: isUnscored ? 0 : isCorrect ? question.marks : (userAnswer.length > 0 || (question.questionType === 'integer' && userAnswer[0])) ? question.negativeMarks : 0
         });
       });
 
@@ -235,6 +265,7 @@ const TestInterface = () => {
         correct: sectionCorrect,
         incorrect: sectionIncorrect,
         unattempted: sectionUnattempted,
+        unscored: sectionUnscored,
         total: section.questions.length,
         timeSpent: sectionTimeSpent
       };
@@ -246,10 +277,12 @@ const TestInterface = () => {
       correctAnswers,
       incorrectAnswers,
       unattempted,
+      unscoredCount,
+      isPracticeTest: isPracticeTest || unscoredCount > 0,
       sectionWiseResults,
       questionDetails,
       totalTestDuration,
-      percentage: ((totalMarks / (totalQuestions * 4)) * 100).toFixed(2),
+      percentage: ((totalMarks / (Math.max(1, (totalQuestions - unscoredCount)) * 4)) * 100).toFixed(2),
       fullscreenExitCount: fullscreenExitCount
     };
   }, [testData, answers, testStartTime, fullscreenExitCount]);

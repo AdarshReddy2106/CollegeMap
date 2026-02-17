@@ -9,6 +9,8 @@ import {
   generateDifficultyBasedTest 
 } from './difficultyTestGenerator';
 
+import { isCustomTest, loadCustomTest } from './customTestGenerator';
+
 /**
  * Get image path for a question
  * @param {string} testName - Name of the test folder
@@ -84,6 +86,17 @@ export const checkImageExists = async (imagePath) => {
  */
 export const loadImageBasedTest = async (testName) => {
   try {
+    // Check if it's a custom test (built from Custom Test Builder)
+    if (isCustomTest(testName)) {
+      console.log(`📝 Loading custom test: ${testName}`);
+      const customTestData = loadCustomTest();
+      if (!customTestData) {
+        throw new Error('Custom test data not found. Please rebuild the test.');
+      }
+      console.log(`✅ Loaded custom test with ${customTestData.totalQuestions} questions`);
+      return customTestData;
+    }
+
     // Check if it's a difficulty-based test
     if (isDifficultyBasedTest(testName)) {
       const difficulty = getDifficultyFromTestId(testName);
@@ -98,8 +111,20 @@ export const loadImageBasedTest = async (testName) => {
     }
     
     // Load regular image-based test
-    // Load answer key
-    const answerKey = await loadAnswerKey(testName);
+    // First try loading answer key
+    let answerKey = null;
+    try {
+      answerKey = await loadAnswerKey(testName);
+    } catch (e) {
+      // No answer key - might be a 2025 practice test
+    }
+
+    // If no answer key, try loading as a 2025 metadata-based test
+    if (!answerKey) {
+      const practiceTest = await loadPracticeTest(testName);
+      if (practiceTest) return practiceTest;
+      throw new Error(`No answer key or metadata found for test: ${testName}`);
+    }
     
     // Process sections and add image paths
     const processedSections = answerKey.sections.map(section => {
@@ -154,6 +179,107 @@ export const loadImageBasedTest = async (testName) => {
   } catch (error) {
     console.error('Error loading image-based test:', error);
     throw error;
+  }
+};
+
+/**
+ * Load a 2025 practice test from metadata JSON (no answer key)
+ * These tests have question images and difficulty/lesson metadata but no correct answers
+ */
+const PRACTICE_TEST_JSON_MAP = {
+  'jee-main-2025-22-jan-shift-1': 'jee-main-2025-22-jan-shift-1.json',
+  'jee-main-2025-22-jan-shift-2': 'jee-main-2025-22-jan-shift-2.json',
+  'jee-main-2025-23rd-jan-shift-1': 'jee-main-2025-23rd-jan-shift-1.json',
+  'jee-main-2025-24th-jan-shift-2': 'jee-main-2025-24th-jan-shift-2.json',
+  'jee-main-2025-28th-jan-shift-1': 'jee-main-2025-28th-jan-shift-1.json',
+  'JEE Main 2025 (28 Jan Shift 2)': 'jee-main-2025-28th-jan-shift-2.json',
+  'JEE Main 2025 (29 Jan Shift 1)': 'jee-main-2025-29th-jan-shift-1.json',
+  'JEE Main 2025 (29 Jan Shift 2)': 'jee-main-2025-29th-jan-shift-2.json'
+};
+
+// Subject folder mapping for 2025 tests (capitalized names, Maths instead of mathematics)
+const PRACTICE_SUBJECT_FOLDERS = {
+  physics: 'Physics',
+  chemistry: 'Chemistry',
+  mathematics: 'Maths',
+  maths: 'Maths'
+};
+
+const loadPracticeTest = async (testName) => {
+  const jsonFile = PRACTICE_TEST_JSON_MAP[testName];
+  if (!jsonFile) return null;
+
+  try {
+    const response = await fetch(`/tests/${encodeURI(testName)}/${jsonFile}`);
+    if (!response.ok) return null;
+    const metadata = await response.json();
+
+    const subjectOrder = ['physics', 'chemistry', 'mathematics'];
+    const sections = [];
+
+    for (const subjectKey of subjectOrder) {
+      const questionsMap = metadata.sections[subjectKey] || metadata.sections[subjectKey === 'mathematics' ? 'maths' : subjectKey];
+      if (!questionsMap) continue;
+
+      const subjectFolder = PRACTICE_SUBJECT_FOLDERS[subjectKey] || subjectKey;
+      const questions = Object.entries(questionsMap).map(([qNum, qData]) => {
+        const questionNumber = parseInt(qNum);
+        const isMCQ = qData.type === 'MCQ';
+        const imagePath = `/tests/${encodeURI(testName)}/${encodeURI(subjectFolder)}/${qNum}`;
+
+        const options = isMCQ ? [
+          { optionId: 'A', optionKey: `${subjectKey}-${questionNumber}-opt-1` },
+          { optionId: 'B', optionKey: `${subjectKey}-${questionNumber}-opt-2` },
+          { optionId: 'C', optionKey: `${subjectKey}-${questionNumber}-opt-3` },
+          { optionId: 'D', optionKey: `${subjectKey}-${questionNumber}-opt-4` }
+        ] : [];
+
+        return {
+          questionId: `${subjectKey}-${questionNumber}`,
+          questionNumber,
+          questionType: isMCQ ? 'single-correct' : 'integer',
+          questionImage: imagePath,
+          questionText: '',
+          subject: subjectKey.charAt(0).toUpperCase() + subjectKey.slice(1),
+          difficulty: qData.difficulty,
+          lesson: qData.lesson,
+          options,
+          correctAnswer: [],
+          correctAnswerKeys: [],
+          correctIntegerAnswer: null,
+          marks: 4,
+          negativeMarks: -1,
+          hasAnswerKey: false
+        };
+      });
+
+      // Sort by question number
+      questions.sort((a, b) => a.questionNumber - b.questionNumber);
+
+      const sectionName = subjectKey === 'mathematics' ? 'Mathematics' :
+                          subjectKey.charAt(0).toUpperCase() + subjectKey.slice(1);
+
+      sections.push({
+        sectionId: subjectKey,
+        sectionName,
+        questionCount: questions.length,
+        questions
+      });
+    }
+
+    return {
+      paperId: metadata.paperId || testName,
+      paperTitle: metadata.paperTitle || testName,
+      paperType: 'JEE Main 2025',
+      duration: 10800,
+      totalQuestions: sections.reduce((sum, s) => sum + s.questions.length, 0),
+      sections,
+      isPracticeOnly: true,
+      hasScoringData: false
+    };
+  } catch (e) {
+    console.warn(`Failed to load practice test ${testName}:`, e);
+    return null;
   }
 };
 
