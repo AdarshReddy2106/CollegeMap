@@ -307,7 +307,8 @@ app.get('/', (req, res) => {
       'GET /api/stats',
       'GET /api/nta-updates',
       'POST /api/track-resource',
-      'GET /api/resource-analytics/:resourceId'
+      'GET /api/resource-analytics/:resourceId',
+      'GET /api/resource-analytics'
     ]
   });
 });
@@ -553,6 +554,104 @@ app.get('/api/search', async (req, res) => {
     res.status(500).json({
       message: 'Search failed.',
       error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
+  }
+});
+
+// Track resource view/download events
+app.post('/api/track-resource', async (req, res) => {
+  try {
+    console.log('📊 [TRACK RESOURCE] Request received:', req.body);
+    
+    const { resourceId, resourceTitle, actionType, subject, type } = req.body;
+
+    if (!resourceId || !actionType) {
+      console.log('❌ [TRACK RESOURCE] Missing required fields');
+      return res.status(400).json({ 
+        message: 'resourceId and actionType are required',
+        success: false
+      });
+    }
+
+    if (!['view', 'download'].includes(actionType)) {
+      console.log('❌ [TRACK RESOURCE] Invalid action type:', actionType);
+      return res.status(400).json({ 
+        message: 'actionType must be "view" or "download"',
+        success: false
+      });
+    }
+
+    await trackResourceEvent({
+      resourceId: String(resourceId),
+      resourceTitle: resourceTitle || 'Unknown',
+      actionType,
+      subject: subject || 'N/A',
+      type: type || 'N/A'
+    });
+
+    console.log(`✅ [TRACK RESOURCE] ${actionType} tracked for: ${resourceTitle || resourceId}`);
+
+    res.status(200).json({ 
+      message: `${actionType} tracked successfully`,
+      success: true,
+      resourceId,
+      actionType
+    });
+  } catch (error) {
+    console.error('❌ [TRACK RESOURCE] Error:', error.message);
+    console.error(error.stack);
+    res.status(500).json({ 
+      message: 'Failed to track resource event',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+      success: false
+    });
+  }
+});
+
+// Get analytics for a specific resource
+app.get('/api/resource-analytics/:resourceId', async (req, res) => {
+  try {
+    const { resourceId } = req.params;
+
+    if (!resourceId) {
+      return res.status(400).json({ 
+        message: 'resourceId is required',
+        success: false
+      });
+    }
+
+    const analytics = await getResourceAnalytics(resourceId);
+
+    res.status(200).json({ 
+      ...analytics,
+      success: true
+    });
+  } catch (error) {
+    console.error('Error fetching resource analytics:', error);
+    res.status(500).json({ 
+      message: 'Failed to fetch resource analytics',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+      success: false
+    });
+  }
+});
+
+// Get all resources analytics
+app.get('/api/resource-analytics', async (req, res) => {
+  try {
+    const analytics = await getAllResourcesAnalytics();
+
+    res.status(200).json({ 
+      resources: analytics,
+      total: analytics.length,
+      success: true
+    });
+  } catch (error) {
+    console.error('Error fetching all resource analytics:', error);
+    res.status(500).json({ 
+      message: 'Failed to fetch resource analytics',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+      success: false
     });
   }
 });
@@ -1183,7 +1282,8 @@ app.use((req, res) => {
       'GET /api/stats',
       'GET /api/search?query=...',
       'POST /api/track-resource',
-      'GET /api/resource-analytics/:resourceId'
+      'GET /api/resource-analytics/:resourceId',
+      'GET /api/resource-analytics'
     ]
   });
 });
@@ -1240,3 +1340,55 @@ if (process.env.NODE_ENV !== 'production' && require.main === module) {
         // Don't crash - continue serving requests
     }
 })();
+// Add this function after saveCBTTestResult function (around line 700)
+const getCBTTestResultsByEmail = async (userEmail) => {
+  try {
+    if (!sheets || !userEmail) {
+      console.log('⚠️ Sheets not initialized or no email provided');
+      return [];
+    }
+
+    console.log(`📊 Fetching test results for: ${userEmail}`);
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: GOOGLE_SHEETS_ID,
+      range: `${CBT_TEST_RESULTS_SHEET_NAME}!A2:M`
+    });
+
+    if (!response.data.values || response.data.values.length === 0) {
+      console.log('📊 No test results found in sheet');
+      return [];
+    }
+
+    // Filter by email (column index 2 = User Email)
+    const userResults = response.data.values
+      .filter(row => row[2]?.toLowerCase() === userEmail.toLowerCase())
+      .map(row => {
+        try {
+          return {
+            completedAt: row[0] || new Date().toISOString(),
+            testId: row[3] || 'unknown',
+            testTitle: row[4] || 'Unknown Test',
+            totalMarks: parseFloat(row[5]) || 0,
+            totalQuestions: parseInt(row[6]) || 0,
+            correctAnswers: parseInt(row[7]) || 0,
+            incorrectAnswers: parseInt(row[8]) || 0,
+            unattempted: parseInt(row[9]) || 0,
+            percentage: parseFloat(row[10]) || 0,
+            totalTestDuration: parseInt(row[11]) || 0,
+            sectionWiseResults: row[12] ? JSON.parse(row[12]) : {}
+          };
+        } catch (parseError) {
+          console.error('Error parsing test result row:', parseError);
+          return null;
+        }
+      })
+      .filter(result => result !== null);
+
+    console.log(`✅ Found ${userResults.length} test results for ${userEmail}`);
+    return userResults;
+  } catch (error) {
+    console.error('Error fetching test results by email:', error);
+    return [];
+  }
+};

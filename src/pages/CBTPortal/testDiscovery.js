@@ -3,6 +3,8 @@
  * Dynamically discovers tests from public/tests folder
  */
 
+import { getDifficultyTestOptions } from './difficultyTestGenerator';
+
 /**
  * Discover all available tests from the tests folder
  * @returns {Promise<Array>} Array of test metadata
@@ -21,6 +23,11 @@ export const discoverTests = async () => {
     
     const tests = [];
     
+    // Add difficulty-based practice tests at the top
+    const difficultyTests = getDifficultyTestOptions();
+    tests.push(...difficultyTests);
+    
+    // Add regular full-length tests
     for (const testFolder of knownTestFolders) {
       try {
         const answerKey = await loadTestMetadata(testFolder);
@@ -32,8 +39,9 @@ export const discoverTests = async () => {
             duration: formatDuration(answerKey.duration),
             totalQuestions: answerKey.totalQuestions || 0,
             subjects: answerKey.sections?.map(s => s.sectionName) || ['Physics', 'Chemistry', 'Mathematics'],
-            description: `Test from ${testFolder}`,
-            testFolder: testFolder
+            description: `Full-length test from ${testFolder}`,
+            testFolder: testFolder,
+            isDifficultyBased: false
           });
         }
       } catch (error) {
@@ -103,10 +111,17 @@ const formatDuration = (seconds) => {
 
 /**
  * Get test by ID
- * @param {string} testId - Test ID (folder name)
+ * @param {string} testId - Test ID (folder name or difficulty-based ID)
  * @returns {Promise<Object|null>} Test metadata or null
  */
 export const getTestById = async (testId) => {
+  // Check if it's a difficulty-based test
+  if (testId && testId.startsWith('difficulty-')) {
+    const difficultyTests = getDifficultyTestOptions();
+    return difficultyTests.find(test => test.id === testId) || null;
+  }
+  
+  // Regular test
   const metadata = await loadTestMetadata(testId);
   if (!metadata) return null;
   
@@ -117,7 +132,8 @@ export const getTestById = async (testId) => {
     duration: formatDuration(metadata.duration),
     totalQuestions: metadata.totalQuestions || 0,
     subjects: metadata.sections?.map(s => s.sectionName) || ['Physics', 'Chemistry', 'Mathematics'],
-    description: `Test from ${testId}`,
-    testFolder: testId
+    description: `Full-length test from ${testId}`,
+    testFolder: testId,
+    isDifficultyBased: false
   };
 };

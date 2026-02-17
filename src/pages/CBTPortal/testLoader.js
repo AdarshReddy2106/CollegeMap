@@ -3,6 +3,12 @@
  * Loads test data from image folders and answer key JSON
  */
 
+import { 
+  isDifficultyBasedTest, 
+  getDifficultyFromTestId, 
+  generateDifficultyBasedTest 
+} from './difficultyTestGenerator';
+
 /**
  * Get image path for a question
  * @param {string} testName - Name of the test folder
@@ -73,11 +79,25 @@ export const checkImageExists = async (imagePath) => {
 
 /**
  * Load test data from images and answer key
- * @param {string} testName - Name of the test folder
+ * @param {string} testName - Name of the test folder or difficulty-based test ID
  * @returns {Promise<Object>} Complete test data with image paths
  */
 export const loadImageBasedTest = async (testName) => {
   try {
+    // Check if it's a difficulty-based test
+    if (isDifficultyBasedTest(testName)) {
+      const difficulty = getDifficultyFromTestId(testName);
+      if (!difficulty) {
+        throw new Error('Invalid difficulty test ID');
+      }
+      
+      console.log(`🎯 Loading ${difficulty} difficulty-based test...`);
+      const testData = await generateDifficultyBasedTest(difficulty);
+      console.log(`✅ Generated ${difficulty} test with ${testData.totalQuestions} questions`);
+      return testData;
+    }
+    
+    // Load regular image-based test
     // Load answer key
     const answerKey = await loadAnswerKey(testName);
     

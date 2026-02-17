@@ -493,6 +493,20 @@ export const resourcesData = [
   downloadUrl: "https://drive.google.com/file/d/1TgSBwyVz3KI3mhvY3WA9nfnhFf1AxO2h/view?usp=drive_link",
 },
 {
+  id: 71,
+  title: "Ray Optics",
+  type: "Cheatsheets",
+  subject: "Physics",
+  downloadUrl: "https://drive.google.com/file/d/1ZBU9ung1Qui8vl48tMf2CLRTOZWGaZRd/view?usp=drive_link",
+},
+{
+  id: 72,
+  title: "Wave Optics",
+  type: "Cheatsheets",
+  subject: "Physics",
+  downloadUrl: "https://drive.google.com/file/d/1iiu4nRC6DdVg2kQqxlQsdk3-FqHbOnN4/view?usp=drive_link",
+},
+{
   id: 73,
   title: "Fluid Mechanics",
   type: "Cheatsheets",
@@ -505,5 +519,25 @@ export const resourcesData = [
   type: "JEE Busters",
   subject: "All",
   downloadUrl: "https://drive.google.com/file/d/1yES42ZZ75w2bEgF6Jbjv5aH975vtq6I-/view?usp=drive_link",
-}
+},{
+  id: 75,
+  title: "JEE Advanced Syllabus Tracker",
+  type: "JEE Busters",
+  subject: "All",
+  downloadUrl: "https://drive.google.com/file/d/11uctifTPSRbVDQkr79gc5JY6M8m0DsFY/view?usp=drive_link",
+},
+{
+  id: 76,
+  title: "Coordination compounds",
+  type: "Cheatsheets",
+  subject: "Chemistry",
+  downloadUrl: "https://drive.google.com/file/d/1e2XvHzqwmyU_IIN4xcfoKciNZSsHZhD0/view?usp=drive_link",
+},
+{
+  id: 77,
+  title: "Electrostatics",
+  type: "Cheatsheets",
+  subject: "Physics",
+  downloadUrl: "https://drive.google.com/file/d/1L9PYe_OD41PShyQOnmc_Fq57WQ-QEnw8/view?usp=drive_link",
+},
 ];

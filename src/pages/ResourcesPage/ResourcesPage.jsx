@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import './ResourcesPage.scss';
 import { resourcesData } from './ResourcesData';
 
 const ResourcesPage = () => {
+  const location = useLocation();
   const [resources, setResources] = useState([]);
   const [filteredResources, setFilteredResources] = useState([]);
   const [activeSubject, setActiveSubject] = useState('Physics');
@@ -21,11 +23,40 @@ const ResourcesPage = () => {
     setFilteredResources(resourcesData);
   }, []);
 
+  // Handle URL query parameters for filtering
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const filterParam = searchParams.get('filter');
+    
+    if (filterParam) {
+      // Map URL filter parameter to activeType
+      const filterMap = {
+        'jee-busters': 'JEE Busters',
+        'short-notes': 'Cheatsheets',
+        'practice': 'Practice'
+      };
+      
+      const mappedType = filterMap[filterParam];
+      if (mappedType) {
+        setActiveType(mappedType);
+        setActiveSubject('All'); // Set to All to show all subjects for the type
+      }
+    }
+  }, [location.search]);
+
   // Track resource event (silently in background)
   const trackResourceEvent = async (resource, actionType) => {
     try {
-      // Use the Vercel backend URL for production
-      const API_URL = 'https://collegemapseminarpage.vercel.app';
+      // FIXED: Better environment detection
+      const isDevelopment = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1';
+      
+      const API_URL = isDevelopment 
+        ? 'http://localhost:4000' 
+        : 'https://collegemapseminarpage.vercel.app';
+        
+      console.log(`🔍 Environment: ${isDevelopment ? 'Development' : 'Production'}`);
+      console.log(`📡 API URL: ${API_URL}/api/track-resource`);
         
       const response = await fetch(`${API_URL}/api/track-resource`, {
         method: 'POST',
@@ -43,10 +74,14 @@ const ResourcesPage = () => {
       });
 
       if (!response.ok) {
-        console.warn(`Tracking failed: ${response.status}`);
+        const errorText = await response.text();
+        console.warn(`⚠️ Tracking failed: ${response.status} - ${errorText}`);
+      } else {
+        const result = await response.json();
+        console.log(`✅ Tracked ${actionType}:`, result);
       }
     } catch (error) {
-      console.error('Failed to track event:', error);
+      console.error('❌ Failed to track event:', error.message);
       // Silently fail - don't block user experience
     }
   };
@@ -109,7 +144,13 @@ const ResourcesPage = () => {
   // Fetch analytics for a specific resource
   const fetchResourceAnalytics = async (resourceId) => {
     try {
-      const API_URL = 'https://collegemapseminarpage.vercel.app';
+      const isDevelopment = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1';
+      
+      const API_URL = isDevelopment 
+        ? 'http://localhost:4000' 
+        : 'https://collegemapseminarpage.vercel.app';
+        
       const response = await fetch(`${API_URL}/api/resource-analytics/${resourceId}`, {
         method: 'GET',
         headers: { 
@@ -122,9 +163,10 @@ const ResourcesPage = () => {
         const data = await response.json();
         return data;
       }
+      console.warn('⚠️ Analytics fetch failed:', response.status);
       return { views: 0, downloads: 0 };
     } catch (error) {
-      console.error('Failed to fetch analytics:', error);
+      console.error('❌ Failed to fetch analytics:', error.message);
       return { views: 0, downloads: 0 };
     }
   };

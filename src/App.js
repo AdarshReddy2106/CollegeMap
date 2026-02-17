@@ -26,6 +26,7 @@ import CBTPortal from "./pages/CBTPortal/CBTPortal";
 import TestInterface from "./pages/CBTPortal/TestInterface";
 import ProfileSetup from "./pages/ProfileSetup/ProfileSetup";
 import CBTDashboard from "./pages/CBTPortal/CBTDashboard";
+import HomePage from "./pages/Home/HomePage";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -63,7 +64,8 @@ function App() {
       <ScrollToTop />
       <Layout isLoggedIn={isLoggedIn}>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          {/* <Route path="/" element={<LandingPage />} /> */}
+          <Route path="/" element={<HomePage />} />
           <Route path="/Questionaire" element={<Questionaire />} />
           <Route path="/ResultsPage" element={<ResultsPage />} />
           <Route path="/MobileLogin" element={<MobileLogin />} />

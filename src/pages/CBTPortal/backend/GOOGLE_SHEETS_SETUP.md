@@ -243,10 +243,19 @@ export default async function handler(req, res) {
 
 ## Step 10: Sheet Headers
 
-Make sure your Google Sheet has these headers in the first row:
+Make sure your Google Sheet has these sheets with correct headers:
 
-| Timestamp | Email | Name | Test ID | Test Title | Total Marks | Total Questions | Correct | Incorrect | Unattempted | Percentage | Duration (s) | Fullscreen Exits | Section Results | Question Details |
-|-----------|-------|------|---------|------------|-------------|-----------------|---------|-----------|-------------|------------|--------------|------------------|-----------------|------------------|
+### **ResourceAnalytics Sheet** (for resource tracking)
+| Resource ID | Resource Title | Subject | Type | Number of Views | Number of Downloads | Last Updated |
+|-------------|----------------|---------|------|-----------------|---------------------|--------------|
+
+### **CBTTestResults Sheet** (for test results)
+| Timestamp | User Name | User Email | Test ID | Test Title | Total Marks | Total Questions | Correct | Incorrect | Unattempted | Percentage | Duration (s) | Section Results |
+|-----------|-----------|-----------|---------|------------|-------------|-----------------|---------|-----------|-------------|------------|--------------|-----------------|
+
+### **Bookings Sheet** (for seminar bookings)
+| Timestamp | Name | Email | Phone |
+|-----------|------|-------|-------|
 
 ## Step 11: Update Frontend API URL
 
