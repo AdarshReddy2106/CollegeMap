@@ -3,12 +3,6 @@
  * Loads test data from image folders and answer key JSON
  */
 
-import { 
-  isDifficultyBasedTest, 
-  getDifficultyFromTestId, 
-  generateDifficultyBasedTest 
-} from './difficultyTestGenerator';
-
 import { isCustomTest, loadCustomTest } from './customTestGenerator';
 
 /**
@@ -97,19 +91,6 @@ export const loadImageBasedTest = async (testName) => {
       return customTestData;
     }
 
-    // Check if it's a difficulty-based test
-    if (isDifficultyBasedTest(testName)) {
-      const difficulty = getDifficultyFromTestId(testName);
-      if (!difficulty) {
-        throw new Error('Invalid difficulty test ID');
-      }
-      
-      console.log(`🎯 Loading ${difficulty} difficulty-based test...`);
-      const testData = await generateDifficultyBasedTest(difficulty);
-      console.log(`✅ Generated ${difficulty} test with ${testData.totalQuestions} questions`);
-      return testData;
-    }
-    
     // Load regular image-based test
     // First try loading answer key
     let answerKey = null;

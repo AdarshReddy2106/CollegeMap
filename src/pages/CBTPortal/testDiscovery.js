@@ -3,7 +3,6 @@
  * Dynamically discovers tests from public/tests folder
  */
 
-import { getDifficultyTestOptions } from './difficultyTestGenerator';
 import { isCustomTest } from './customTestGenerator';
 
 // 2025 tests with metadata JSONs but no answerKey.json
@@ -35,10 +34,6 @@ export const discoverTests = async () => {
     ];
     
     const tests = [];
-    
-    // Add difficulty-based practice tests at the top
-    const difficultyTests = getDifficultyTestOptions();
-    tests.push(...difficultyTests);
     
     // Add regular full-length tests
     for (const testFolder of knownTestFolders) {
@@ -170,12 +165,6 @@ export const getTestById = async (testId) => {
     };
   }
 
-  // Check if it's a difficulty-based test
-  if (testId && testId.startsWith('difficulty-')) {
-    const difficultyTests = getDifficultyTestOptions();
-    return difficultyTests.find(test => test.id === testId) || null;
-  }
-  
   // Regular test with answer key
   const metadata = await loadTestMetadata(testId);
   if (metadata) {
