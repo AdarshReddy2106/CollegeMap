@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import './TestInterface.scss';
 import { loadImageBasedTest, resolveImageUrl } from './testLoader';
 import TestResults from './TestResults';
+import { saveTestResult, getUserProfile } from '../../services/supabaseService';
 // PDF feature disabled - dormant
 // import { downloadTestAnalysisPDF } from './pdfGenerator';
 
@@ -291,11 +292,24 @@ const TestInterface = () => {
     return calculateResultsWithTime(questionTimeSpent);
   }, [calculateResultsWithTime, questionTimeSpent]);
 
-  // Save test results to backend - MODIFIED: No localStorage limit, direct save to sheets
+  // Save test results to Supabase
   const saveTestResults = useCallback(async (results) => {
     try {
-      const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-      
+      // Get user email from localStorage profile
+      const localProfile = localStorage.getItem('userProfile');
+      if (!localProfile) {
+        console.warn('⚠️ No user profile found, cannot save results');
+        return;
+      }
+
+      const profile = JSON.parse(localProfile);
+      const userEmail = profile.email;
+
+      if (!userEmail) {
+        console.warn('⚠️ No user email found, cannot save results');
+        return;
+      }
+
       // Prepare test result data
       const testResultData = {
         testId: testId,
@@ -313,66 +327,17 @@ const TestInterface = () => {
         completedAt: new Date().toISOString()
       };
 
-      // ALWAYS save locally first (organized by email)
-      const { saveTestResultLocally } = await import('./backend/localStorageManager');
-      saveTestResultLocally(testResultData, userProfile);
+      // Save to Supabase
+      console.log('💾 Saving test results to Supabase...');
+      console.log('📝 User:', userEmail, '| Test:', testData?.paperTitle);
+
+      const savedResult = await saveTestResult(testResultData, userEmail);
       
-      if (!userProfile.email) {
-        console.warn('⚠️ User profile not found, saved locally only');
-        return;
-      }
-
-      // Try to save to Google Sheets (optional - local storage is primary)
-      console.log('💾 Attempting to save to Google Sheets (local storage already saved)...');
-      console.log('📝 User:', userProfile.email, '| Test:', testData?.paperTitle);
-
-      // Create AbortController with 30s timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-      try {
-        const response = await fetch('https://collegemapseminarpage.vercel.app/api/cbt/test-results', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-User-Profile': JSON.stringify(userProfile)
-          },
-          body: JSON.stringify(testResultData),
-          signal: controller.signal
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const responseData = await response.json();
-        console.log('✅ Test results saved to Google Sheets:', responseData);
-
-        if (responseData.success) {
-          console.log('✅ Successfully saved to backend - No localStorage needed');
-          // Store Google Sheets link if provided
-          if (responseData.sheetUrl || responseData.url) {
-            const sheetUrl = responseData.sheetUrl || responseData.url;
-            localStorage.setItem('lastTestSheetUrl', sheetUrl);
-            console.log('📊 Google Sheets URL stored:', sheetUrl);
-          }
-          return responseData; // Return response data for use in PDF download
-        } else {
-          throw new Error(responseData.message || 'Failed to save');
-        }
-      } catch (fetchError) {
-        clearTimeout(timeoutId);
-        
-        if (fetchError.name === 'AbortError') {
-          console.error('❌ Request timeout (30s) - Saving to pending queue');
-        } else {
-          console.error('❌ Network error:', fetchError.message);
-        }
-        
-        // Already saved locally, just mark as not synced to Google Sheets
-        console.log('💾 Saved locally - Will sync to Google Sheets when online');
+      if (savedResult) {
+        console.log('✅ Test results saved to Supabase');
+        return savedResult;
+      } else {
+        console.error('❌ Failed to save test results to Supabase');
       }
     } catch (error) {
       console.error('❌ Error in saveTestResults:', error);
@@ -505,16 +470,11 @@ const TestInterface = () => {
       });
   }, [testId, navigate]);
 
-  // Lazy load image for current question only - saves memory/disk space
+  // Lazy load image for current question only - saves memory/disk space - MEMOIZED
   const loadCurrentQuestionImage = useCallback(async (question) => {
     if (!question || !question.questionImage) return;
     
     const questionId = question.questionId;
-    
-    // If already loaded, don't reload
-    if (imageUrls[questionId]) {
-      return;
-    }
     
     setLoadingImages(true);
     
@@ -1179,7 +1139,7 @@ const TestInterface = () => {
     if (safeQuestionIndex !== currentQuestion) {
       setCurrentQuestion(safeQuestionIndex);
     }
-  }, [currentSection, currentQuestion, testData, testSubmitted, questionStartTime, loadCurrentQuestionImage, cleanupOldImages]);
+  }, [currentSection, currentQuestion, testData, testSubmitted]); // Removed loadCurrentQuestionImage and cleanupOldImages to avoid infinite loop
 
   if (!testData) {
     return <div className="loading">Loading test...</div>;

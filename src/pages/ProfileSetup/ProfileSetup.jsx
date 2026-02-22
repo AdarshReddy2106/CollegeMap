@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { saveUserProfile } from '../../services/supabaseService';
 import './ProfileSetup.scss';
 
 const ProfileSetup = () => {
@@ -44,47 +45,23 @@ const ProfileSetup = () => {
 
     setLoading(true);
     
-    // Always save to localStorage first
     const profileData = {
       name: formData.name.trim(),
-      email: formData.email.trim().toLowerCase(),
-      setupComplete: true,
-      setupDate: new Date().toISOString()
+      email: formData.email.trim().toLowerCase()
     };
-    
-    localStorage.setItem('userProfile', JSON.stringify(profileData));
-    console.log('✅ Profile saved to localStorage:', profileData);
-    
-    try {
-      console.log('📤 Submitting profile to backend...');
-      
-      const response = await fetch('https://collegemapseminarpage.vercel.app/api/save-profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          name: profileData.name,
-          email: profileData.email
-        })
-      });
 
-      console.log('Response status:', response.status);
+    try {
+      const savedProfile = await saveUserProfile(profileData);
       
-      if (response.ok) {
-        const data = await response.json();
-        console.log('✅ Profile saved to backend:', data);
-      } else {
-        console.warn('⚠️ Backend save failed, but continuing with localStorage profile');
+      if (!savedProfile) {
+        setError('Failed to save profile. Please try again.');
+        setLoading(false);
+        return;
       }
-    } catch (error) {
-      console.error('⚠️ Network error saving to backend:', error);
-      console.log('Continuing with localStorage profile...');
-    } finally {
-      setLoading(false);
+
+      console.log('✅ Profile saved to Supabase:', savedProfile);
       
-      // Navigate regardless of backend save status
+      // Navigate to test or dashboard
       if (testId) {
         navigate(`/cbt-portal/test/${testId}`);
       } else if (redirectTo) {
@@ -92,6 +69,11 @@ const ProfileSetup = () => {
       } else {
         navigate('/cbt-portal');
       }
+    } catch (error) {
+      console.error('❌ Error saving profile:', error);
+      setError('Failed to save profile. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 

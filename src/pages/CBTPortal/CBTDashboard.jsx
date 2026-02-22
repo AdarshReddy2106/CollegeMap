@@ -6,6 +6,7 @@ import './CBTDashboard.scss';
 import ProfileIcon from '../../components/ProfileIcon/ProfileIcon';
 import { downloadTestAnalysisPDF } from './pdfGenerator';
 import { loadImageBasedTest, resolveImageUrl } from './testLoader';
+import { getTestResults } from '../../services/supabaseService';
 
 const CBTDashboard = () => {
   const [testHistory, setTestHistory] = useState([]);
@@ -34,190 +35,41 @@ const CBTDashboard = () => {
   const fetchTestHistory = async () => {
     try {
       setLoading(true);
-      const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-      
-      console.log('📊 [DASHBOARD] Fetching test history for:', userProfile.email);
-      
-      // ALWAYS fetch from local storage first (organized by email)
-      const { getTestResultsByEmail } = await import('./backend/localStorageManager');
-      const localResults = getTestResultsByEmail(userProfile.email || null);
-      console.log(`📊 [DASHBOARD] Found ${localResults.length} local test results`);
-      
-      if (!userProfile.email) {
-        console.warn('⚠️ [DASHBOARD] No user profile found, showing local results only');
-        setTestHistory(localResults);
+      const localProfile = localStorage.getItem('userProfile');
+      if (!localProfile) {
+        console.warn('⚠️ [DASHBOARD] No user profile found');
+        setTestHistory([]);
         setLoading(false);
         return;
       }
 
-      // First, try to sync any pending results to Google Sheets (optional)
-      await syncPendingResults(userProfile);
+      const userProfile = JSON.parse(localProfile);
+      const userEmail = userProfile.email;
 
-      // Fetch ALL results from Google Sheets (no pagination, no limits)
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-      try {
-        console.log('📊 [DASHBOARD] Making fetch request...');
-        console.log('📊 [DASHBOARD] URL:', 'https://collegemapseminarpage.vercel.app/api/cbt/test-results');
-        console.log('📊 [DASHBOARD] Profile:', userProfile);
-        
-        const response = await fetch('https://collegemapseminarpage.vercel.app/api/cbt/test-results', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-User-Profile': JSON.stringify(userProfile)
-          },
-          signal: controller.signal
-        });
-
-        clearTimeout(timeoutId);
-
-        console.log('📊 [DASHBOARD] Response status:', response.status);
-        console.log('📊 [DASHBOARD] Response ok:', response.ok);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('✅ [DASHBOARD] Fetched data:', data);
-          console.log(`✅ [DASHBOARD] Fetched ${data.testResults?.length || 0} results from Google Sheets`);
-          
-          // Combine server results with local results
-          const allResults = [...(data.testResults || []), ...localResults];
-          
-          // Remove duplicates based on testId and completedAt
-          const uniqueResults = allResults.filter((result, index, self) =>
-            index === self.findIndex((r) => 
-              r.testId === result.testId && 
-              r.completedAt === result.completedAt
-            )
-          );
-          
-          // Sort by date (most recent first)
-          const sortedResults = sortTestsByDate(uniqueResults);
-          
-          setTestHistory(sortedResults);
-        } else {
-          let errorText = '';
-          try {
-            errorText = await response.text();
-            try {
-              const errorData = JSON.parse(errorText);
-              console.error('❌ [DASHBOARD] Failed to fetch from server:', response.status, errorData);
-            } catch (parseError) {
-              console.error('❌ [DASHBOARD] Failed to fetch from server:', response.status, errorText);
-            }
-          } catch (e) {
-            console.error('❌ [DASHBOARD] Failed to read error response:', e);
-          }
-          
-          // Fallback to local results only
-          console.log('📊 [DASHBOARD] Server error - Using local results only:', localResults.length);
-          setTestHistory(localResults);
-        }
-      } catch (fetchError) {
-        clearTimeout(timeoutId);
-        
-        if (fetchError.name === 'AbortError') {
-          console.error('❌ [DASHBOARD] Request timeout - Using pending results');
-        } else {
-          console.error('❌ [DASHBOARD] Network error:', fetchError.message);
-          console.error('❌ [DASHBOARD] Error stack:', fetchError.stack);
-        }
-        
-        // Use local results as fallback
-        console.log('📊 [DASHBOARD] Network error - Using local results:', localResults.length);
-        setTestHistory(localResults);
+      if (!userEmail) {
+        console.warn('⚠️ [DASHBOARD] No email in user profile');
+        setTestHistory([]);
+        setLoading(false);
+        return;
       }
+
+      console.log('📊 [DASHBOARD] Fetching test history for:', userEmail);
+
+      // Fetch from Supabase
+      const results = await getTestResults(userEmail);
+      
+      console.log(`✅ [DASHBOARD] Fetched ${results.length} results from Supabase`);
+      
+      // Sort by date (most recent first)
+      const sortedResults = sortTestsByDate(results);
+      
+      setTestHistory(sortedResults);
     } catch (error) {
       console.error('❌ [DASHBOARD] Error fetching test history:', error);
-      console.error('❌ [DASHBOARD] Error stack:', error.stack);
-      
-      // Final fallback to local results
-      try {
-        const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-        const { getTestResultsByEmail } = await import('./backend/localStorageManager');
-        const localResults = getTestResultsByEmail(userProfile.email || null);
-        console.log('📊 [DASHBOARD] Error - Using local results as final fallback:', localResults.length);
-        setTestHistory(localResults);
-      } catch (fallbackError) {
-        console.error('❌ [DASHBOARD] Error in fallback:', fallbackError);
-        setTestHistory([]);
-      }
+      setTestHistory([]);
     } finally {
       setLoading(false);
     }
-  };
-
-  // MODIFIED: Sync pending results (from localStorage queue)
-  const syncPendingResults = async (userProfile) => {
-    const pendingResults = JSON.parse(localStorage.getItem('pendingTestResults') || '[]');
-    const unsyncedResults = pendingResults.filter(r => !r.synced);
-
-    if (unsyncedResults.length === 0) {
-      console.log('✅ No pending results to sync');
-      return;
-    }
-
-    console.log(`📤 Syncing ${unsyncedResults.length} pending results...`);
-
-    let syncedCount = 0;
-    const remainingPending = [];
-
-    for (const result of pendingResults) {
-      if (result.synced) {
-        continue; // Already synced, skip
-      }
-
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-        const response = await fetch('https://collegemapseminarpage.vercel.app/api/cbt/test-results', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-User-Profile': JSON.stringify(userProfile)
-          },
-          body: JSON.stringify({
-            testId: result.testId,
-            testTitle: result.testTitle,
-            totalMarks: result.totalMarks,
-            totalQuestions: result.totalQuestions,
-            correctAnswers: result.correctAnswers,
-            incorrectAnswers: result.incorrectAnswers,
-            unattempted: result.unattempted,
-            percentage: result.percentage,
-            totalTestDuration: result.totalTestDuration,
-            sectionWiseResults: result.sectionWiseResults,
-            fullscreenExitCount: result.fullscreenExitCount || 0,
-            questionDetails: result.questionDetails || []
-          }),
-          signal: controller.signal
-        });
-
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-          console.log(`✅ Synced: ${result.testTitle}`);
-          syncedCount++;
-          // Don't add to remainingPending - it's synced
-        } else {
-          console.warn(`⚠️ Failed to sync ${result.testTitle}: ${response.status}`);
-          remainingPending.push(result); // Keep for retry
-        }
-      } catch (error) {
-        if (error.name === 'AbortError') {
-          console.warn(`⏱️ Sync timeout for: ${result.testTitle}`);
-        } else {
-          console.error(`❌ Failed to sync: ${result.testTitle}`, error.message);
-        }
-        remainingPending.push(result); // Keep for retry
-      }
-    }
-
-    // Update localStorage with only unsynced results
-    localStorage.setItem('pendingTestResults', JSON.stringify(remainingPending));
-    console.log(`✅ Synced ${syncedCount} results, ${remainingPending.length} remaining in queue`);
   };
 
   const formatTime = (seconds) => {
