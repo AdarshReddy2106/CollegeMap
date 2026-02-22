@@ -1,14 +1,13 @@
 import React from 'react';
-import './Home.css'; // Make sure this file exists in the same folder
+import './Home.css';
 
 import HomeBanner from './HomeBanner';
 import TrustedPlatform from './TrustedPlatform';
 import HomeHighlights from './HomeHighlights';
 import JEEBatches from './JEEBatches';
-// import AcademicAchievements from './AcademicAchievements'; 
-// import StudentTestimonials from './StudentTestimonials'; 
 import StudyResources from './StudyResources';
 import JoinFamily from './JoinFamily';
+import Team from '../../components/Team/Team';
 
 const HomePage = () => {
   return (
@@ -18,9 +17,8 @@ const HomePage = () => {
       <TrustedPlatform />
       <HomeHighlights />
       <JEEBatches />
-      {/* <AcademicAchievements /> */}
-      {/* <StudentTestimonials /> */}
       <StudyResources />
+      <Team />
       <JoinFamily />
     </div>
   );

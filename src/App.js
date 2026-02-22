@@ -65,7 +65,7 @@ function App() {
       <ScrollToTop />
       <Layout isLoggedIn={isLoggedIn}>
         <Routes>
-          {/* <Route path="/" element={<LandingPage />} /> */}
+          <Route path="/lp" element={<LandingPage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/Questionaire" element={<Questionaire />} />
           <Route path="/ResultsPage" element={<ResultsPage />} />
