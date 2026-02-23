@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useUserProfile } from '../../context/UserProfileContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import './CBTDashboard.scss';
 import ProfileIcon from '../../components/ProfileIcon/ProfileIcon';
@@ -18,32 +19,38 @@ const CBTDashboard = () => {
   const [resolvedImageUrls, setResolvedImageUrls] = useState({});
   const navigate = useNavigate();
   const { isLoggedIn, user } = useAuth();
+  const { userProfile, refreshProfile } = useUserProfile();
 
   useEffect(() => {
-    // Check profile first
-    const userProfile = localStorage.getItem('userProfile');
-    if (!userProfile) {
-      navigate('/profile-setup', { state: { redirectTo: '/cbt-portal/dashboard' } });
-      return;
-    }
+    // Check profile and load if needed
+    const loadAndFetch = async () => {
+      if (!userProfile) {
+        const emailStored = sessionStorage.getItem('userEmail');
+        if (!emailStored) {
+          navigate('/profile-setup', { state: { redirectTo: '/cbt-portal/dashboard' } });
+          return;
+        }
+        // Fetch profile from Supabase
+        await refreshProfile(emailStored);
+      }
+      // Profile exists, fetch test history
+      fetchTestHistory();
+    };
     
-    // Profile exists, fetch test history
-    fetchTestHistory();
+    loadAndFetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchTestHistory = async () => {
     try {
       setLoading(true);
-      const localProfile = localStorage.getItem('userProfile');
-      if (!localProfile) {
+      if (!userProfile?.email) {
         console.warn('⚠️ [DASHBOARD] No user profile found');
         setTestHistory([]);
         setLoading(false);
         return;
       }
 
-      const userProfile = JSON.parse(localProfile);
       const userEmail = userProfile.email;
 
       if (!userEmail) {
@@ -164,8 +171,6 @@ const CBTDashboard = () => {
             }
           }
         }
-
-        const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
         
         // Generate and download PDF
         await downloadTestAnalysisPDF(results, testData, imageUrls, userProfile);
@@ -207,7 +212,7 @@ const CBTDashboard = () => {
       >
         <div className="header-content">
           <h1>My Test Dashboard</h1>
-          <p>Welcome, {JSON.parse(localStorage.getItem('userProfile') || '{}').name || 'Student'}</p>
+          <p>Welcome, {userProfile?.name || 'Student'}</p>
         </div>
         <div className="header-actions">
           <button

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useUserProfile } from '../../context/UserProfileContext';
 import './CBTPortal.scss';
 import { discoverTests, getTestById } from './testDiscovery';
 import ProfileIcon from '../../components/ProfileIcon/ProfileIcon';
@@ -14,6 +15,22 @@ const CBTPortal = () => {
   const [showWarning, setShowWarning] = useState(false);
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
+  const { userProfile, refreshProfile } = useUserProfile();
+
+  useEffect(() => {
+    // Check and load user profile from Supabase if not in context
+    const loadProfile = async () => {
+      if (!userProfile) {
+        const emailStored = sessionStorage.getItem('userEmail');
+        if (emailStored) {
+          // Fetch profile from Supabase
+          await refreshProfile(emailStored);
+        }
+      }
+    };
+
+    loadProfile();
+  }, [userProfile, refreshProfile]);
 
   useEffect(() => {
     // Discover tests dynamically from public/tests folder
@@ -28,8 +45,7 @@ const CBTPortal = () => {
   }, []);
 
   const handleStartTest = (testId) => {
-    // Check if profile is set up first
-    const userProfile = localStorage.getItem('userProfile');
+    // Check if profile is set up first (from context)
     if (!userProfile) {
       navigate('/profile-setup', { state: { testId } });
       return;
@@ -80,7 +96,7 @@ const CBTPortal = () => {
         <div className="header-content">
           <div className="header-left">
             <span className="user-name">
-              {JSON.parse(localStorage.getItem('userProfile') || '{}').name || 'User'}
+              {userProfile?.name || 'User'}
             </span>
           </div>
           <div className="header-right">

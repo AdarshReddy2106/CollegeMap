@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useUserProfile } from '../../context/UserProfileContext';
 import './ProfileIcon.scss';
 
 const ProfileIcon = () => {
+  const { userProfile, setProfile } = useUserProfile();
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -13,10 +15,9 @@ const ProfileIcon = () => {
   const [success, setSuccess] = useState('');
 
   const loadProfile = () => {
-    const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
     setFormData({
-      name: userProfile.name || '',
-      email: userProfile.email || ''
+      name: userProfile?.name || '',
+      email: userProfile?.email || ''
     });
     setShowModal(true);
     setError('');
@@ -60,12 +61,16 @@ const ProfileIcon = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        localStorage.setItem('userProfile', JSON.stringify({
+        const updatedProfile = {
           name: formData.name.trim(),
-          email: formData.email.trim().toLowerCase(),
-          setupComplete: true,
-          setupDate: new Date().toISOString()
-        }));
+          email: formData.email.trim().toLowerCase()
+        };
+        
+        // Update context
+        setProfile(updatedProfile);
+        
+        // Store email in sessionStorage
+        sessionStorage.setItem('userEmail', updatedProfile.email);
 
         setSuccess('Profile updated successfully!');
         setTimeout(() => {
@@ -78,15 +83,15 @@ const ProfileIcon = () => {
     } catch (error) {
       console.error('Error updating profile:', error);
       
-      // Fallback: Save locally
-      localStorage.setItem('userProfile', JSON.stringify({
+      // Fallback: Update context
+      const fallbackProfile = {
         name: formData.name.trim(),
-        email: formData.email.trim().toLowerCase(),
-        setupComplete: true,
-        setupDate: new Date().toISOString()
-      }));
+        email: formData.email.trim().toLowerCase()
+      };
+      setProfile(fallbackProfile);
+      sessionStorage.setItem('userEmail', fallbackProfile.email);
       
-      setSuccess('Profile updated locally!');
+      setSuccess('Profile updated!');
       setTimeout(() => {
         setShowModal(false);
         window.location.reload();
@@ -96,8 +101,7 @@ const ProfileIcon = () => {
     }
   };
 
-  const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-  const initials = userProfile.name 
+  const initials = userProfile?.name 
     ? userProfile.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
     : '👤';
 
@@ -107,7 +111,7 @@ const ProfileIcon = () => {
         <div className="profile-avatar">
           {initials}
         </div>
-        <div className="profile-name">{userProfile.name || 'User'}</div>
+        <div className="profile-name">{userProfile?.name || 'User'}</div>
       </div>
 
       <AnimatePresence>

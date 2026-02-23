@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { saveUserProfile } from '../../services/supabaseService';
+import { useUserProfile } from '../../context/UserProfileContext';
 import './ProfileSetup.scss';
 
 const ProfileSetup = () => {
+  const { setProfile } = useUserProfile();
   const [formData, setFormData] = useState({
     name: '',
     email: ''
@@ -60,6 +62,15 @@ const ProfileSetup = () => {
       }
 
       console.log('✅ Profile saved to Supabase:', savedProfile);
+      
+      // Store email in sessionStorage as identifier
+      sessionStorage.setItem('userEmail', savedProfile.email);
+      
+      // Update UserProfileContext with the saved profile data
+      setProfile({
+        name: savedProfile.name,
+        email: savedProfile.email
+      });
       
       // Navigate to test or dashboard
       if (testId) {

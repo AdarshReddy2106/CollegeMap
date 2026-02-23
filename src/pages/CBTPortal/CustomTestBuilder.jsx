@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useUserProfile } from '../../context/UserProfileContext';
 import './CustomTestBuilder.scss';
 import { buildQuestionPool, filterQuestions, getAvailableCounts, generateCustomTest } from './customTestGenerator';
 import ProfileIcon from '../../components/ProfileIcon/ProfileIcon';
 
 const CustomTestBuilder = () => {
   const navigate = useNavigate();
+  const { userProfile, refreshProfile } = useUserProfile();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [questionPool, setQuestionPool] = useState([]);
@@ -31,9 +33,14 @@ const CustomTestBuilder = () => {
 
   // Load question pool on mount
   useEffect(() => {
-    const userProfile = localStorage.getItem('userProfile');
     if (!userProfile) {
-      navigate('/profile-setup', { state: { returnTo: '/cbt-portal/custom-test' } });
+      const emailStored = sessionStorage.getItem('userEmail');
+      if (!emailStored) {
+        navigate('/profile-setup', { state: { returnTo: '/cbt-portal/custom-test' } });
+        return;
+      }
+      // Load profile from context
+      refreshProfile(emailStored);
       return;
     }
 

@@ -5,7 +5,7 @@ import './TestResults.scss';
 import { downloadTestAnalysisPDF } from './pdfGenerator';
 import { resolveImageUrl } from './testLoader';
 
-const TestResults = ({ results, testData, imageUrls = {} }) => {
+const TestResults = ({ results, testData, imageUrls = {}, userProfile = {} }) => {
   const navigate = useNavigate();
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [resolvedImageUrls, setResolvedImageUrls] = useState({});
@@ -79,7 +79,6 @@ const TestResults = ({ results, testData, imageUrls = {} }) => {
   const handleDownloadPDF = async () => {
     try {
       console.log('📄 Generating PDF...');
-      const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
       const allImageUrls = { ...imageUrls, ...resolvedImageUrls };
       await downloadTestAnalysisPDF(results, testData, allImageUrls, userProfile);
       console.log('✅ PDF downloaded successfully');

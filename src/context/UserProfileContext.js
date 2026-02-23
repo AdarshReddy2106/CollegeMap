@@ -7,27 +7,15 @@ export const UserProfileProvider = ({ children }) => {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load user profile on mount if email is available
+  // Load user profile on mount if email is available in sessionStorage
   useEffect(() => {
     const loadProfile = async () => {
-      // Check if we have user email from auth context
-      const userSession = localStorage.getItem('userSession');
-      if (userSession) {
+      const emailStored = sessionStorage.getItem('userEmail');
+      if (emailStored) {
         try {
-          const session = JSON.parse(userSession);
-          if (session.phoneNumber) {
-            // Fetch from Supabase using phone as identifier (you may need to adjust)
-            // For now, we'll check local email first
-            const localProfile = localStorage.getItem('userProfile');
-            if (localProfile) {
-              const profile = JSON.parse(localProfile);
-              if (profile.email) {
-                const supabaseProfile = await getUserProfile(profile.email);
-                if (supabaseProfile) {
-                  setUserProfile(supabaseProfile);
-                }
-              }
-            }
+          const supabaseProfile = await getUserProfile(emailStored);
+          if (supabaseProfile) {
+            setUserProfile(supabaseProfile);
           }
         } catch (error) {
           console.error('Error loading user profile:', error);

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
+import { useUserProfile } from '../../context/UserProfileContext';
 import './TestInterface.scss';
 import { loadImageBasedTest, resolveImageUrl } from './testLoader';
 import TestResults from './TestResults';
@@ -13,6 +14,7 @@ const TestInterface = () => {
   const { testId } = useParams();
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
+  const { userProfile, refreshProfile } = useUserProfile();
   const [testData, setTestData] = useState(null);
   const [currentSection, setCurrentSection] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -295,15 +297,13 @@ const TestInterface = () => {
   // Save test results to Supabase
   const saveTestResults = useCallback(async (results) => {
     try {
-      // Get user email from localStorage profile
-      const localProfile = localStorage.getItem('userProfile');
-      if (!localProfile) {
+      // Get user email from context profile
+      if (!userProfile?.email) {
         console.warn('⚠️ No user profile found, cannot save results');
         return;
       }
 
-      const profile = JSON.parse(localProfile);
-      const userEmail = profile.email;
+      const userEmail = userProfile.email;
 
       if (!userEmail) {
         console.warn('⚠️ No user email found, cannot save results');
@@ -342,7 +342,7 @@ const TestInterface = () => {
     } catch (error) {
       console.error('❌ Error in saveTestResults:', error);
     }
-  }, [testId, testData]);
+  }, [testId, testData, userProfile]);
 
   const handleAutoSubmit = useCallback(async () => {
     // Prevent multiple simultaneous submissions
@@ -392,9 +392,14 @@ const TestInterface = () => {
 
   useEffect(() => {
     // Check if profile exists first
-    const userProfile = localStorage.getItem('userProfile');
     if (!userProfile) {
-      navigate('/profile-setup', { state: { testId } });
+      const emailStored = sessionStorage.getItem('userEmail');
+      if (!emailStored) {
+        navigate('/profile-setup', { state: { testId } });
+        return;
+      }
+      // Load profile from Supabase
+      refreshProfile(emailStored);
       return;
     }
 
@@ -684,7 +689,6 @@ const TestInterface = () => {
       const results = calculateResultsWithTime(updatedQuestionTime);
       if (results) {
         try {
-          const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
           const testResultData = {
             testId: testId,
             testTitle: testData?.paperTitle || 'Test',
@@ -706,7 +710,7 @@ const TestInterface = () => {
           const pendingResults = JSON.parse(localStorage.getItem('pendingTestResults') || '[]');
           pendingResults.push({
             ...testResultData,
-            userProfile,
+            userProfile: userProfile,
             synced: false
           });
           localStorage.setItem('pendingTestResults', JSON.stringify(pendingResults));
@@ -721,7 +725,7 @@ const TestInterface = () => {
           }));
 
           // Try sendBeacon for async server save (non-blocking)
-          if (navigator.sendBeacon && userProfile.email) {
+          if (navigator.sendBeacon && userProfile?.email) {
             try {
               const blob = new Blob(
                 [JSON.stringify(testResultData)],
@@ -1146,7 +1150,7 @@ const TestInterface = () => {
   }
 
   if (testSubmitted && testResults) {
-    return <TestResults results={testResults} testData={testData} imageUrls={imageUrls} />;
+    return <TestResults results={testResults} testData={testData} imageUrls={imageUrls} userProfile={userProfile} />;
   }
 
   // Filter out sections with no questions
@@ -1218,7 +1222,7 @@ const TestInterface = () => {
                 <span className="detail-label">Candidate Name</span>
                 <span className="detail-separator">:</span>
                 <span className="detail-value">
-                  {JSON.parse(localStorage.getItem('userProfile') || '{}').name || '[Your Name]'}
+                  {userProfile?.name || '[Your Name]'}
                 </span>
               </div>
               <div className="detail-row">
