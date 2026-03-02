@@ -11,7 +11,7 @@
 
 // Registry of all available test papers with metadata
 const TEST_REGISTRY = [
-  // Old tests WITH answer keys (scoring available)
+  // 2022, 2023 tests WITH answer keys
   {
     folder: 'jee-main-2022-27th-jan-shift-1',
     hasAnswerKey: true,
@@ -22,45 +22,96 @@ const TEST_REGISTRY = [
     hasAnswerKey: true,
     subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'mathematics' }
   },
-  // 2025 tests WITHOUT answer keys (practice mode)
+  // 2026 tests - 21-jan use capitalized folders; 22-jan through 28th use lowercase (Linux case-sensitive)
+  {
+    folder: 'jee-main-2026-21-jan-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
+  },
+  {
+    folder: 'jee-main-2026-21-jan-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
+  },
+  {
+    folder: 'jee-main-2026-22-jan-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2026-22-jan-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2026-23-jan-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2026-23rd-jan-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2026-24th-jan-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2026-24th-jan-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2026-28th-jan-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2026-28th-jan-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  // 2025 tests
   {
     folder: 'jee-main-2025-22-jan-shift-1',
-    hasAnswerKey: false,
+    hasAnswerKey: true,
     subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
   },
   {
     folder: 'jee-main-2025-22-jan-shift-2',
-    hasAnswerKey: false,
+    hasAnswerKey: true,
     subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
   },
   {
     folder: 'jee-main-2025-23rd-jan-shift-1',
-    hasAnswerKey: false,
+    hasAnswerKey: true,
     subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
   },
   {
     folder: 'jee-main-2025-24th-jan-shift-2',
-    hasAnswerKey: false,
+    hasAnswerKey: true,
     subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
   },
   {
     folder: 'jee-main-2025-28th-jan-shift-1',
-    hasAnswerKey: false,
+    hasAnswerKey: true,
     subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
   },
   {
     folder: 'JEE Main 2025 (28 Jan Shift 2)',
-    hasAnswerKey: false,
+    hasAnswerKey: true,
     subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
   },
   {
     folder: 'JEE Main 2025 (29 Jan Shift 1)',
-    hasAnswerKey: false,
+    hasAnswerKey: true,
     subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
   },
   {
     folder: 'JEE Main 2025 (29 Jan Shift 2)',
-    hasAnswerKey: false,
+    hasAnswerKey: true,
     subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
   }
 ];
@@ -345,6 +396,7 @@ export const generateCustomTest = (filteredQuestions, questionCount, config) => 
 
     const processedQuestions = ordered.map((q, index) => {
       const questionNumber = index + 1;
+    
       const optionsWithKeys = q.options?.length > 0
         ? q.options.map((opt, idx) => ({
             ...opt,
@@ -356,23 +408,48 @@ export const generateCustomTest = (filteredQuestions, questionCount, config) => 
             { optionId: 'C', optionKey: `${subject}-q${questionNumber}-opt-3` },
             { optionId: 'D', optionKey: `${subject}-q${questionNumber}-opt-4` }
           ];
-
+    
+      const questionType =
+        q.questionType || (q.type === 'MCQ' ? 'single-correct' : 'integer');
+    
+      // ✅ NORMALIZATION FIX STARTS HERE
+      const rawCorrect =
+        q.correctAnswerKeys?.length > 0
+          ? q.correctAnswerKeys
+          : (q.correctAnswer || []);
+    
+      let normalizedCorrectKeys = rawCorrect;
+    
+      if (questionType === 'single-correct' && optionsWithKeys.length > 0) {
+        normalizedCorrectKeys = rawCorrect.map(ans => {
+          const match = optionsWithKeys.find(o => o.optionId === ans);
+          return match ? match.optionKey : ans;
+        });
+      }
+      // ✅ NORMALIZATION FIX ENDS HERE
+    
       return {
         questionId: `${subject}-q${questionNumber}`,
         questionNumber,
-        questionType: q.questionType || (q.type === 'MCQ' ? 'single-correct' : 'integer'),
+        questionType,
         questionImage: q.imagePath,
         questionText: '',
         subject: q.subjectDisplayName,
         subjectId: q.subject,
         difficulty: q.difficulty,
         lesson: q.lesson,
-        options: q.questionType === 'integer' || q.type === 'Numerical' ? [] : optionsWithKeys,
-        correctAnswer: q.correctAnswer || [],
-        correctAnswerKeys: q.correctAnswerKeys || q.correctAnswer || [],
+        options:
+          questionType === 'integer' || q.type === 'Numerical'
+            ? []
+            : optionsWithKeys,
+    
+        correctAnswer: rawCorrect,
+        correctAnswerKeys: normalizedCorrectKeys,
         correctIntegerAnswer: q.correctIntegerAnswer,
-        marks: q.marks || 4,
-        negativeMarks: q.negativeMarks || -1,
+    
+        marks: q.marks ?? 4,
+        negativeMarks: q.negativeMarks ?? -1,
+    
         originalTestFolder: q.testFolder,
         originalQuestionNumber: q.questionNumber,
         hasAnswerKey: q.hasAnswerKey
@@ -449,3 +526,5 @@ export const loadCustomTest = () => {
   }
   return null;
 };
+
+

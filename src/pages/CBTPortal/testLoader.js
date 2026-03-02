@@ -6,6 +6,23 @@
 import { isCustomTest, loadCustomTest } from './customTestGenerator';
 
 /**
+ * Tests with capitalized subject folders (Physics, Chemistry, Maths).
+ * Case-sensitive on Linux servers - folder names must match exactly.
+ */
+const TESTS_WITH_CAPITALIZED_FOLDERS = new Set([
+  'jee-main-2026-21-jan-shift-1',
+  'jee-main-2026-21-jan-shift-2',
+  'jee-main-2025-22-jan-shift-1',
+  'jee-main-2025-22-jan-shift-2',
+  'jee-main-2025-23rd-jan-shift-1',
+  'jee-main-2025-24th-jan-shift-2',
+  'jee-main-2025-28th-jan-shift-1',
+  'JEE Main 2025 (28 Jan Shift 2)',
+  'JEE Main 2025 (29 Jan Shift 1)',
+  'JEE Main 2025 (29 Jan Shift 2)'
+]);
+
+/**
  * Get image path for a question
  * @param {string} testName - Name of the test folder
  * @param {string} subject - Subject folder name (physics, chemistry, maths)
@@ -13,18 +30,22 @@ import { isCustomTest, loadCustomTest } from './customTestGenerator';
  * @returns {string} Image path
  */
 export const getQuestionImagePath = (testName, subject, questionNumber) => {
-  // Map subject names to folder names
-  const subjectFolderMap = {
-    'physics': 'physics',
-    'chemistry': 'chemistry',
-    'mathematics': 'mathematics',
-    'maths': 'mathematics' // Map 'maths' to 'mathematics' folder
-  };
-  
+  const usesCapitalizedFolders = testName && TESTS_WITH_CAPITALIZED_FOLDERS.has(testName);
+  // 2022/2023 use "mathematics" folder; 2026 (non-21-jan) use "maths"
+  const usesMathematicsFolder = testName && (testName.includes('2022') || testName.includes('2023'));
+
+  let subjectFolderMap;
+  if (usesCapitalizedFolders) {
+    subjectFolderMap = { 'physics': 'Physics', 'chemistry': 'Chemistry', 'mathematics': 'Maths', 'maths': 'Maths' };
+  } else if (usesMathematicsFolder) {
+    subjectFolderMap = { 'physics': 'physics', 'chemistry': 'chemistry', 'mathematics': 'mathematics', 'maths': 'mathematics' };
+  } else {
+    subjectFolderMap = { 'physics': 'physics', 'chemistry': 'chemistry', 'mathematics': 'maths', 'maths': 'maths' };
+  }
+
   const folderName = subjectFolderMap[subject.toLowerCase()] || subject.toLowerCase();
-  
-  // Try .jpg first, then .png
-  const basePath = `/tests/${testName}/${folderName}/${questionNumber}`;
+
+  const basePath = `/tests/${encodeURIComponent(testName)}/${encodeURIComponent(folderName)}/${questionNumber}`;
   return basePath;
 };
 

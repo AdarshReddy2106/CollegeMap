@@ -27,8 +27,20 @@ export const discoverTests = async () => {
     // Since we can't list directories in browser, we'll use a manifest approach
     // For now, we'll try to load known tests and check if they exist
     
-    // Known test folders - can be extended
+    // Known test folders - can be extended (with answerKey.json)
     const knownTestFolders = [
+      // 2026 tests
+      'jee-main-2026-21-jan-shift-1',
+      'jee-main-2026-21-jan-shift-2',
+      'jee-main-2026-22-jan-shift-1',
+      'jee-main-2026-22-jan-shift-2',
+      'jee-main-2026-23-jan-shift-1',
+      'jee-main-2026-23rd-jan-shift-2',
+      'jee-main-2026-24th-jan-shift-1',
+      'jee-main-2026-24th-jan-shift-2',
+      'jee-main-2026-28th-jan-shift-1',
+      'jee-main-2026-28th-jan-shift-2',
+      // 2023, 2022
       'jee-main-2023-25th-jan-shift-2',
       'jee-main-2022-27th-jan-shift-1'
     ];

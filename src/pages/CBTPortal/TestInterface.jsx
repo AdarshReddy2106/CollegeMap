@@ -33,6 +33,7 @@ const TestInterface = () => {
   const [showCalculator, setShowCalculator] = useState(false);
   const [imageUrls, setImageUrls] = useState({}); // Cache resolved image URLs
   const [loadingImages, setLoadingImages] = useState(false);
+  const [questionZoom, setQuestionZoom] = useState(100); // Zoom level for question (80-200%)
   const imageErrorAttempts = useRef({}); // Track error attempts per question to prevent infinite loops
   const timerRef = useRef(null);
   const questionTimerRef = useRef(null);
@@ -1273,9 +1274,42 @@ const TestInterface = () => {
         <div className="jee-question-panel">
           <div className="question-header-bar">
             <span className="question-number-display">Question No. {currentQuestionData.questionNumber}</span>
+            <div className="question-zoom-controls">
+              <button
+                type="button"
+                className="zoom-btn"
+                onClick={() => setQuestionZoom((z) => Math.max(80, z - 25))}
+                title="Zoom out"
+                aria-label="Zoom out"
+              >
+                −
+              </button>
+              <span className="zoom-level">{questionZoom}%</span>
+              <button
+                type="button"
+                className="zoom-btn"
+                onClick={() => setQuestionZoom((z) => Math.min(200, z + 25))}
+                title="Zoom in"
+                aria-label="Zoom in"
+              >
+                +
+              </button>
+              <button
+                type="button"
+                className="zoom-reset-btn"
+                onClick={() => setQuestionZoom(100)}
+                title="Reset zoom"
+                aria-label="Reset zoom"
+              >
+                Reset
+              </button>
+            </div>
           </div>
 
-          <div className="question-content-area">
+          <div
+            className="question-content-area"
+            style={{ zoom: questionZoom / 100 }}
+          >
             {/* Image-based questions - no text display */}
             {currentQuestionData.questionImage && (
               <div className="question-image-wrapper">
