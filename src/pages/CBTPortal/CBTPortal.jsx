@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -7,57 +7,146 @@ import './CBTPortal.scss';
 import { discoverTests, getTestById } from './testDiscovery';
 import ProfileIcon from '../../components/ProfileIcon/ProfileIcon';
 
+/**
+ * Parse a test id/folder name into structured metadata.
+ * Handles formats like:
+ *   jee-main-2026-21-jan-shift-1
+ *   jee-main-2025-23rd-jan-shift-1
+ *   JEE Main 2025 (28 Jan Shift 2)
+ */
+const parseTestMeta = (id) => {
+  let year = '', month = '', date = '', shift = '';
+
+  // Parenthesised format: "JEE Main 2025 (28 Jan Shift 2)"
+  const parenMatch = id.match(/(\d{4})\s*\((\d{1,2})\s+(\w+)\s+Shift\s+(\d)\)/i);
+  if (parenMatch) {
+    year = parenMatch[1];
+    date = parenMatch[2];
+    month = parenMatch[3].toLowerCase();
+    shift = parenMatch[4];
+  } else {
+    // Slug format: jee-main-2026-21-jan-shift-1  or jee-main-2025-23rd-jan-shift-1
+    const slugMatch = id.match(/(\d{4})-(\d{1,2})(?:st|nd|rd|th)?-(\w+)-shift-(\d)/i);
+    if (slugMatch) {
+      year = slugMatch[1];
+      date = slugMatch[2];
+      month = slugMatch[3].toLowerCase();
+      shift = slugMatch[4];
+    }
+  }
+
+  // Determine session from month (Jan = Session 1, Apr = Session 2)
+  let session = '';
+  if (month === 'jan' || month === 'january') session = 'Session 1';
+  else if (month === 'apr' || month === 'april') session = 'Session 2';
+  else if (month === 'jun' || month === 'june') session = 'Session 2';
+  else session = 'Session 1'; // default
+
+  return { year, session, date, shift };
+};
+
 const CBTPortal = () => {
   const [tests, setTests] = useState([]);
   const [showGuidelines, setShowGuidelines] = useState(false);
   const [selectedTest, setSelectedTest] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
+
+  // Filter state for Previous Year Tests
+  const [filterYear, setFilterYear] = useState('');
+  const [filterSession, setFilterSession] = useState('');
+  const [filterDate, setFilterDate] = useState('');
+  const [filterShift, setFilterShift] = useState('');
+
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const { userProfile, refreshProfile } = useUserProfile();
 
   useEffect(() => {
-    // Check and load user profile from Supabase if not in context
     const loadProfile = async () => {
       if (!userProfile) {
         const emailStored = sessionStorage.getItem('userEmail');
         if (emailStored) {
-          // Fetch profile from Supabase
           await refreshProfile(emailStored);
         }
       }
     };
-
     loadProfile();
   }, [userProfile, refreshProfile]);
 
   useEffect(() => {
-    // Discover tests dynamically from public/tests folder
     discoverTests()
-      .then(discoveredTests => {
-        setTests(discoveredTests);
-      })
+      .then(discoveredTests => setTests(discoveredTests))
       .catch(error => {
         console.error('Error discovering tests:', error);
         setTests([]);
       });
   }, []);
 
+  // Enrich tests with parsed metadata
+  const enrichedTests = useMemo(() =>
+    tests.map(t => ({ ...t, meta: parseTestMeta(t.id) })),
+    [tests]
+  );
+
+  // Derive unique filter options (cascading)
+  const availableYears = useMemo(() =>
+    [...new Set(enrichedTests.map(t => t.meta.year).filter(Boolean))].sort((a, b) => b - a),
+    [enrichedTests]
+  );
+
+  const filteredByYear = useMemo(() =>
+    filterYear ? enrichedTests.filter(t => t.meta.year === filterYear) : enrichedTests,
+    [enrichedTests, filterYear]
+  );
+
+  const availableSessions = useMemo(() =>
+    [...new Set(filteredByYear.map(t => t.meta.session).filter(Boolean))].sort(),
+    [filteredByYear]
+  );
+
+  const filteredBySession = useMemo(() =>
+    filterSession ? filteredByYear.filter(t => t.meta.session === filterSession) : filteredByYear,
+    [filteredByYear, filterSession]
+  );
+
+  const availableDates = useMemo(() =>
+    [...new Set(filteredBySession.map(t => t.meta.date).filter(Boolean))].sort((a, b) => Number(a) - Number(b)),
+    [filteredBySession]
+  );
+
+  const filteredByDate = useMemo(() =>
+    filterDate ? filteredBySession.filter(t => t.meta.date === filterDate) : filteredBySession,
+    [filteredBySession, filterDate]
+  );
+
+  const availableShifts = useMemo(() =>
+    [...new Set(filteredByDate.map(t => t.meta.shift).filter(Boolean))].sort(),
+    [filteredByDate]
+  );
+
+  const filteredTests = useMemo(() =>
+    filterShift ? filteredByDate.filter(t => t.meta.shift === filterShift) : filteredByDate,
+    [filteredByDate, filterShift]
+  );
+
+  // Reset downstream filters when upstream changes
+  const handleYearChange = (v) => { setFilterYear(v); setFilterSession(''); setFilterDate(''); setFilterShift(''); };
+  const handleSessionChange = (v) => { setFilterSession(v); setFilterDate(''); setFilterShift(''); };
+  const handleDateChange = (v) => { setFilterDate(v); setFilterShift(''); };
+  const handleShiftChange = (v) => { setFilterShift(v); };
+
   const handleStartTest = (testId) => {
-    // Check if profile is set up first (from context)
     if (!userProfile) {
       navigate('/profile-setup', { state: { testId } });
       return;
     }
-    
-    // Profile exists, proceed directly to test guidelines
     getTestById(testId)
       .then(test => {
         if (test) {
           setSelectedTest(test);
           setShowGuidelines(true);
-          setTermsAccepted(false); // Reset checkbox when opening guidelines
+          setTermsAccepted(false);
         } else {
           console.error('Test not found:', testId);
           navigate('/cbt-portal');
@@ -74,7 +163,6 @@ const CBTPortal = () => {
       setShowWarning(true);
       return;
     }
-    
     if (selectedTest) {
       setShowGuidelines(false);
       navigate(`/cbt-portal/test/${selectedTest.id}`);
@@ -83,115 +171,141 @@ const CBTPortal = () => {
 
   return (
     <div className="cbt-portal-page">
-      <motion.div 
+      {/* ─── Header Section ─── */}
+      <motion.div
         className="cbt-portal-header"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="header-title-section">
-          <h1 className="header-portal-title">CBT Portal</h1>
+        <div className="header-left">
+          <h1 className="header-portal-title">Test Portal</h1>
           <p className="header-portal-subtitle">Practice with timed mock tests</p>
         </div>
-        <div className="header-content">
-          <div className="header-left">
-            <span className="user-name">
-              {userProfile?.name || 'User'}
-            </span>
-          </div>
-          <div className="header-right">
-            <motion.button
-              className="update-details-button"
-              onClick={() => navigate('/profile-setup')}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              Update Details
-            </motion.button>
-            <motion.button
-              className="dashboard-button"
-              onClick={() => navigate('/cbt-portal/dashboard')}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              View Dashboard
-            </motion.button>
-          </div>
+        <div className="header-right">
+          <span className="user-name-label">Name: <strong>{userProfile?.name || 'User'}</strong></span>
+          <motion.button
+            className="update-details-button"
+            onClick={() => navigate('/profile-setup')}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            Update Details
+          </motion.button>
+          <motion.button
+            className="dashboard-button"
+            onClick={() => navigate('/cbt-portal/dashboard')}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            View Dashboard
+          </motion.button>
         </div>
       </motion.div>
-      
-      <motion.div 
-        className="tests-container"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-      >
-        {/* Custom Test Builder Card */}
-        <motion.div 
-          className="custom-test-builder-card"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          whileHover={{ scale: 1.02, boxShadow: '0 10px 30px rgba(13, 148, 136, 0.3)' }}
-          onClick={() => navigate('/cbt-portal/custom-test')}
-        >
-          <div className="builder-card-content">
-            <div className="builder-icon">📝</div>
-            <div className="builder-info">
-              <h3>Build Custom Test</h3>
-              <p>Choose your subject, topic, difficulty & number of questions to create a personalized practice test from 750+ JEE Main questions</p>
-            </div>
-            <div className="builder-features">
-              <span className="feature-tag">🎯 By Topic</span>
-              <span className="feature-tag">📊 By Difficulty</span>
-              <span className="feature-tag">🔢 Custom Count</span>
-            </div>
-            <button className="builder-start-btn">Build Your Test →</button>
-          </div>
-        </motion.div>
 
-        {tests.length === 0 ? (
-          <div className="no-tests">
-            <h3>No tests available</h3>
-            <p>Check back later for new tests</p>
+      {/* ─── Previous Year Tests Section ─── */}
+      <motion.div
+        className="pyt-section"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <div className="pyt-header">
+          <h2>JEE Mains Previous Year Tests</h2>
+        </div>
+
+        <div className="pyt-filters">
+          {/* Year */}
+          <div className="filter-dropdown">
+            <select value={filterYear} onChange={e => handleYearChange(e.target.value)}>
+              <option value="">YEAR</option>
+              {availableYears.map(y => <option key={y} value={y}>{y}</option>)}
+            </select>
+            <span className="dropdown-arrow">▼</span>
           </div>
-        ) : (
-          <div className="tests-grid">
-            {tests.map((test) => (
-              <motion.div 
-                className="test-card"
-                key={test.id}
-                whileHover={{ scale: 1.03, boxShadow: '0 10px 20px rgba(0,0,0,0.25)' }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <div className="test-content">
-                  <span className={`type-indicator ${test.type.replace(/\s+/g, '-')}`}>
-                    {test.type}
-                  </span>
-                  <div className="test-details">
-                    <h3>{test.title}</h3>
-                    <div className="test-info">
-                      <p><strong>Duration:</strong> {test.duration}</p>
-                      <p><strong>Questions:</strong> {test.totalQuestions}</p>
-                      <p><strong>Subjects:</strong> {test.subjects.join(', ')}</p>
-                    </div>
-                    <p className="test-description">{test.description}</p>
-                    <div className="test-actions">
-                      <button 
-                        onClick={() => handleStartTest(test.id)} 
-                        className="start-button"
-                      >
-                        Start Test
-                      </button>
-                    </div>
+
+          {/* Session */}
+          <div className="filter-dropdown">
+            <select value={filterSession} onChange={e => handleSessionChange(e.target.value)} disabled={!filterYear}>
+              <option value="">Session</option>
+              {availableSessions.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <span className="dropdown-arrow">▼</span>
+          </div>
+
+          {/* Date */}
+          <div className="filter-dropdown">
+            <select value={filterDate} onChange={e => handleDateChange(e.target.value)} disabled={!filterSession}>
+              <option value="">Date</option>
+              {availableDates.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <span className="dropdown-arrow">▼</span>
+          </div>
+
+          {/* Shift */}
+          <div className="filter-dropdown">
+            <select value={filterShift} onChange={e => handleShiftChange(e.target.value)} disabled={!filterDate}>
+              <option value="">Shift</option>
+              {availableShifts.map(s => <option key={s} value={s}>Shift {s}</option>)}
+            </select>
+            <span className="dropdown-arrow">▼</span>
+          </div>
+        </div>
+
+        {/* Filtered test results */}
+        <AnimatePresence>
+          {filterYear && filteredTests.length > 0 && (
+            <motion.div
+              className="pyt-results"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              {filteredTests.map(test => (
+                <motion.div className="pyt-test-card" key={test.id} whileHover={{ scale: 1.01 }}>
+                  <div className="pyt-test-info">
+                    <h4>{test.title}</h4>
+                    <span className="pyt-meta">{test.duration} &middot; {test.totalQuestions} Questions</span>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+                  <button className="pyt-start-btn" onClick={() => handleStartTest(test.id)}>
+                    Start Test
+                  </button>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+          {filterYear && filteredTests.length === 0 && (
+            <motion.p className="pyt-empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              No tests match the selected filters.
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* ─── Make-your-own Test Section ─── */}
+      <motion.div
+        className="custom-test-section"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <h2 className="custom-section-title">Make-your-own Test</h2>
+        <p className="custom-section-desc">
+          Choose your subject, topic, difficulty &amp; number of questions to create a personalized practice test from 750+ JEE Main questions
+        </p>
+        <div className="custom-tags">
+          <span className="custom-tag"><span className="tag-icon">🎯</span> By Topic</span>
+          <span className="custom-tag"><span className="tag-icon">📊</span> By Difficulty</span>
+          <span className="custom-tag"><span className="tag-icon">🔢</span> Custom Count</span>
+        </div>
+        <motion.button
+          className="custom-build-btn"
+          onClick={() => navigate('/cbt-portal/custom-test')}
+          whileHover={{ scale: 1.04, x: 4 }}
+          whileTap={{ scale: 0.97 }}
+        >
+          Build Your Test →
+        </motion.button>
       </motion.div>
 
       <AnimatePresence>

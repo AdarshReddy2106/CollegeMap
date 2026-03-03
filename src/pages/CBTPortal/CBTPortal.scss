@@ -6,395 +6,363 @@
   background: #f5f5f5;
   color: #333;
   min-height: 100vh;
-  
+
+  /* ───────── Header ───────── */
   .cbt-portal-header {
-    margin-bottom: 20px;
-    padding: 35px 30px 20px;
-    background: linear-gradient(135deg, #0d9488, #10c3bc);
-    border-radius: 15px;
-    color: white;
-    box-shadow: 0 8px 30px rgba(16, 195, 188, 0.4);
-    
-    .header-title-section {
-      text-align: center;
-      margin-bottom: 25px;
-      
-      .header-portal-title {
-        font-size: 3.2rem;
-        font-weight: 700;
-        color: white;
-        margin: 0 0 10px 0;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-      }
-      
-      .header-portal-subtitle {
-        font-size: 1.4rem;
-        font-weight: 500;
-        color: white;
-        margin: 0;
-        opacity: 0.95;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-      }
-    }
-    
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-    }
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    padding: 28px 32px;
+    background: linear-gradient(135deg, #0b5e57, #03423c);
+    border-radius: 16px;
+    border: 2px solid #e0e0e0;
+    border-top: 4px solid #0a3d38;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 
     .header-left {
       display: flex;
-      align-items: center;
-      
-      .user-name {
-        font-size: 1.4rem;
-        font-weight: 500;
-        color: white;
-        opacity: 0.95;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      flex-direction: column;
+
+      .header-portal-title {
+        font-size: 2.4rem;
+        font-weight: 700;
+        color: #f5f2f2;
+        margin: 0 0 4px 0;
       }
+
+      .header-portal-subtitle {
+        font-size: 1.1rem;
+        font-weight: 400;
+        color: #e2dede;
+        margin: 0;
+      }
+    }
+
+    .header-color-bar {
+      width: 120px;
+      height: 38px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #0d4f4a, #0a3d38);
+      flex-shrink: 0;
     }
 
     .header-right {
       display: flex;
-      gap: 12px;
-      align-items: center;
-    }
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
 
-    .update-details-button,
-    .dashboard-button {
-      padding: 10px 20px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 2px solid white;
-      border-radius: 8px;
-      color: white;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      white-space: nowrap;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      }
-    }
-  }
-  
-  .tests-container {
-    margin-bottom: 60px;
-    
-    .no-tests {
-      text-align: center;
-      padding: 60px 20px;
-      background: #f9f9f9;
-      border-radius: 10px;
-      
-      h3 {
-        font-size: 1.8rem;
-        margin-bottom: 15px;
-        color: #555;
-      }
-      
-      p {
-        font-size: 1.1rem;
-        color: #777;
-      }
-    }
-
-    // Custom Test Builder Card
-    .custom-test-builder-card {
-      margin-bottom: 30px;
-      background: linear-gradient(135deg, #0d9488 0%, #10c3bc 50%, #0d9488 100%);
-      border-radius: 16px;
-      padding: 28px 32px;
-      cursor: pointer;
-      box-shadow: 0 6px 25px rgba(13, 148, 136, 0.25);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        pointer-events: none;
-      }
-
-      .builder-card-content {
-        position: relative;
-        z-index: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-      }
-
-      .builder-icon {
-        font-size: 2.8rem;
-      }
-
-      .builder-info {
-        h3 {
-          font-size: 1.8rem;
-          font-weight: 700;
-          color: white;
-          margin: 0 0 8px 0;
-          text-shadow: 0 2px 4px rgba(0,0,0,0.15);
-        }
-
-        p {
-          font-size: 1.05rem;
-          color: rgba(255,255,255,0.9);
-          margin: 0;
-          line-height: 1.5;
-          max-width: 700px;
-        }
-      }
-
-      .builder-features {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 4px;
-
-        .feature-tag {
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
-          padding: 6px 14px;
-          background: rgba(255,255,255,0.2);
-          border: 1px solid rgba(255,255,255,0.3);
-          border-radius: 20px;
-          color: white;
-          font-size: 0.88rem;
-          font-weight: 500;
-        }
-      }
-
-      .builder-start-btn {
-        align-self: flex-start;
-        padding: 12px 28px;
-        background: white;
-        color: #0d9488;
-        border: none;
-        border-radius: 10px;
+      .user-name-label {
         font-size: 1.05rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        margin-top: 4px;
-
-        &:hover {
-          background: #f0faf9;
-          transform: translateX(4px);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-      }
-    }
-    
-    .tests-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 30px;
-      
-      .test-card {
-        background: #fff;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        
-        .test-content {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-        }
-        
-        .type-indicator {
-          background: rgba(0, 0, 0, 0.6);
-          color: white;
-          padding: 8px 12px;
-          text-transform: capitalize;
-          font-size: 0.9rem;
-          font-weight: 500;
-          
-          &.JEE-Main {
-            background: rgba(33, 150, 243, 0.9);
-          }
-          
-          &.JEE-Advanced {
-            background: rgba(156, 39, 176, 0.9);
-          }
-          
-
-        }
-        
-        .test-details {
-          padding: 24px;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          
-          h3 {
-            font-size: 1.4rem;
-            margin-bottom: 15px;
-            color: #333;
-            line-height: 1.3;
-            font-weight: 600;
-          }
-          
-          .test-info {
-            margin-bottom: 15px;
-            
-            p {
-              color: #666;
-              margin-bottom: 8px;
-              font-size: 0.95rem;
-              
-              strong {
-                color: #10c3bc;
-              }
-            }
-          }
-          
-          .test-description {
-            color: #777;
-            margin-bottom: 20px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            flex: 1;
-          }
-          
-          .test-actions {
-            display: flex;
-            gap: 12px;
-            
-            .start-button {
-              padding: 12px 24px;
-              border-radius: 8px;
-              cursor: pointer;
-              font-weight: 600;
-              font-size: 1rem;
-              transition: all 0.2s ease;
-              text-align: center;
-              background-color: #10c3bc;
-              color: white;
-              width: 100%;
-              text-decoration: none;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              box-shadow: 0 4px 12px rgba(16, 195, 188, 0.3);
-              border: none;
-              
-              &:hover {
-                background-color: #0ea39d;
-                transform: translateY(-2px);
-                box-shadow: 0 6px 15px rgba(16, 195, 188, 0.4);
-              }
-            }
-          }
-        }
-        
-        &:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-        }
-      }
-    }
-  }
-
-  @media (max-width: 768px) {
-    .cbt-portal-header {
-      padding: 25px 20px 15px;
-      
-      .header-title-section {
-        margin-bottom: 20px;
-        
-        .header-portal-title {
-          font-size: 2.5rem;
-          margin-bottom: 8px;
-        }
-        
-        .header-portal-subtitle {
-          font-size: 1.2rem;
-        }
-      }
-      
-      .header-content {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-      }
-
-      .header-right {
-        width: 100%;
-        justify-content: flex-end;
-      }
-
-      .header-left {
-        .user-name {
-          font-size: 1.2rem;
-        }
+        color: #fffcfc;
+        strong { color: #ffffff; }
       }
 
       .update-details-button,
       .dashboard-button {
-        padding: 8px 16px;
+        padding: 8px 18px;
+        background: #fff;
+        border: 2px solid #bbb;
+        border-radius: 8px;
+        color: #333;
         font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+
+        &:hover {
+          border-color: $primary;
+          color: $primary;
+          box-shadow: 0 2px 8px rgba(16,195,188,0.15);
+        }
+      }
+    }
+  }
+
+  /* ───────── Previous Year Tests ───────── */
+  .pyt-section {
+    margin-bottom: 28px;
+    padding: 28px 32px;
+    background: #dff6ff;
+    border-radius: 16px;
+    border: 2px solid #e0e0e0;
+    border-top: 4px solid #2563eb;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+
+    .pyt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+
+      h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #222;
+        margin: 0;
       }
     }
 
-    .tests-container {
-      .tests-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    .pyt-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+
+      .filter-dropdown {
+        position: relative;
+        flex: 1 1 140px;
+        min-width: 130px;
+        max-width: 220px;
+
+        select {
+          width: 100%;
+          padding: 12px 36px 12px 16px;
+          font-size: 1rem;
+          font-weight: 600;
+          color: #333;
+          background: #fff;
+          border: 2px solid #ccc;
+          border-radius: 10px;
+          appearance: none;
+          cursor: pointer;
+          transition: border-color 0.2s ease;
+
+          &:focus {
+            outline: none;
+            border-color: $primary;
+            box-shadow: 0 0 0 3px rgba(16,195,188,0.15);
+          }
+
+          &:disabled {
+            background: #f5f5f5;
+            color: #aaa;
+            cursor: not-allowed;
+          }
+        }
+
+        .dropdown-arrow {
+          position: absolute;
+          right: 14px;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 0.7rem;
+          color: #666;
+          pointer-events: none;
+        }
       }
+    }
+
+    .pyt-results {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow: hidden;
+
+      .pyt-test-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        background: #f9fafb;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: $primary;
+          box-shadow: 0 4px 14px rgba(16,195,188,0.12);
+        }
+
+        .pyt-test-info {
+          h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #222;
+            margin: 0 0 4px 0;
+          }
+
+          .pyt-meta {
+            font-size: 0.9rem;
+            color: #777;
+          }
+        }
+
+        .pyt-start-btn {
+          padding: 10px 24px;
+          background: $primary;
+          color: #fff;
+          border: none;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 0.95rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: darken($primary, 8%);
+            box-shadow: 0 4px 12px rgba(16,195,188,0.35);
+            transform: translateY(-1px);
+          }
+        }
+      }
+    }
+
+    .pyt-empty {
+      margin-top: 20px;
+      text-align: center;
+      color: #999;
+      font-size: 1rem;
+    }
+  }
+
+  /* ───────── Make-your-own Test ───────── */
+  .custom-test-section {
+    padding: 28px 32px;
+    background: linear-gradient(135deg, #0d9488 0%, #10c3bc 50%, #0d9488 100%);
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 6px 25px rgba(13, 148, 136, 0.25);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .custom-section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 6px 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    .custom-section-desc {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.5;
+      margin: 0 0 18px 0;
+      max-width: 700px;
+    }
+
+    .custom-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+
+      .custom-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 18px;
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 24px;
+        color: #fff;
+        font-size: 0.92rem;
+        font-weight: 600;
+
+        .tag-icon {
+          font-size: 1rem;
+        }
+      }
+    }
+
+    .custom-build-btn {
+      padding: 12px 28px;
+      background: #fff;
+      color: #0d9488;
+      border: none;
+      border-radius: 24px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #f0faf9;
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+    }
+  }
+
+  /* ───────── Responsive ───────── */
+  @media (max-width: 768px) {
+    .cbt-portal-header {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 20px;
+      gap: 16px;
+
+      .header-color-bar { display: none; }
+
+      .header-left .header-portal-title { font-size: 1.8rem; }
+
+      .header-right {
+        align-items: flex-start;
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+    }
+
+    .pyt-section {
+      padding: 20px;
+
+      .pyt-header h2 { font-size: 1.4rem; }
+
+      .pyt-filters {
+        gap: 10px;
+        .filter-dropdown { max-width: 100%; }
+      }
+    }
+
+    .custom-test-section {
+      padding: 20px;
+      .custom-section-title { font-size: 1.4rem; }
     }
   }
 
   @media (max-width: 480px) {
-    padding: 15px;
-    
+    padding: 12px;
+
     .cbt-portal-header {
-      padding: 20px 15px 12px;
-
-      .header-title-section {
-        margin-bottom: 15px;
-        
-        .header-portal-title {
-          font-size: 2rem;
-          margin-bottom: 6px;
-        }
-        
-        .header-portal-subtitle {
-          font-size: 1rem;
-        }
-      }
-
-      .header-left {
-        .user-name {
-          font-size: 1.1rem;
-        }
-      }
-
-      .update-details-button,
-      .dashboard-button {
-        padding: 8px 12px;
-        font-size: 0.85rem;
+      padding: 16px;
+      .header-left .header-portal-title { font-size: 1.5rem; }
+      .header-right {
+        .update-details-button,
+        .dashboard-button { font-size: 0.82rem; padding: 6px 12px; }
       }
     }
-    
-    .tests-container {
-      .tests-grid {
-        grid-template-columns: 1fr;
+
+    .pyt-section {
+      padding: 16px;
+      .pyt-header h2 { font-size: 1.2rem; }
+      .pyt-filters { flex-direction: column; .filter-dropdown { max-width: 100%; } }
+
+      .pyt-results .pyt-test-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
       }
+    }
+
+    .custom-test-section {
+      padding: 16px;
+      .custom-tags { gap: 6px; .custom-tag { font-size: 0.82rem; padding: 6px 12px; } }
     }
   }
 
