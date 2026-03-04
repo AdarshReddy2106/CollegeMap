@@ -12,7 +12,7 @@ const bannerSlides = [
   },
   {
     id: 2,
-    image: '/banner_2.png',
+    image: '/banner_3.png',
     alt: 'CollegeMap - JEE Mock Tests & Resources',
     link: '/resources',
   },
@@ -34,17 +34,17 @@ const HomeBanner = () => {
   const settings = {
     dots: true,
     infinite: true,
-    speed: 600,
+    speed: 300,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 4000,
+    autoplaySpeed: 3000,
     pauseOnHover: true,
     arrows: true,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
     fade: true,
-    cssEase: 'ease-in-out',
+    cssEase: 'linear',
     dotsClass: 'slick-dots banner-dots',
   };
 
@@ -58,7 +58,7 @@ const HomeBanner = () => {
                 src={slide.image}
                 alt={slide.alt}
                 className="banner-image"
-                loading={slide.id === 1 ? 'eager' : 'lazy'}
+                loading="eager"
               />
             </a>
           </div>
