@@ -334,6 +334,10 @@
       padding: 20px;
       .custom-section-title { font-size: 1.4rem; }
     }
+
+    .guidelines-modal-content.nta-official {
+      .nta-content { padding: 20px 24px 30px; }
+    }
   }
 
   @media (max-width: 480px) {
@@ -351,7 +355,16 @@
     .pyt-section {
       padding: 16px;
       .pyt-header h2 { font-size: 1.2rem; }
-      .pyt-filters { flex-direction: column; .filter-dropdown { max-width: 100%; } }
+      .pyt-filters {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        gap: 10px;
+        .filter-dropdown {
+          flex: 0 0 auto;
+          width: 100%;
+          max-width: 100%;
+        }
+      }
 
       .pyt-results .pyt-test-card {
         flex-direction: column;
@@ -363,6 +376,16 @@
     .custom-test-section {
       padding: 16px;
       .custom-tags { gap: 6px; .custom-tag { font-size: 0.82rem; padding: 6px 12px; } }
+    }
+
+    .guidelines-modal-content.nta-official {
+      .nta-header { padding: 12px 16px; h1 { font-size: 1.1rem; } }
+      .nta-content { padding: 14px 16px 20px; }
+      .proceed-button-container .proceed-btn { padding: 12px 30px; }
+    }
+
+    .pyt-section .pyt-results .pyt-test-card .pyt-start-btn {
+      width: 100%;
     }
   }
 

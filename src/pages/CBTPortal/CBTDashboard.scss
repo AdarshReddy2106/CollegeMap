@@ -903,5 +903,67 @@
         }
       }
     }
+
+    .analysis-modal {
+      margin: 0.5rem;
+      max-height: 95vh;
+
+      .analysis-header {
+        padding: 1.25rem 1.5rem;
+        h2 { font-size: 1.4rem; }
+      }
+
+      .analysis-content {
+        padding: 1rem;
+
+        .overall-stats {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.75rem;
+        }
+
+        .detailed-stats {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.75rem;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+
+    .dashboard-header {
+      padding: 1.25rem;
+
+      .header-content {
+        h1 { font-size: 1.5rem; }
+        p { font-size: 0.9rem; }
+      }
+    }
+
+    .stats-summary {
+      gap: 1rem;
+
+      .stat-card {
+        padding: 1.25rem;
+        .stat-number { font-size: 2rem; }
+      }
+    }
+
+    .test-history-list {
+      padding: 1rem;
+      h2 { font-size: 1.4rem; }
+    }
+
+    .analysis-modal {
+      margin: 0.25rem;
+
+      .analysis-content {
+        .overall-stats,
+        .detailed-stats {
+          grid-template-columns: 1fr;
+        }
+      }
+    }
   }
 }

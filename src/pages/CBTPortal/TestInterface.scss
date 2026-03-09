@@ -804,26 +804,26 @@
 
   @media (max-width: 768px) {
     .jee-test-header {
-      .header-top {
-        flex-direction: column;
+      .header-top-bar {
+        padding: 10px 14px;
         gap: 10px;
-        padding: 10px 15px;
 
-        .candidate-info {
-          margin: 10px 0;
-          order: 2;
-        }
+        .candidate-profile {
+          .profile-image .avatar-placeholder {
+            width: 52px;
+            height: 52px;
+            font-size: 1.6rem;
+          }
 
-        .timer-section {
-          order: 1;
-          text-align: center;
-          width: 100%;
-        }
+          .candidate-details .detail-row {
+            font-size: 0.82rem;
+            flex-wrap: wrap;
 
-        .logo-section {
-          order: 0;
-          text-align: center;
-          width: 100%;
+            .detail-label {
+              min-width: 88px;
+              font-size: 0.78rem;
+            }
+          }
         }
       }
 
@@ -833,17 +833,9 @@
 
         .subject-tab {
           flex: 1;
-          min-width: 100px;
-          padding: 10px 15px;
+          min-width: 80px;
+          padding: 10px 12px;
           font-size: 0.85rem;
-        }
-
-        .language-selector {
-          width: 100%;
-          margin-left: 0;
-          justify-content: center;
-          padding: 10px 0;
-          border-top: 1px solid #ddd;
         }
       }
     }
@@ -876,7 +868,55 @@
   }
 
   @media (max-width: 480px) {
+    .jee-test-header {
+      .header-top-bar {
+        padding: 8px 10px;
+
+        .candidate-profile {
+          gap: 0;
+
+          .profile-image {
+            display: none;
+          }
+
+          .candidate-details .detail-row {
+            font-size: 0.72rem;
+
+            .detail-label {
+              min-width: 72px;
+            }
+          }
+        }
+
+        .language-selector-top .language-dropdown {
+          font-size: 0.78rem;
+          padding: 4px 8px;
+        }
+      }
+
+      .header-tabs .subject-tab {
+        min-width: 60px;
+        padding: 8px 10px;
+        font-size: 0.78rem;
+      }
+    }
+
     .jee-test-body {
+      .jee-question-panel {
+        .question-content-area {
+          padding: 12px 14px;
+
+          .integer-answer-input .integer-field {
+            max-width: 100%;
+          }
+        }
+
+        .mobile-navigation .mobile-nav-btn {
+          padding: 10px 6px;
+          font-size: 0.85rem;
+        }
+      }
+
       .jee-question-navigator {
         .navigator-content {
           .question-grid {

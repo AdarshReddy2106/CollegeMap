@@ -28,6 +28,7 @@ import CustomTestBuilder from "./pages/CBTPortal/CustomTestBuilder";
 import ProfileSetup from "./pages/ProfileSetup/ProfileSetup";
 import CBTDashboard from "./pages/CBTPortal/CBTDashboard";
 import HomePage from "./pages/Home/HomePage";
+import PYQPage from "./pages/PYQPage/PYQPage";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -82,7 +83,8 @@ function App() {
           <Route path="/Terms-and-Conditions" element={<TermsAndConditions />} />
           <Route path="/ComingSoon" element={<ComingSoon />} />
           <Route path="/seminar" element={<SeminarPage />} />
-          <Route path="/resources" element={<ResourcesPage />} /> {/* Add the new route here */}
+          <Route path="/resources" element={<ResourcesPage />} />
+          <Route path="/pyq" element={<PYQPage />} />
           <Route path="/news" element={<NewsPage />} />
           <Route path="/branch-comparison" element={<BranchComparison />} />
           <Route path="/cbt-portal" element={<CBTPortal />} />
