@@ -188,3 +188,44 @@ export const deleteTestResult = async (resultId) => {
     return false;
   }
 };
+
+/**
+ * Submit a question report to Supabase
+ * @param {Object} reportData - Report data
+ * @returns {Promise<Object|null>} Saved report or null
+ */
+export const reportQuestion = async (reportData) => {
+  if (!supabase) {
+    console.error('❌ Supabase client not initialized');
+    return null;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('question_reports')
+      .insert({
+        test_id: reportData.testId,
+        test_title: reportData.testTitle || null,
+        question_id: reportData.questionId,
+        question_number: reportData.questionNumber || null,
+        subject: reportData.subject || null,
+        reason: reportData.reason,
+        description: reportData.description || null,
+        user_email: reportData.userEmail ? reportData.userEmail.toLowerCase() : null,
+        reported_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Supabase error reporting question:', error);
+      throw error;
+    }
+
+    console.log('✅ Question report submitted:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Error submitting question report:', error);
+    return null;
+  }
+};

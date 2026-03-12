@@ -6,7 +6,7 @@ import { useUserProfile } from '../../context/UserProfileContext';
 import './TestInterface.scss';
 import { loadImageBasedTest, resolveImageUrl } from './testLoader';
 import TestResults from './TestResults';
-import { saveTestResult, getUserProfile } from '../../services/supabaseService';
+import { saveTestResult, getUserProfile, reportQuestion } from '../../services/supabaseService';
 // PDF feature disabled - dormant
 // import { downloadTestAnalysisPDF } from './pdfGenerator';
 
@@ -34,6 +34,11 @@ const TestInterface = () => {
   const [imageUrls, setImageUrls] = useState({}); // Cache resolved image URLs
   const [loadingImages, setLoadingImages] = useState(false);
   const [questionZoom, setQuestionZoom] = useState(100); // Zoom level for question (80-200%)
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [reportDescription, setReportDescription] = useState('');
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [reportSubmitted, setReportSubmitted] = useState(false);
   const imageErrorAttempts = useRef({}); // Track error attempts per question to prevent infinite loops
   const timerRef = useRef(null);
   const questionTimerRef = useRef(null);
@@ -982,6 +987,35 @@ const TestInterface = () => {
     handleNextQuestion();
   };
 
+  const handleOpenReportModal = () => {
+    setReportReason('');
+    setReportDescription('');
+    setReportSubmitted(false);
+    setShowReportModal(true);
+  };
+
+  const handleCloseReportModal = () => {
+    setShowReportModal(false);
+  };
+
+  const handleSubmitReport = async () => {
+    if (!reportReason) return;
+    setReportSubmitting(true);
+    const email = localStorage.getItem('userEmail') || userProfile?.email || null;
+    await reportQuestion({
+      testId: testData?.paperId || testData?.testId || '',
+      testTitle: testData?.paperTitle || testData?.title || '',
+      questionId: currentQuestionData?.questionId || '',
+      questionNumber: currentQuestionData?.questionNumber || null,
+      subject: currentSectionData?.sectionName || null,
+      reason: reportReason,
+      description: reportDescription,
+      userEmail: email,
+    });
+    setReportSubmitting(false);
+    setReportSubmitted(true);
+  };
+
   const handleSubmit = () => {
     setShowSubmitConfirm(true);
   };
@@ -1304,6 +1338,14 @@ const TestInterface = () => {
                 Reset
               </button>
             </div>
+            <button
+              type="button"
+              className="report-question-btn"
+              onClick={handleOpenReportModal}
+              title="Report an issue with this question"
+            >
+              ⚑ Report
+            </button>
           </div>
 
           <div
@@ -1607,6 +1649,73 @@ const TestInterface = () => {
           <Calculator 
             onClose={() => setShowCalculator(false)}
           />
+        )}
+
+        {showReportModal && (
+          <motion.div
+            className="submit-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleCloseReportModal}
+          >
+            <motion.div
+              className="submit-modal report-modal"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {reportSubmitted ? (
+                <>
+                  <div className="report-success-icon">✅</div>
+                  <h3>Report Submitted</h3>
+                  <p>Thank you! Your report for Question {currentQuestionData?.questionNumber} has been submitted. We'll review it shortly.</p>
+                  <div className="modal-actions">
+                    <button className="confirm-btn" onClick={handleCloseReportModal}>Close</button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3>⚑ Report Question {currentQuestionData?.questionNumber}</h3>
+                  <p>Please describe the issue with this question so we can investigate and fix it.</p>
+                  <div className="report-form">
+                    <label className="report-label">Reason <span className="required">*</span></label>
+                    <select
+                      className="report-select"
+                      value={reportReason}
+                      onChange={(e) => setReportReason(e.target.value)}
+                    >
+                      <option value="">-- Select a reason --</option>
+                      <option value="Image not loading">Image not loading</option>
+                      <option value="Question is blurry/unclear">Question is blurry / unclear</option>
+                      <option value="Question is cut off">Question is cut off</option>
+                      <option value="Duplicate question">Duplicate question</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <label className="report-label">Additional details (optional)</label>
+                    <textarea
+                      className="report-textarea"
+                      rows={3}
+                      placeholder="Describe the issue..."
+                      value={reportDescription}
+                      onChange={(e) => setReportDescription(e.target.value)}
+                    />
+                  </div>
+                  <div className="modal-actions">
+                    <button className="cancel-btn" onClick={handleCloseReportModal} disabled={reportSubmitting}>Cancel</button>
+                    <button
+                      className="confirm-btn report-submit-btn"
+                      onClick={handleSubmitReport}
+                      disabled={!reportReason || reportSubmitting}
+                    >
+                      {reportSubmitting ? 'Submitting...' : 'Submit Report'}
+                    </button>
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

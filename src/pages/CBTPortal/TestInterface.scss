@@ -256,6 +256,25 @@
             }
           }
         }
+
+        .report-question-btn {
+          margin-left: auto;
+          padding: 6px 14px;
+          border: 1.5px solid #e53935;
+          border-radius: 4px;
+          background: transparent;
+          color: #e53935;
+          font-size: 0.8rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          white-space: nowrap;
+
+          &:hover {
+            background: #e53935;
+            color: white;
+          }
+        }
       }
 
       .question-content-area {
@@ -744,6 +763,15 @@
           &:hover {
             background: #da190b;
           }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        }
+
+        &.report-submit-btn {
+          background: #e53935;
         }
 
         &.enter-fullscreen-btn {
@@ -761,6 +789,67 @@
           &:active {
             transform: translateY(0);
           }
+        }
+      }
+    }
+  }
+
+  .report-modal {
+    max-width: 480px;
+
+    .report-success-icon {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .report-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 15px;
+
+      .report-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #444;
+
+        .required {
+          color: #e53935;
+          margin-left: 2px;
+        }
+      }
+
+      .report-select {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1.5px solid #ccc;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        color: #333;
+        background: white;
+        cursor: pointer;
+        outline: none;
+
+        &:focus {
+          border-color: #e53935;
+        }
+      }
+
+      .report-textarea {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1.5px solid #ccc;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        color: #333;
+        resize: vertical;
+        outline: none;
+        font-family: inherit;
+        box-sizing: border-box;
+
+        &:focus {
+          border-color: #e53935;
         }
       }
     }

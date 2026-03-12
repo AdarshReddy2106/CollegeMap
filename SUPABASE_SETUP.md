@@ -95,6 +95,48 @@ to anon
 using (true);
 ```
 
+### 3. question_reports table (NEW — run this in Supabase SQL editor)
+```sql
+-- Create question_reports table
+create table if not exists public.question_reports (
+  id bigserial primary key,
+  test_id text not null,
+  test_title text,
+  question_id text not null,
+  question_number integer,
+  subject text,
+  reason text not null,
+  description text,
+  user_email text,
+  reported_at timestamptz not null default now(),
+  created_at timestamptz not null default now()
+);
+
+-- Index for admin queries
+create index if not exists idx_question_reports_test_id
+on public.question_reports(test_id);
+
+create index if not exists idx_question_reports_reported_at
+on public.question_reports(reported_at desc);
+
+-- Enable RLS
+alter table public.question_reports enable row level security;
+
+-- Allow anyone to insert a report
+create policy "allow anon insert question reports"
+on public.question_reports
+for insert
+to anon
+with check (true);
+
+-- Allow anyone to read reports (restrict to service_role in production if desired)
+create policy "allow anon select question reports"
+on public.question_reports
+for select
+to anon
+using (true);
+```
+
 ## Implementation Summary
 
 1. **User Profile Flow:**

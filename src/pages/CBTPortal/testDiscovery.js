@@ -40,6 +40,13 @@ export const discoverTests = async () => {
       'jee-main-2026-24th-jan-shift-2',
       'jee-main-2026-28th-jan-shift-1',
       'jee-main-2026-28th-jan-shift-2',
+      // 2025 April tests
+      'jee-main-2025-7th-apr-shift-1',
+      'jee-main-2025-7th-apr-shift-2',
+      'jee-main-2025-8th-apr-shift-2',
+      // 2025 January tests
+      'jee-main-2025-24th-jan-shift-1',
+      'jee-main-2025-23rd-jan-shift-2',
       // 2023, 2022
       'jee-main-2023-25th-jan-shift-2',
       'jee-main-2022-27th-jan-shift-1'
