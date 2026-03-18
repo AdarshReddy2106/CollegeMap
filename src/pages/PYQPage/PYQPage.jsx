@@ -227,7 +227,7 @@ const PYQPage = () => {
                       </button>
                     )}
 
-                    {paper.answerUrl ? (
+                    {paper.answerUrl && (
                       <button
                         className="pyq-btn pyq-btn--answer"
                         onClick={() => openModal(`${cardLabel(paper)} — Answer Key`, paper.answerUrl)}
@@ -236,10 +236,6 @@ const PYQPage = () => {
                           <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                         </svg>
                         Answer Key
-                      </button>
-                    ) : (
-                      <button className="pyq-btn pyq-btn--disabled" disabled>
-                        Key Coming Soon
                       </button>
                     )}
                   </div>

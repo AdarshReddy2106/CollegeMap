@@ -539,5 +539,18 @@ export const resourcesData = [
   type: "Cheatsheets",
   subject: "Physics",
   downloadUrl: "https://drive.google.com/file/d/1L9PYe_OD41PShyQOnmc_Fq57WQ-QEnw8/view?usp=drive_link",
+},{
+  id: 78,
+  title: "Chemical kinetics",
+  type: "Cheatsheets",
+  subject: "Chemistry",
+  downloadUrl: "https://drive.google.com/file/d/15vgRnE2B6PL2v0-yk3QwlZbhgI43R9bR/view?usp=drive_link",
+},
+{
+  id: 79,
+  title: "Top Class 10 Foundation Guide",
+  type: "JEE Busters",
+  subject: "All",
+  downloadUrl: "https://drive.google.com/file/d/10Qn4J7BLikv_DOEKEpuNzWVZZaeSCel0/view?usp=drive_link",
 },
 ];
