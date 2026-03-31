@@ -1,5 +1,10 @@
 import React from "react";
 import "./StudyWithIITians.css";
+import thumbnailAsk from "../../assets/Thumbnails/Ask me anything.png";
+import thumbnailLive from "../../assets/Thumbnails/Live Slef Studies.png";
+import thumbnailMaxx from "../../assets/Thumbnails/MAXX.png";
+import thumbnailPaper from "../../assets/Thumbnails/2.png";
+import thumbnailTwo from "../../assets/Thumbnails/1.png";
 
 const EXTERNAL_LINKS = {
 	youtube: "https://www.youtube.com/@CollegeMap-in?sub_confirmation=1",
@@ -21,34 +26,30 @@ const highFocusPoints = [
 	"Support and guidance by IITians",
 ];
 
-const youtubeSessions = [
+const youtubeThumbnails = [
 	{
-		title: "JEE Main Strategy Sprint",
-		meta: "High-impact revision plan",
+		src: thumbnailAsk,
+		alt: "YouTube session thumbnail: Ask me anything",
 	},
 	{
-		title: "Physics Score Booster",
-		meta: "Concept-first solving",
+		src: thumbnailLive,
+		alt: "YouTube session thumbnail: Live self studies",
 	},
 	{
-		title: "Maths Problem Clinic",
-		meta: "Speed with accuracy",
+		src: thumbnailMaxx,
+		alt: "YouTube session thumbnail: Score max in JEE",
 	},
 	{
-		title: "Chemistry in 45 Minutes",
-		meta: "Memory tricks by IITians",
+		src: thumbnailPaper,
+		alt: "YouTube session thumbnail: Paper series launch",
 	},
 	{
-		title: "Mock Test Analysis Live",
-		meta: "Learn from ranking patterns",
-	},
-	{
-		title: "Doubt Solving Marathon",
-		meta: "Targeted topic cleanup",
+		src: thumbnailTwo,
+		alt: "YouTube session thumbnail: JEE 2026 prep",
 	},
 ];
 
-const marqueeSessions = [...youtubeSessions, ...youtubeSessions];
+const marqueeSessions = [...youtubeThumbnails, ...youtubeThumbnails];
 
 const WhatsAppIcon = () => (
 	<svg
@@ -148,15 +149,18 @@ const StudyWithIITians = () => {
 							<div className="swi-marquee-track">
 								{marqueeSessions.map((session, index) => (
 									<a
-										key={`${session.title}-${index}`}
+										key={`${session.src}-${index}`}
 										className="swi-thumbnail-card"
 										href={EXTERNAL_LINKS.youtube}
 										target="_blank"
 										rel="noopener noreferrer"
 									>
-										<span className="swi-thumbnail-tag">YouTube Live</span>
-										<h3>{session.title}</h3>
-										<p>{session.meta}</p>
+										<img
+											className="swi-thumbnail-image"
+											src={session.src}
+											alt={session.alt}
+											loading="lazy"
+										/>
 									</a>
 								))}
 							</div>

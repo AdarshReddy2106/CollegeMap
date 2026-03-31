@@ -639,6 +639,23 @@ section {
   border: 2px solid var(--warm-gray, #f0ebe5);
 }
 
+.gmeet-media {
+  background: linear-gradient(135deg, #e5f6ff 0%, #f0f9fa 100%);
+  height: 200px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gmeet-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .gmeet-placeholder {
   background: linear-gradient(135deg, #e5f6ff 0%, #f0f9fa 100%);
   padding: 3rem 2rem;

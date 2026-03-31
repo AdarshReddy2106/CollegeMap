@@ -1,4 +1,7 @@
 import React from 'react';
+import gmeet1 from '../../assets/GMeetphotos/1.png';
+import gmeet2 from '../../assets/GMeetphotos/2.png';
+import gmeet3 from '../../assets/GMeetphotos/5.png';
 
 const testimonials = [
   {
@@ -15,6 +18,27 @@ const testimonials = [
     name: 'Arjun K.',
     batch: 'JEE 2027',
     text: '"Starting early with the community gave me a huge head start. The mock tests and resources are top quality."',
+  },
+];
+
+const gmeetSessions = [
+  {
+    image: gmeet3,
+    alt: "Live Google Meet doubt session",
+    title: "Physics Doubt Clearing",
+    detail: "JEE 2026 Batch",
+  },
+  {
+    image: gmeet1,
+    alt: "Interactive Google Meet strategy session",
+    title: "JEE Strategy",
+    detail: "Discussion with IITians",
+  },
+  {
+    image: gmeet2,
+    alt: "Google Meet mock analysis session",
+    title: "Mock Test Analysis",
+    detail: "Improvement Tips",
   },
 ];
 
@@ -50,27 +74,19 @@ const JoinFamily = () => {
         <div className="gmeet-evidence">
           <h3 className="evidence-heading">Interactive <strong>Google Meet</strong> Sessions</h3>
           <div className="gmeet-gallery">
-            <div className="gmeet-card">
-              <div className="gmeet-placeholder">
-                <span className="gmeet-icon">🎥</span>
-                <span>Live Doubt Session</span>
+            {gmeetSessions.map((session) => (
+              <div className="gmeet-card" key={session.title}>
+                <div className="gmeet-media">
+                  <img
+                    className="gmeet-image"
+                    src={session.image}
+                    alt={session.alt}
+                    loading="lazy"
+                  />
+                </div>
+                <p className="gmeet-caption"><strong>{session.title}</strong>{session.detail ? ` — ${session.detail}` : ""}</p>
               </div>
-              <p className="gmeet-caption"><strong>Physics</strong> Doubt Clearing — JEE 2026 Batch</p>
-            </div>
-            <div className="gmeet-card">
-              <div className="gmeet-placeholder">
-                <span className="gmeet-icon">📢</span>
-                <span>Strategy Session</span>
-              </div>
-              <p className="gmeet-caption"><strong>JEE Strategy</strong> Discussion with IITians</p>
-            </div>
-            <div className="gmeet-card">
-              <div className="gmeet-placeholder">
-                <span className="gmeet-icon">✍️</span>
-                <span>Mock Analysis</span>
-              </div>
-              <p className="gmeet-caption"><strong>Mock Test Analysis</strong> &amp; Improvement Tips</p>
-            </div>
+            ))}
           </div>
         </div>
 
