@@ -55,15 +55,19 @@ const Navbar = () => {
                     {/* <li><Link to="/HowItWorks" onClick={() => setIsMenuOpen(false)}>How It Works?</Link></li>
                     <li><Link to="/AboutUs" onClick={() => setIsMenuOpen(false)}>About Us</Link></li> */}
                      {/* <li><Link to="/AboutIITs" onClick={() => setIsMenuOpen(false)}>About IITs</Link></li> */}
-                    <li><Link to="/branch-comparison" onClick={() => setIsMenuOpen(false)}>College Finder</Link></li> 
-                    <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>Study with IITians</Link></li>
                     <li><Link to="/resources" onClick={() => setIsMenuOpen(false)}>Top Resources</Link></li>
                     <li><Link to="/cbt-portal" onClick={() => setIsMenuOpen(false)}>Exam Portal</Link></li>
+                    <li><Link to="/pyq" onClick={() => setIsMenuOpen(false)}>PYQ</Link></li>
+                    <li><Link to="/branch-comparison" onClick={() => setIsMenuOpen(false)}>College Finder</Link></li>
+                    <li><Link to="/college-predictor" onClick={() => setIsMenuOpen(false)}>College Predictor</Link></li>
+                    <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>Study with IITians</Link></li>
+                    
+                    
                     {/* <li><Link to="https://collegemap1.wordpress.com/" onClick={() => setIsMenuOpen(false)}>IIT News</Link></li> */}
                     {/* <li><Link to="https://wa.link/lo05a1" onClick={() => setIsMenuOpen(false)}>Talk to an IITian</Link></li> */}
-                    <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>IIT News</Link></li>
+                    {/* <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>IIT News</Link></li> */}
                     {/* <li><Link to="/news" onClick={() => setIsMenuOpen(false)}>News</Link></li> */}
-                    <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}> Energy Batch</Link></li>
+                    <li><Link to="/energy-batch" onClick={() => setIsMenuOpen(false)}>Energy Batch</Link></li>
                     {/* <li><Link to="/Contact-Us" onClick={() => setIsMenuOpen(false)}>Contact Us</Link></li> */}
                     {/* <li><Link to="/seminar" onClick={() => setIsMenuOpen(false)}>Seminar</Link></li> */}
 

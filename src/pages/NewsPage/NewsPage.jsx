@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './NewsPage.scss';
+import { collegemapApiUrl } from '../../collegemapApiOrigin';
 
 const NewsPage = () => {
   const [updates, setUpdates] = useState([]);
@@ -13,9 +14,7 @@ const NewsPage = () => {
   const fetchUpdates = async () => {
     try {
       setLoading(true);
-      const API_URL = 'https://collegemapseminarpage.vercel.app'; // Points to production
-
-      const response = await fetch(`${API_URL}/api/nta-updates`);
+      const response = await fetch(collegemapApiUrl('/api/nta-updates'));
       const data = await response.json();
       
       if (data.success) {

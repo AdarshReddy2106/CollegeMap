@@ -9,7 +9,7 @@ const WhatsAppIcon = () => (
 const JEEBatches = () => (
   <section className="jee-batches">
     <div className="container">
-      <h2 className="section-title">JEE Student Batches</h2>
+      <h2 className="section-title">JEE Student Communities</h2>
       <p className="section-subtitle">Join a <strong>free WhatsApp community</strong> of aspirants &amp; IITian mentors for your target year</p>
       <div className="batches-grid">
         

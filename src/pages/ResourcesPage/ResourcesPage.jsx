@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import './ResourcesPage.scss';
 import { resourcesData } from './ResourcesData';
+import { collegemapApiUrl } from '../../collegemapApiOrigin';
 
 const ResourcesPage = () => {
   const location = useLocation();
@@ -11,8 +12,7 @@ const ResourcesPage = () => {
   const [activeSubject, setActiveSubject] = useState('Physics');
   const [activeType, setActiveType] = useState('JEE Busters');
   const [searchQuery, setSearchQuery] = useState('');
-  const [showBooks, setShowBooks] = useState(false);
-  const [booksSelected, setBooksSelected] = useState(false);
+  const [selectedBookSource, setSelectedBookSource] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
   const [resourceAnalytics, setResourceAnalytics] = useState(null);
@@ -48,17 +48,14 @@ const ResourcesPage = () => {
   const trackResourceEvent = async (resource, actionType) => {
     try {
       // FIXED: Better environment detection
-      const isDevelopment = window.location.hostname === 'localhost' || 
-                           window.location.hostname === '127.0.0.1';
-      
-      const API_URL = isDevelopment 
-        ? 'http://localhost:4000' 
-        : 'https://collegemapseminarpage.vercel.app';
-        
+      const isDevelopment = window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1';
+
+      const trackUrl = collegemapApiUrl('/api/track-resource');
       console.log(`🔍 Environment: ${isDevelopment ? 'Development' : 'Production'}`);
-      console.log(`📡 API URL: ${API_URL}/api/track-resource`);
-        
-      const response = await fetch(`${API_URL}/api/track-resource`, {
+      console.log(`📡 API URL: ${trackUrl}`);
+
+      const response = await fetch(trackUrl, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -102,9 +99,13 @@ const ResourcesPage = () => {
       result = result.filter(resource => resource.type === activeType);
     }
     
-    // For Books type, only show if books category is selected
-    if (activeType === 'Books' && !booksSelected) {
-      result = [];
+    // For Books type, only show if a book source is selected
+    if (activeType === 'Books') {
+      if (!selectedBookSource) {
+        result = [];
+      } else {
+        result = result.filter(resource => resource.bookSource === selectedBookSource);
+      }
     }
     
     // Filter by search query
@@ -119,39 +120,38 @@ const ResourcesPage = () => {
     result = [...result].sort((a, b) => a.title.localeCompare(b.title));
     
     setFilteredResources(result);
-    
-    // Show books selection when Books type is active
-    setShowBooks(activeType === 'Books' && !booksSelected);
-  }, [resources, activeSubject, activeType, searchQuery, booksSelected]);
+  }, [resources, activeSubject, activeType, searchQuery, selectedBookSource]);
 
   // Get unique subjects and types for filters
   const subjects = ['All', ...new Set(resources.map(item => item.subject).filter(s => s !== 'All'))];
   const types = ['JEE Busters', 'Cheatsheets', 'Practice', 'Books'];
+  const bookSources = [...new Set(
+    resources
+      .filter(item => item.type === 'Books' && (activeSubject === 'All' || item.subject === activeSubject))
+      .map(item => item.bookSource)
+      .filter(Boolean)
+  )];
+  const showBooks = activeType === 'Books' && !selectedBookSource && bookSources.length > 0;
 
   const handleTypeChange = (type) => {
     setActiveType(type);
-    setBooksSelected(false); // Reset books selection when type changes
+    if (type !== 'Books') {
+      setSelectedBookSource(null);
+    }
   };
 
-  const handleBooksClick = () => {
-    setBooksSelected(true);
+  const handleBooksClick = (source) => {
+    setSelectedBookSource(source);
   };
 
   const handleBackFromBooks = () => {
-    setBooksSelected(false);
+    setSelectedBookSource(null);
   };
 
   // Fetch analytics for a specific resource
   const fetchResourceAnalytics = async (resourceId) => {
     try {
-      const isDevelopment = window.location.hostname === 'localhost' || 
-                           window.location.hostname === '127.0.0.1';
-      
-      const API_URL = isDevelopment 
-        ? 'http://localhost:4000' 
-        : 'https://collegemapseminarpage.vercel.app';
-        
-      const response = await fetch(`${API_URL}/api/resource-analytics/${resourceId}`, {
+      const response = await fetch(collegemapApiUrl(`/api/resource-analytics/${resourceId}`), {
         method: 'GET',
         headers: { 
           'Content-Type': 'application/json',
@@ -199,32 +199,42 @@ const ResourcesPage = () => {
 
   return (
     <div className="resources-page">
-      <motion.div 
+      <motion.div
         className="resources-header"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1>Our Resources</h1>
-      </motion.div>
-      
-      <elevenlabs-convai agent-id="agent_6001k906ndgzee69c8hjc31kv5fg"></elevenlabs-convai>
-      
-      <div className="search-section">
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search for resources..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <button className="search-button">
-            <svg viewBox="0 0 24 24" width="18" height="18">
-              <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-            </svg>
-          </button>
+        <div className="resources-header-inner">
+          <div className="resources-header-text">
+            <h1>Top Resources</h1>
+            <p className="resources-header-sub">
+              Best recommended resources, curated by IITians
+            </p>
+          </div>
+          <div className="resources-header-search">
+            <div className="search-bar">
+              <input
+                type="search"
+                placeholder="Search for resources..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search resources"
+              />
+              <button type="button" className="search-button" aria-label="Search">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden>
+                  <path
+                    fill="currentColor"
+                    d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      </motion.div>
+
+      <elevenlabs-convai agent-id="agent_6001k906ndgzee69c8hjc31kv5fg"></elevenlabs-convai>
       
       <div className="filter-section">
         <div className="filter-container">
@@ -270,22 +280,25 @@ const ResourcesPage = () => {
       >
         {showBooks ? (
           <div className="books-selection">
-            <motion.div
-              className="books-card"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 300 }}
-              onClick={handleBooksClick}
-            >
-              <div className="books-content">
-                <div className="books-icon">📚</div>
-                <h2>Cengage</h2>
-                <p>Click to view all available books</p>
-              </div>
-            </motion.div>
+            {bookSources.map((source) => (
+              <motion.div
+                className="books-card"
+                key={source}
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                onClick={() => handleBooksClick(source)}
+              >
+                <div className="books-content">
+                  <div className="books-icon">📚</div>
+                  <h2>{source}</h2>
+                  <p>Click to view all available books</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         ) : (
           <>
-            {booksSelected && activeType === 'Books' && (
+            {selectedBookSource && activeType === 'Books' && (
               <div className="back-button-container">
                 <button className="back-button" onClick={handleBackFromBooks}>
                   ←Back

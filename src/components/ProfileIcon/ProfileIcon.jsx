@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUserProfile } from '../../context/UserProfileContext';
+import { collegemapApiUrl } from '../../collegemapApiOrigin';
 import './ProfileIcon.scss';
 
 const ProfileIcon = () => {
@@ -46,7 +47,7 @@ const ProfileIcon = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('https://collegemapseminarpage.vercel.app/api/save-profile', {
+      const response = await fetch(collegemapApiUrl('/api/save-profile'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

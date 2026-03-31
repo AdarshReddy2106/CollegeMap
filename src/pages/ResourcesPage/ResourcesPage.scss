@@ -7,92 +7,101 @@
   color: #333;
   min-height: 100vh;
   
-  // Header section styling
+  // Top banner: title + subtitle (left) and search in darker panel (right)
   .resources-header {
-    text-align: center;
     margin-bottom: 20px;
-    padding: 50px 20px;
+    padding: 0;
     background: linear-gradient(135deg, #0d9488, #10c3bc);
     border-radius: 15px;
     color: white;
-    box-shadow: 0 8px 30px rgba(16, 195, 188, 0.4);
-    
+    box-shadow: 0 8px 30px rgba(16, 195, 188, 0.35);
+    overflow: hidden;
+  }
+
+  .resources-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    padding: 1.75rem 1.75rem 1.75rem 2rem;
+  }
+
+  .resources-header-text {
+    flex: 1;
+    min-width: min(100%, 260px);
+    text-align: left;
+
     h1 {
-      font-size: 3rem;
-      margin-bottom: 15px;
-      font-weight: bold;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      font-size: clamp(1.75rem, 4vw, 2.65rem);
+      margin: 0 0 0.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
   }
-  
-  // Search section styling
-  .search-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 15px;
-    gap: 15px;
-    
+
+  .resources-header-sub {
+    margin: 0;
+    font-size: clamp(0.95rem, 2vw, 1.1rem);
+    font-weight: 500;
+    line-height: 1.45;
+    opacity: 0.95;
+    max-width: 36rem;
+  }
+
+  .resources-header-search {
+    flex: 1 1 280px;
+    max-width: 420px;
+    min-width: 220px;
+    padding: 1rem 1.25rem;
+    margin-left: auto;
+    background: rgba(0, 77, 79, 0.28);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
     .search-bar {
-      flex: 1;
+      width: 100%;
       display: flex;
-      max-width: 600px;
       position: relative;
-      
+
       input {
-        flex: 1;
-        padding: 12px 20px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 1rem;
+        width: 100%;
+        padding: 12px 44px 12px 16px;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.95rem;
         background-color: #fff;
         color: #333;
-        transition: all 0.3s ease;
-        
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+        &::placeholder {
+          color: #9ca3af;
+          font-weight: 400;
+        }
+
         &:focus {
           outline: none;
-          border-color: #10c3bc;
-          box-shadow: 0 0 0 2px rgba(16, 195, 188, 0.2);
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
         }
       }
-      
+
       .search-button {
         position: absolute;
-        right: 10px;
+        right: 8px;
         top: 50%;
         transform: translateY(-50%);
+        padding: 6px;
         background: none;
         border: none;
-        color: #777;
+        color: #6b7280;
         cursor: pointer;
-        
+        line-height: 0;
+        border-radius: 6px;
+
         &:hover {
           color: #10c3bc;
-        }
-      }
-    }
-    
-    .sort-dropdown {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      
-      label {
-        font-size: 0.9rem;
-        color: #666;
-      }
-      
-      select {
-        padding: 8px 12px;
-        border-radius: 6px;
-        border: 1px solid #ddd;
-        background-color: #fff;
-        cursor: pointer;
-        
-        &:focus {
-          outline: none;
-          border-color: #10c3bc;
+          background: rgba(16, 195, 188, 0.08);
         }
       }
     }
@@ -157,9 +166,10 @@
     margin-bottom: 60px;
     
     .books-selection {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      align-items: stretch;
       min-height: auto;
       padding: 40px 0;
       
@@ -172,6 +182,8 @@
         text-align: center;
         transition: all 0.3s ease;
         max-width: 350px;
+        width: 100%;
+        justify-self: center;
         
         .books-content {
           .books-icon {
@@ -482,25 +494,19 @@
 
   // Responsive design
   @media (max-width: 768px) {
-    .resources-header {
-      padding: 30px 15px;
-      
-      h1 {
-        font-size: 2.2rem;
-      }
-    }
-    
-    .search-section {
+    .resources-header-inner {
       flex-direction: column;
       align-items: stretch;
-      
-      .search-bar {
-        max-width: none;
-      }
-      
-      .sort-dropdown {
-        align-self: flex-end;
-      }
+      padding: 1.35rem 1.15rem;
+    }
+
+    .resources-header-text h1 {
+      font-size: 1.85rem;
+    }
+
+    .resources-header-search {
+      max-width: none;
+      margin-left: 0;
     }
     
     .filter-section {

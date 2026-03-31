@@ -4,6 +4,7 @@ export const resourcesData = [
     title: "Mechanics I",
     type: "Books",
     subject: "Physics",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1nu8LUMs8RmT5AKdSHEv-pvMVwIQw4LUl",
   },
   {
@@ -11,6 +12,7 @@ export const resourcesData = [
     title: "Mechanics II",
     type: "Books",
     subject: "Physics",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1RE_hBQogejGMxClAYYw9lQES4klRpAjd",
   },
   {
@@ -18,6 +20,7 @@ export const resourcesData = [
     title: "Magnetism",
     type: "Books",
     subject: "Physics",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1AX-FJxu8EYcoE4LME9dRGZKuI2OWJHZY",
   },
   {
@@ -25,6 +28,7 @@ export const resourcesData = [
     title: "Thermometry",
     type: "Books",
     subject: "Physics",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/17hlNXTFZiNuUGLNNMK6hMlSv-VbBQIcM",
   },
   {
@@ -32,6 +36,7 @@ export const resourcesData = [
     title: "Electrostatics",
     type: "Books",
     subject: "Physics",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1W2YEoENQlhgLe2Ky_M-d2rA1cVc9Dbf6",
   },
   {
@@ -39,6 +44,7 @@ export const resourcesData = [
     title: "Optics",
     type: "Books",
     subject: "Physics",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1muAo9SzSkFPfcjsj3fhJDCveyWul3f8G",
   },
 
@@ -48,6 +54,7 @@ export const resourcesData = [
     title: "Physical Chemistry I",
     type: "Books",
     subject: "Chemistry",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1C00WgC5fPhUFrGmfZ9xo5h_w4sMDahg_",
   },
   {
@@ -55,6 +62,7 @@ export const resourcesData = [
     title: "Physical Chemistry II",
     type: "Books",
     subject: "Chemistry",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1o-Zpun8PFjvr2wAtmRGRb0ixVbr5Oar7",
   },
   {
@@ -62,6 +70,7 @@ export const resourcesData = [
     title: "Inorganic Chemistry I",
     type: "Books",
     subject: "Chemistry",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1D_pdEgTWEFQ0rwJSS-hIgObM51rE9qYe",
   },
   {
@@ -69,6 +78,7 @@ export const resourcesData = [
     title: "Inorganic Chemistry II",
     type: "Books",
     subject: "Chemistry",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1gWFrxlwQ_W-KEheqkCOKVvvb4QKQcoK3",
   },
   {
@@ -76,6 +86,7 @@ export const resourcesData = [
     title: "Organic Chemistry I",
     type: "Books",
     subject: "Chemistry",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1IxXUj5wO2hdx3ID5G8lFDamomGu_KfdJ",
   },
   {
@@ -83,6 +94,7 @@ export const resourcesData = [
     title: "Organic Chemistry II",
     type: "Books",
     subject: "Chemistry",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1fpjU3VWAwOd8O8cVvWNkZPWWcA2cQA72",
   },
 
@@ -92,6 +104,7 @@ export const resourcesData = [
     title: "Trigonometry",
     type: "Books",
     subject: "Mathematics",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1XNLJuPpw-9wQ9MWnnEzJ_4Vfw16J6ZAH",
   },
   
@@ -100,6 +113,7 @@ export const resourcesData = [
     title: "Calculus",
     type: "Books",
     subject: "Mathematics",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1a_wPAXU_Q1fiyVtZFGLFQj3hx_eIomH-",
   },
   
@@ -108,6 +122,7 @@ export const resourcesData = [
     title: "3D Geometry",
     type: "Books",
     subject: "Mathematics",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1LJByflN76lAwqTR02NP9FGaiM9clri5s",
   },
   {
@@ -115,6 +130,7 @@ export const resourcesData = [
     title: "Algebra",
     type: "Books",
     subject: "Mathematics",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1H6j6Ew3A0ntL971RTqpbkaJqsdIwdodG",
   },
   {
@@ -122,6 +138,7 @@ export const resourcesData = [
     title: "Coordinate Geometry",
     type: "Books",
     subject: "Mathematics",
+    bookSource: "Cengage",
     downloadUrl: "https://drive.google.com/drive/folders/1MSVkAlTy-ljQauWc0awJdO1wMf40YT2J",
   },
   // Practice Papers
@@ -552,5 +569,21 @@ export const resourcesData = [
   type: "JEE Busters",
   subject: "All",
   downloadUrl: "https://drive.google.com/file/d/10Qn4J7BLikv_DOEKEpuNzWVZZaeSCel0/view?usp=drive_link",
+},
+{
+  id: 80,
+  title: "OP Tandon Physical Chemistry",
+  type: "Books",
+  subject: "Chemistry",
+  bookSource: "OP Tandon Physical Chemistry",
+  downloadUrl: "https://drive.google.com/file/d/1L9gm6-MepFelfegUKND4jmIR-x3nH3qD/view?usp=drive_link",
+},
+{
+  id: 81,
+  title: "MS Chouhan Organic Chemistry",
+  type: "Books",
+  subject: "Chemistry",
+  bookSource: "MS Chouhan Organic Chemistry",
+  downloadUrl: "https://drive.google.com/file/d/1DY9t1lkTpBheS1b25r7M-Omh-UfipdF1/view?usp=drive_link",
 },
 ];

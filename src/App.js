@@ -10,6 +10,8 @@ import EnhancedQuestions from "./pages/EnhancedQuestions/EnhancedQuestions";
 import AboutUs from "./pages/AboutUs/AboutUs";
 import AboutIITs from "./pages/AboutIITs/AboutIITs";
 import BranchComparison from "./pages/BranchComparison/BranchComparison";
+import CollegePredictor from "./pages/CollegePredictor/CollegePredictor";
+import CollegePredictorResults from "./pages/CollegePredictor/CollegePredictorResults";
 import ContactUs from "./pages/ContactUs/ContactUs";
 import HowItWorks from "./pages/HowItWorks/HowItWorks";
 import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy";
@@ -29,6 +31,7 @@ import ProfileSetup from "./pages/ProfileSetup/ProfileSetup";
 import CBTDashboard from "./pages/CBTPortal/CBTDashboard";
 import HomePage from "./pages/Home/HomePage";
 import PYQPage from "./pages/PYQPage/PYQPage";
+import EnergyBatch from "./pages/EnergyBatch/EnergyBatch";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -87,6 +90,9 @@ function App() {
           <Route path="/pyq" element={<PYQPage />} />
           <Route path="/news" element={<NewsPage />} />
           <Route path="/branch-comparison" element={<BranchComparison />} />
+          <Route path="/college-predictor" element={<CollegePredictor />} />
+          <Route path="/college-predictor/results" element={<CollegePredictorResults />} />
+          <Route path="/energy-batch" element={<EnergyBatch />} />
           <Route path="/cbt-portal" element={<CBTPortal />} />
           <Route path="/cbt-portal/custom-test" element={<CustomTestBuilder />} />
           <Route path="/profile-setup" element={<ProfileSetup />} />

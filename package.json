@@ -46,8 +46,15 @@
     "web-vitals": "^2.1.4",
     "xlsx": "^0.18.5"
   },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "concurrently -n api,web -c cyan,magenta \"npm run start:api\" \"npm run start:web\"",
+    "start:web": "react-scripts start",
+    "start:api": "cd Backend && node server.js",
+    "start:api:python": "cd \"branchintel 9\" && uvicorn main:app --host 127.0.0.1 --port 8000 --reload",
+    "setup:branchintel": "pip3 install -r \"branchintel 9/requirements.txt\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -58,6 +65,7 @@
       "react-app/jest"
     ]
   },
+  "proxy": "http://127.0.0.1:4000",
   "browserslist": {
     "production": [
       ">0.2%",

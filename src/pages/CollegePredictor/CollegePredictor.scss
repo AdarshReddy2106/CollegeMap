@@ -1,0 +1,184 @@
+@import '../../components/colortheme.scss';
+
+.cp-page {
+  min-height: 78vh;
+  padding: 2rem 1rem 2.5rem;
+  background: linear-gradient(120deg, $accent-light 0%, $background-alt 100%);
+}
+
+.cp-card {
+  max-width: 720px;
+  margin: 0 auto;
+  background: $background;
+  border-radius: 16px;
+  border: 1px solid rgba($primary3, 0.6);
+  box-shadow: 0 6px 24px rgba($primary, 0.08);
+  padding: 1.5rem 1.35rem 1.75rem;
+}
+
+.cp-title {
+  margin: 0 0 1.25rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: $primary;
+  text-align: center;
+}
+
+.cp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cp-row {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.cp-row label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: $dark-green-blue;
+  margin: 0;
+}
+
+.cp-row--top {
+  align-items: start;
+}
+
+.cp-label-span {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: $dark-green-blue;
+  padding-top: 0.35rem;
+}
+
+.cp-seg {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cp-seg-opt {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.875rem;
+  color: $text-dark;
+  cursor: pointer;
+  margin: 0;
+  font-weight: 500;
+}
+
+.cp-seg-opt input {
+  accent-color: $primary;
+}
+
+.cp-branch-field {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.cp-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: $gray;
+  line-height: 1.45;
+}
+
+.cp-branch-list {
+  width: 100%;
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.2rem 0;
+  border: 1px solid $primary3;
+  border-radius: 8px;
+  background: $background;
+  box-sizing: border-box;
+}
+
+.cp-branch-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.55rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.45rem 0.65rem;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+
+  &:hover {
+    background: rgba($primary, 0.05);
+  }
+}
+
+.cp-branch-checkbox {
+  width: 1rem;
+  height: 1rem;
+  min-width: 1rem;
+  margin: 0.2rem 0 0;
+  flex-shrink: 0;
+  accent-color: $primary;
+  cursor: pointer;
+}
+
+.cp-branch-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: $text-dark;
+}
+
+.cp-row > select,
+.cp-row > input {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.9rem;
+  border: 1px solid $primary3;
+  border-radius: 8px;
+  background: $background;
+  color: $text-dark;
+  font-family: inherit;
+}
+
+.cp-btn {
+  margin-top: 0.35rem;
+  padding: 0.55rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  background: $primary;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  align-self: flex-start;
+}
+
+.cp-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.cp-err {
+  color: $error-red;
+  font-size: 0.8125rem;
+  margin: 0.65rem 0 0;
+}
+
+@media (max-width: 480px) {
+  .cp-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}

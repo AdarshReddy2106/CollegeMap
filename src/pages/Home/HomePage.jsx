@@ -17,9 +17,9 @@ const HomePage = () => {
       <TrustedPlatform />
       <HomeHighlights />
       <JEEBatches />
+      <JoinFamily />
       <StudyResources />
       <Team />
-      <JoinFamily />
     </div>
   );
 };

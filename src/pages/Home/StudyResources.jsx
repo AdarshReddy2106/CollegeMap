@@ -14,40 +14,41 @@ const StudyResources = () => {
           <div className="batch-card resource-card-1">
             <div className="batch-year resource-header-1">JEE Busters</div>
             <div className="batch-content">
-              <h3 className="batch-title">🎯 <strong>High-Yield</strong> Question Bank</h3>
-              <p className="batch-description">Curated by <strong>IITians</strong> — crack the toughest problems with <strong>targeted practice</strong> and boost your score significantly.</p>
+              <h3 className="batch-title">Game of Strategy</h3>
+              <p className="batch-description">Exclusive support resources to help you ACE in the game of JEE- only from the best IITians</p>
               <ul className="batch-features">
-                <li>✓ <strong>Previous Year</strong> Questions</li>
-                <li>✓ <strong>Topic-wise</strong> Practice</li>
-                <li>✓ Difficulty Level: <strong>Advanced</strong></li>
+                <li>✓ JEE Mains syllabus tracker</li>
+                <li>✓ Formula sheets</li>
+                <li>✓ Strategic guidance resources</li>
+                <li>✓ and much more...</li>
               </ul>
-              <button className="batch-btn primary" onClick={() => navigate('/resources')}>View Materials</button>
+              <button className="batch-btn primary" onClick={() => navigate('/resources')}>Get TOP material</button>
             </div>
           </div>
 
           <div className="batch-card resource-card-2">
-            <div className="batch-year resource-header-2">Summary Notes</div>
+            <div className="batch-year resource-header-2">Short notes</div>
             <div className="batch-content">
-              <h3 className="batch-title">📝 <strong>Quick Revision</strong> Notes</h3>
-              <p className="batch-description"><strong>Comprehensive notes</strong> designed for last-minute prep — all <strong>key formulas</strong>, concepts, and tricks in one place.</p>
+              <h3 className="batch-title">Chapter-wise overview</h3>
+              <p className="batch-description">Quick summary of all chapters for last minute revision</p>
               <ul className="batch-features">
-                <li>✓ All <strong>Important Formulas</strong></li>
-                <li>✓ Key <strong>Concepts &amp; Tricks</strong></li>
-                <li>✓ <strong>Chapter-wise</strong> Coverage</li>
+                <li>✓ Chapter-wise coverage</li>
+                <li>✓ Important formulas and diagrams</li>
+                <li>✓ Mains to advanced level</li>
               </ul>
-              <button className="batch-btn primary" onClick={() => navigate('/resources')}>Download PDF</button>
+              <button className="batch-btn primary" onClick={() => navigate('/resources')}>FREE Short Notes</button>
             </div>
           </div>
 
           <div className="batch-card resource-card-3">
             <div className="batch-year resource-header-3">Practice Sheets</div>
             <div className="batch-content">
-              <h3 className="batch-title">✍️ <strong>Topic-wise</strong> Worksheets</h3>
-              <p className="batch-description">Carefully designed <strong>practice sheets</strong> with <strong>detailed solutions</strong> — progress from easy to advanced step by step.</p>
+              <h3 className="batch-title">Chapter-wise worksheets</h3>
+              <p className="batch-description">Exclusive worksheets with progressive difficulty, for TOP tier preparation</p>
               <ul className="batch-features">
-                <li>✓ <strong>Progressive</strong> Difficulty</li>
-                <li>✓ <strong>Detailed</strong> Solutions</li>
-                <li>✓ <strong>Regular</strong> Updates</li>
+                <li>✓ 150+ questions per chapter</li>
+                <li>✓ Full coverage of every chapter</li>
+                <li>✓ Regular updates</li>
               </ul>
               <button className="batch-btn primary" onClick={() => navigate('/resources')}>Start Practicing</button>
             </div>

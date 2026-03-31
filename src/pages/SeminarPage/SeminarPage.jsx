@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import './SeminarPage.scss';
 import mentorImage from '../../assets/mentor.png';
+import { collegemapApiUrl } from '../../collegemapApiOrigin';
 
 // You can replace these with actual icons from a library like react-icons
 const CheckIcon = () => <span className="icon-check">✓</span>;
@@ -70,7 +71,7 @@ const SeminarPage = () => {
         
         try {
             // First try the direct API endpoint
-            const response = await fetch('https://collegemapseminarpage.vercel.app/api/save-booking', {
+            const response = await fetch(collegemapApiUrl('/api/save-booking'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

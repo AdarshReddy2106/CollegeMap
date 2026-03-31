@@ -5,6 +5,7 @@ const cron = require('node-cron');
 const { google } = require('googleapis');
 const { scrapeNTAUpdates } = require('./scraper'); // Add this import
 const { parseNTARSS } = require('./rssParser');
+const { registerBranchIntelRoutes } = require('./branchIntel');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -24,6 +25,8 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: '10mb' }));
+
+registerBranchIntelRoutes(app);
 
 // Google Sheets Configuration
 const GOOGLE_SHEETS_ID = process.env.GOOGLE_SHEETS_ID;
@@ -308,7 +311,12 @@ app.get('/', (req, res) => {
       'GET /api/nta-updates',
       'POST /api/track-resource',
       'GET /api/resource-analytics/:resourceId',
-      'GET /api/resource-analytics'
+      'GET /api/resource-analytics',
+      'GET /api/branch-intel/health',
+      'GET /api/branch-intel/catalog',
+      'GET /api/branch-intel/colleges',
+      'GET /api/branch-intel/branches',
+      'POST /api/branch-intel/compare'
     ]
   });
 });
@@ -1283,7 +1291,12 @@ app.use((req, res) => {
       'GET /api/search?query=...',
       'POST /api/track-resource',
       'GET /api/resource-analytics/:resourceId',
-      'GET /api/resource-analytics'
+      'GET /api/resource-analytics',
+      'GET /api/branch-intel/health',
+      'GET /api/branch-intel/catalog',
+      'GET /api/branch-intel/colleges',
+      'GET /api/branch-intel/branches',
+      'POST /api/branch-intel/compare'
     ]
   });
 });
