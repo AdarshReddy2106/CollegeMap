@@ -8,7 +8,7 @@ const StudyResources = () => {
     <section className="study-resources">
       <div className="container">
         <h2 className="section-title">Study Resources</h2>
-        <p className="section-subtitle">Everything you need to <strong>ace JEE</strong>, curated by <strong>IITians</strong> — all in one place</p>
+        <p className="section-subtitle">Top quality resources for <strong>free</strong>,curated by <strong>IITians</strong></p>
         <div className="batches-grid">
           
           <div className="batch-card resource-card-1">

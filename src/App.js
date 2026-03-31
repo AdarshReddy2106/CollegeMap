@@ -32,6 +32,7 @@ import CBTDashboard from "./pages/CBTPortal/CBTDashboard";
 import HomePage from "./pages/Home/HomePage";
 import PYQPage from "./pages/PYQPage/PYQPage";
 import EnergyBatch from "./pages/EnergyBatch/EnergyBatch";
+import StudyWithIITians from "./pages/StudyWithIITians/StudyWithIITians";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -93,6 +94,7 @@ function App() {
           <Route path="/college-predictor" element={<CollegePredictor />} />
           <Route path="/college-predictor/results" element={<CollegePredictorResults />} />
           <Route path="/energy-batch" element={<EnergyBatch />} />
+          <Route path="/study-with-iitians" element={<StudyWithIITians />} />
           <Route path="/cbt-portal" element={<CBTPortal />} />
           <Route path="/cbt-portal/custom-test" element={<CustomTestBuilder />} />
           <Route path="/profile-setup" element={<ProfileSetup />} />
