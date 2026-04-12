@@ -8,8 +8,18 @@ import {
   School,
   ArrowLeft
 } from 'lucide-react';
-import iitpkdData from '../../IIT DATA/iitpkd.json';
-import iitkgpData from '../../IIT DATA/iitkgp.json';
+import iithData from '../../IIT DATA/iith.json';
+import iitpData from '../../IIT DATA/iitp.json';
+import iitbbsData from '../../IIT DATA/iitbbs.json';
+import iitmdData from '../../IIT DATA/iitmd.json';
+import iitiData from '../../IIT DATA/iiti.json';
+import iitbhuData from '../../IIT DATA/iitbhu.json';
+import iittData from '../../IIT DATA/iitt.json';
+import iitismData from '../../IIT DATA/iitism.json';
+import iitbhData from '../../IIT DATA/iitbh.json';
+import iitdhData from '../../IIT DATA/iitdh.json';
+import iitjmuData from '../../IIT DATA/iitjmu.json';
+import iitgoaData from '../../IIT DATA/iitgoa.json';
 import { getImageUrl } from '../../utils/imageLoader';
 import "./AboutIITs.css";
 
@@ -391,8 +401,18 @@ const SelectionScreen = ({ onSelect }) => {
               defaultValue=""
             >
               <option value="" disabled>Choose an IIT...</option>
-              <option value="iitpkd">IIT Palakkad</option>
-              <option value="iitkgp">IIT Kharagpur</option>
+              <option value="iith">IIT Hyderabad</option>
+              <option value="iitp">IIT Patna</option>
+              <option value="iitbbs">IIT Bhubaneswar</option>
+              <option value="iitmd">IIT Mandi</option>
+              <option value="iiti">IIT Indore</option>
+              <option value="iitbhu">IIT BHU</option>
+              <option value="iitt">IIT Tirupati</option>
+              <option value="iitism">IIT ISM Dhanbad</option>
+              <option value="iitbh">IIT Bhilai</option>
+              <option value="iitdh">IIT Dharwad</option>
+              <option value="iitjmu">IIT Jammu</option>
+              <option value="iitgoa">IIT Goa</option>
             </select>
             <ChevronRight className="iit-select-arrow" />
           </div>
@@ -503,12 +523,19 @@ export default function App() {
   // Map selection to data
   const getCollegeData = (college) => {
     switch (college) {
-      case 'iitpkd':
-        return iitpkdData;
-      case 'iitkgp':
-        return iitkgpData;
-      default:
-        return null;
+      case 'iith': return iithData;
+      case 'iitp': return iitpData;
+      case 'iitbbs': return iitbbsData;
+      case 'iitmd': return iitmdData;
+      case 'iiti': return iitiData;
+      case 'iitbhu': return iitbhuData;
+      case 'iitt': return iittData;
+      case 'iitism': return iitismData;
+      case 'iitbh': return iitbhData;
+      case 'iitdh': return iitdhData;
+      case 'iitjmu': return iitjmuData;
+      case 'iitgoa': return iitgoaData;
+      default: return null;
     }
   };
 
