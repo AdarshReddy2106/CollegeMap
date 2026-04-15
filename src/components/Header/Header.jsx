@@ -8,7 +8,7 @@ const Header = () => {
     const { isLoggedIn, logout } = useAuth();
     const handleLogout = () => {
         logout();
-        navigate("/MobileLogin");
+        navigate("/login", { replace: true });
     };
 
     return (
@@ -30,7 +30,7 @@ const Header = () => {
                         Sign Out
                     </button>
                 ) : (
-                    <Link to="/MobileLogin" className="bg-green-500 px-4 py-2 rounded">
+                    <Link to="/login" className="bg-green-500 px-4 py-2 rounded">
                         Login
                     </Link>
                 )}

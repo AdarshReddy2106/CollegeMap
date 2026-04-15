@@ -178,7 +178,10 @@ const Login2 = () => {
 				options: {
 					emailRedirectTo: `${window.location.origin}/login`,
 					data: {
+						display_name: fullName.trim(),
+						name: fullName.trim(),
 						full_name: fullName.trim(),
+						phone_number: normalizedSignupPhone,
 						phone: normalizedSignupPhone,
 					},
 				},

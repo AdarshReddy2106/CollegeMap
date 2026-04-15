@@ -35,7 +35,7 @@ const Navbar = () => {
 
     const handleLogout = () => {
         logout();
-        navigate("/MobileLogin");
+        navigate("/login", { replace: true });
     };
 
     const toggleMenu = () => {

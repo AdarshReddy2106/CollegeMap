@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const ProtectedRoute = ({ children, requirePayment = true }) => {
     const { isLoggedIn, isPaid, checkPaymentStatus } = useAuth();
     const [checkingPayment, setCheckingPayment] = useState(true);
+    const location = useLocation();
 
     useEffect(() => {
         const fetchStatus = async () => {
@@ -17,7 +18,7 @@ const ProtectedRoute = ({ children, requirePayment = true }) => {
     }, [requirePayment, isPaid, checkPaymentStatus]);
 
     if (!isLoggedIn) {
-        return <Navigate to="/MobileLogin" />;
+        return <Navigate to="/login" state={{ redirectTo: location.pathname }} replace />;
     }
 
     if (checkingPayment) {
