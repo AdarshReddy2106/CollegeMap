@@ -33,6 +33,7 @@ import HomePage from "./pages/Home/HomePage";
 import PYQPage from "./pages/PYQPage/PYQPage";
 import EnergyBatch from "./pages/EnergyBatch/EnergyBatch";
 import StudyWithIITians from "./pages/StudyWithIITians/StudyWithIITians";
+import Home2 from "./pages/Home_2/Home2";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -95,6 +96,7 @@ function App() {
           <Route path="/college-predictor/results" element={<CollegePredictorResults />} />
           <Route path="/energy-batch" element={<EnergyBatch />} />
           <Route path="/study-with-iitians" element={<StudyWithIITians />} />
+          <Route path="/home-2" element={<Home2 />} />
           <Route path="/cbt-portal" element={<CBTPortal />} />
           <Route path="/cbt-portal/custom-test" element={<CustomTestBuilder />} />
           <Route path="/profile-setup" element={<ProfileSetup />} />

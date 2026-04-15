@@ -17,7 +17,7 @@ const teamMembers = [
     { iit: "IIT Palakkad", name: 'Adarsh Reddy', role: 'Lead web Developer', img: adarsh, url: "https://www.linkedin.com/in/adarsh-reddy-bb1b8b318/" },  
     { iit: "IIT Bombay", name: 'Ashish Kumar Yadav', role: 'Web Developer and Data Analyst', img: ashish, url: "https://www.linkedin.com/in/ashish-kumar-yadav-518231285/" }, 
     { iit: "IIT Bombay", name: 'Paridhi Vatrey', role: 'Design lead', img:paridhi, url: "https://www.linkedin.com/in/paridhi-vatrey/" },
-    { iit: "IIT ", name: 'Moksh Lakhani', role: 'Social Media Manager', img: moksh, url: "https://www.linkedin.com/in/moksh-lakhani-243244251/" },
+    { iit: "", name: 'Moksh Lakhani', role: 'Social Media Manager', img: moksh, url: "https://www.linkedin.com/in/moksh-lakhani-243244251/" },
     { iit: "IIT Bombay", name: 'Bhoomi Singhvi', role: 'Strategic Partnerships Lead', img: bhoomi, url: "https://www.linkedin.com/in/bhoomisinghvi/" },
 
     // { iit: "IIT Bhilai", name: 'Kamalesh Swargam', role: 'Head of Marketing', img: kamalesh, url: "https://www.linkedin.com/in/kamaleshswargam/" },
