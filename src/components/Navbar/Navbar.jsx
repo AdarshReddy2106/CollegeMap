@@ -78,7 +78,7 @@ const Navbar = () => {
                             className="cta login-size"
                             onClick={() => {
                                 setIsMenuOpen(false);
-                                navigate("/MobileLogin", {
+                                navigate("/login", {
                                     state: { redirectTo: location.pathname }
                                 });
                             }}

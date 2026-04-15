@@ -34,6 +34,7 @@ import PYQPage from "./pages/PYQPage/PYQPage";
 import EnergyBatch from "./pages/EnergyBatch/EnergyBatch";
 import StudyWithIITians from "./pages/StudyWithIITians/StudyWithIITians";
 import Home2 from "./pages/Home_2/Home2";
+import Login2 from "./pages/Login_2/login2";
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -76,6 +77,7 @@ function App() {
           <Route path="/Questionaire" element={<Questionaire />} />
           <Route path="/ResultsPage" element={<ResultsPage />} />
           <Route path="/MobileLogin" element={<MobileLogin />} />
+          <Route path="/login" element={<Login2 />} />
           {/* Correct placement of ProtectedRoute */}
           <Route path="/EnhancedQuestions" element={<ProtectedRoute requirePayment={false}><EnhancedQuestions /></ProtectedRoute>} />
           <Route path="/AboutUs" element={<AboutUs />} />
