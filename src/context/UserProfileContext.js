@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getUserProfile } from '../services/supabaseService';
+import { getUserProfile, getCachedProfile, clearCachedProfile } from '../services/supabaseService';
 
 const UserProfileContext = createContext();
 
@@ -7,32 +7,43 @@ export const UserProfileProvider = ({ children }) => {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load user profile on mount if email is available in sessionStorage
+  // Load user profile on mount — prefer localStorage cache to avoid Supabase rate limits
   useEffect(() => {
-    const loadProfile = async () => {
+    const loadProfile = () => {
+      // Try cache first (no network call)
+      const cached = getCachedProfile();
+      if (cached) {
+        setUserProfile(cached);
+        setLoading(false);
+        return;
+      }
+
+      // Fallback: check sessionStorage for email and fetch once
       const emailStored = sessionStorage.getItem('userEmail');
       if (emailStored) {
-        try {
-          const supabaseProfile = await getUserProfile(emailStored);
-          if (supabaseProfile) {
-            setUserProfile(supabaseProfile);
-          }
-        } catch (error) {
-          console.error('Error loading user profile:', error);
-        }
+        getUserProfile(emailStored)
+          .then((profile) => {
+            if (profile) setUserProfile(profile);
+          })
+          .catch((error) => {
+            console.error('Error loading user profile:', error);
+          })
+          .finally(() => setLoading(false));
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     loadProfile();
   }, []);
 
+  // Refresh profile from Supabase (skips cache)
   const refreshProfile = async (email) => {
     if (!email) return;
     setLoading(true);
     try {
-      const profile = await getUserProfile(email);
-      setUserProfile(profile);
+      const profile = await getUserProfile(email, true); // skipCache = true
+      if (profile) setUserProfile(profile);
     } catch (error) {
       console.error('Error refreshing profile:', error);
     } finally {
@@ -46,6 +57,7 @@ export const UserProfileProvider = ({ children }) => {
 
   const clearProfile = () => {
     setUserProfile(null);
+    clearCachedProfile();
   };
 
   return (

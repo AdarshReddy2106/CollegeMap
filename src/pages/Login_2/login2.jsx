@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../../supabaseClient";
 import { useAuth } from "../../context/AuthContext";
+import { useUserProfile } from "../../context/UserProfileContext";
+import { saveUserProfile, getUserProfile } from "../../services/supabaseService";
 import "./login2.css";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -41,6 +43,7 @@ const Login2 = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { login } = useAuth();
+	const { setProfile } = useUserProfile();
 
 	const [email, setEmail] = useState("");
 	const [fullName, setFullName] = useState("");
@@ -166,6 +169,23 @@ const Login2 = () => {
 					sessionStorage.setItem("userEmail", currentUser.email);
 				}
 
+				// Fetch user profile from users table and populate context (cached)
+				const profile = await getUserProfile(currentUser.email);
+				if (profile) {
+					setProfile(profile);
+				} else {
+					// Fallback: build profile from Supabase Auth metadata
+					const meta = currentUser.user_metadata || {};
+					const fallbackProfile = {
+						email: currentUser.email,
+						name: meta.display_name || meta.name || meta.full_name || '',
+						phone: meta.phone_number || meta.phone || '',
+					};
+					if (fallbackProfile.name) {
+						setProfile(fallbackProfile);
+					}
+				}
+
 				navigate(redirectTo, { replace: true });
 				return;
 			}
@@ -190,6 +210,16 @@ const Login2 = () => {
 			if (signUpError) {
 				setError(getFriendlyError(signUpError.message));
 				return;
+			}
+
+			// Save user details to the users table
+			const savedProfile = await saveUserProfile({
+				name: fullName.trim(),
+				email: email.trim().toLowerCase(),
+				phone: normalizedSignupPhone,
+			});
+			if (savedProfile) {
+				setProfile(savedProfile);
 			}
 
 			if (data?.session?.access_token && data?.user) {

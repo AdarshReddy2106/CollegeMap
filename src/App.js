@@ -27,7 +27,6 @@ import NewsPage from "./pages/NewsPage/NewsPage";
 import CBTPortal from "./pages/CBTPortal/CBTPortal";
 import TestInterface from "./pages/CBTPortal/TestInterface";
 import CustomTestBuilder from "./pages/CBTPortal/CustomTestBuilder";
-import ProfileSetup from "./pages/ProfileSetup/ProfileSetup";
 import CBTDashboard from "./pages/CBTPortal/CBTDashboard";
 import HomePage from "./pages/Home/HomePage";
 import PYQPage from "./pages/PYQPage/PYQPage";
@@ -101,7 +100,6 @@ function App() {
           <Route path="/home-2" element={<Home2 />} />
           <Route path="/cbt-portal" element={<CBTPortal />} />
           <Route path="/cbt-portal/custom-test" element={<CustomTestBuilder />} />
-          <Route path="/profile-setup" element={<ProfileSetup />} />
           <Route path="/cbt-portal/test/:testId" element={<TestInterface />} />
           <Route path="/cbt-portal/dashboard" element={<CBTDashboard />} />
           {/* Add other routes as needed */}

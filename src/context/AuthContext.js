@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { clearCachedProfile } from "../services/supabaseService";
 
 const AuthContext = createContext();
 
@@ -57,6 +58,8 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         localStorage.removeItem("userSession");
         localStorage.removeItem("authToken");
+        sessionStorage.removeItem("userEmail");
+        clearCachedProfile();
         setUser(null);
         setIsPaid(null);
     };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUserProfile } from '../../context/UserProfileContext';
-import { collegemapApiUrl } from '../../collegemapApiOrigin';
+import { saveUserProfile } from '../../services/supabaseService';
 import './ProfileIcon.scss';
 
 const ProfileIcon = () => {
@@ -9,7 +9,8 @@ const ProfileIcon = () => {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    email: ''
+    email: '',
+    phone: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -18,7 +19,8 @@ const ProfileIcon = () => {
   const loadProfile = () => {
     setFormData({
       name: userProfile?.name || '',
-      email: userProfile?.email || ''
+      email: userProfile?.email || '',
+      phone: userProfile?.phone || ''
     });
     setShowModal(true);
     setError('');
@@ -47,56 +49,25 @@ const ProfileIcon = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(collegemapApiUrl('/api/save-profile'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          email: formData.email.trim().toLowerCase()
-        })
+      const savedProfile = await saveUserProfile({
+        name: formData.name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phone.trim()
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        const updatedProfile = {
-          name: formData.name.trim(),
-          email: formData.email.trim().toLowerCase()
-        };
-        
-        // Update context
-        setProfile(updatedProfile);
-        
-        // Store email in sessionStorage
-        sessionStorage.setItem('userEmail', updatedProfile.email);
-
+      if (savedProfile) {
+        setProfile(savedProfile);
+        sessionStorage.setItem('userEmail', savedProfile.email);
         setSuccess('Profile updated successfully!');
         setTimeout(() => {
           setShowModal(false);
-          window.location.reload();
-        }, 1500);
+        }, 1200);
       } else {
-        setError(data.message || 'Failed to update profile');
+        setError('Failed to update profile. Please try again.');
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      
-      // Fallback: Update context
-      const fallbackProfile = {
-        name: formData.name.trim(),
-        email: formData.email.trim().toLowerCase()
-      };
-      setProfile(fallbackProfile);
-      sessionStorage.setItem('userEmail', fallbackProfile.email);
-      
-      setSuccess('Profile updated!');
-      setTimeout(() => {
-        setShowModal(false);
-        window.location.reload();
-      }, 1500);
+      setError('Failed to update profile. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -138,10 +109,10 @@ const ProfileIcon = () => {
 
               <form onSubmit={handleSubmit} className="profile-form">
                 <div className="form-group">
-                  <label htmlFor="name">Full Name *</label>
+                  <label htmlFor="profile-name">Full Name *</label>
                   <input
                     type="text"
-                    id="name"
+                    id="profile-name"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
@@ -151,15 +122,28 @@ const ProfileIcon = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="email">Email Address *</label>
+                  <label htmlFor="profile-email">Email Address *</label>
                   <input
                     type="email"
-                    id="email"
+                    id="profile-email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="Enter your email"
                     required
+                    disabled
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="profile-phone">Phone Number</label>
+                  <input
+                    type="tel"
+                    id="profile-phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="Enter your phone number"
                   />
                 </div>
 

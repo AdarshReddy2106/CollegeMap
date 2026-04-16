@@ -1,21 +1,101 @@
 import { supabase } from '../supabaseClient';
 
 /**
+ * Helper: get the current Supabase Auth user's metadata (name, email, phone)
+ * This is useful as a fallback when the users table doesn't have a row yet.
+ */
+const getAuthUserMeta = async () => {
+  if (!supabase) return null;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+    const meta = user.user_metadata || {};
+    return {
+      email: user.email,
+      name: meta.display_name || meta.name || meta.full_name || '',
+      phone: meta.phone_number || meta.phone || '',
+    };
+  } catch {
+    return null;
+  }
+};
+
+const PROFILE_CACHE_KEY = 'cachedUserProfile';
+
+/**
+ * Get cached user profile from localStorage
+ * @returns {Object|null} Cached profile or null
+ */
+export const getCachedProfile = () => {
+  try {
+    const cached = localStorage.getItem(PROFILE_CACHE_KEY);
+    if (cached) return JSON.parse(cached);
+  } catch (e) {
+    // ignore parse errors
+  }
+  return null;
+};
+
+/**
+ * Cache user profile in localStorage
+ * @param {Object|null} profile
+ */
+export const setCachedProfile = (profile) => {
+  if (profile) {
+    localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(profile));
+  } else {
+    localStorage.removeItem(PROFILE_CACHE_KEY);
+  }
+};
+
+/**
+ * Clear cached user profile
+ */
+export const clearCachedProfile = () => {
+  localStorage.removeItem(PROFILE_CACHE_KEY);
+};
+
+/**
  * Get user profile from Supabase by email
  * @param {string} email - User's email
+ * @param {boolean} skipCache - If true, always fetch from Supabase
  * @returns {Promise<Object|null>} User profile or null
  */
-export const getUserProfile = async (email) => {
-  if (!supabase || !email) return null;
+export const getUserProfile = async (email, skipCache = false) => {
+  if (!email) return null;
+
+  // Return cached profile if available (avoids rate limits)
+  if (!skipCache) {
+    const cached = getCachedProfile();
+    if (cached && cached.email === email.toLowerCase()) {
+      return cached;
+    }
+  }
+
+  if (!supabase) return null;
   
   try {
     const { data, error } = await supabase
-      .from('portal_users')
+      .from('users')
       .select('*')
       .eq('email', email.toLowerCase())
       .single();
     
-    if (error) throw error;
+    if (error) {
+      // No row in users table — fallback to Supabase Auth metadata
+      console.warn('No profile row in users table, falling back to auth metadata');
+      const authMeta = await getAuthUserMeta();
+      if (authMeta && authMeta.email?.toLowerCase() === email.toLowerCase()) {
+        // Auto-create user row from auth metadata
+        const created = await saveUserProfile(authMeta);
+        if (created) return created;
+        // If auto-create failed, still return the metadata so the UI shows the name
+        setCachedProfile(authMeta);
+        return authMeta;
+      }
+      return null;
+    }
+    if (data) setCachedProfile(data);
     return data;
   } catch (error) {
     console.error('Error fetching user profile:', error);
@@ -25,27 +105,28 @@ export const getUserProfile = async (email) => {
 
 /**
  * Save or update user profile in Supabase
- * @param {Object} profileData - Profile data { name, email }
+ * @param {Object} profileData - Profile data { name, email, phone }
  * @returns {Promise<Object|null>} Saved profile or null
  */
 export const saveUserProfile = async (profileData) => {
   if (!supabase) return null;
   
   try {
+    const row = {
+      name: profileData.name,
+      email: profileData.email.toLowerCase(),
+      phone: profileData.phone || '',
+      password_hash: 'managed_by_supabase_auth',
+    };
+
     const { data, error } = await supabase
-      .from('portal_users')
-      .upsert(
-        {
-          name: profileData.name,
-          email: profileData.email.toLowerCase(),
-          submitted_at: new Date().toISOString()
-        },
-        { onConflict: 'email' }
-      )
+      .from('users')
+      .upsert(row, { onConflict: 'email' })
       .select()
       .single();
     
     if (error) throw error;
+    if (data) setCachedProfile(data);
     return data;
   } catch (error) {
     console.error('Error saving user profile:', error);
