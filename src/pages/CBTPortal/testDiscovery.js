@@ -12,9 +12,9 @@ const NEW_TEST_FOLDERS = [
   { folder: 'jee-main-2025-23rd-jan-shift-1', jsonFile: 'jee-main-2025-23rd-jan-shift-1.json' },
   { folder: 'jee-main-2025-24th-jan-shift-2', jsonFile: 'jee-main-2025-24th-jan-shift-2.json' },
   { folder: 'jee-main-2025-28th-jan-shift-1', jsonFile: 'jee-main-2025-28th-jan-shift-1.json' },
-  { folder: 'JEE Main 2025 (28 Jan Shift 2)', jsonFile: 'jee-main-2025-28th-jan-shift-2.json' },
-  { folder: 'JEE Main 2025 (29 Jan Shift 1)', jsonFile: 'jee-main-2025-29th-jan-shift-1.json' },
-  { folder: 'JEE Main 2025 (29 Jan Shift 2)', jsonFile: 'jee-main-2025-29th-jan-shift-2.json' }
+  { folder: 'jee-main-2025-28th-jan-shift-2', jsonFile: 'jee-main-2025-28th-jan-shift-2.json' },
+  { folder: 'jee-main-2025-29th-jan-shift-1', jsonFile: 'jee-main-2025-29th-jan-shift-1.json' },
+  { folder: 'jee-main-2025-29th-jan-shift-2', jsonFile: 'jee-main-2025-29th-jan-shift-2.json' }
 ];
 
 /**
@@ -80,7 +80,8 @@ export const discoverTests = async () => {
     // Add 2025 tests (metadata-based, no answer keys but with question images)
     for (const testInfo of NEW_TEST_FOLDERS) {
       try {
-        const response = await fetch(`/tests/${encodeURI(testInfo.folder)}/${testInfo.jsonFile}`);
+        const url = `/tests/${encodeURIComponent(testInfo.folder)}/${encodeURIComponent(testInfo.jsonFile)}`;
+        const response = await fetch(url);
         if (response.ok) {
           const metadata = await response.json();
           const totalQ = Object.values(metadata.sections || {}).reduce(
@@ -118,7 +119,7 @@ export const discoverTests = async () => {
  */
 export const loadTestMetadata = async (testFolder) => {
   try {
-    const response = await fetch(`/tests/${testFolder}/answerKey.json`);
+    const response = await fetch(`/tests/${encodeURIComponent(testFolder)}/answerKey.json`);
     if (!response.ok) {
       return null;
     }
@@ -204,7 +205,8 @@ export const getTestById = async (testId) => {
   for (const testInfo of NEW_TEST_FOLDERS) {
     if (testInfo.folder === testId) {
       try {
-        const response = await fetch(`/tests/${encodeURI(testInfo.folder)}/${testInfo.jsonFile}`);
+        const url = `/tests/${encodeURIComponent(testInfo.folder)}/${encodeURIComponent(testInfo.jsonFile)}`;
+        const response = await fetch(url);
         if (response.ok) {
           const meta = await response.json();
           return {
