@@ -401,7 +401,7 @@ const TestInterface = () => {
     if (!userProfile) {
       const emailStored = sessionStorage.getItem('userEmail');
       if (!emailStored) {
-        navigate('/profile-setup', { state: { testId } });
+        navigate('/login', { state: { redirectTo: `/cbt-portal/test/${testId}` } });
         return;
       }
       // Load profile from Supabase

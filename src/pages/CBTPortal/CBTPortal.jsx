@@ -138,7 +138,7 @@ const CBTPortal = () => {
 
   const handleStartTest = (testId) => {
     if (!userProfile) {
-      navigate('/profile-setup', { state: { testId } });
+      navigate('/login', { state: { testId, redirectTo: '/cbt-portal' } });
       return;
     }
     getTestById(testId)
@@ -186,7 +186,7 @@ const CBTPortal = () => {
           <span className="user-name-label">Name: <strong>{userProfile?.name || 'User'}</strong></span>
           <motion.button
             className="update-details-button"
-            onClick={() => navigate('/profile-setup')}
+            onClick={() => navigate('/login')}
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
           >

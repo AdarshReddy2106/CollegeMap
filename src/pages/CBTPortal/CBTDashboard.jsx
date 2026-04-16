@@ -27,7 +27,7 @@ const CBTDashboard = () => {
       if (!userProfile) {
         const emailStored = sessionStorage.getItem('userEmail');
         if (!emailStored) {
-          navigate('/profile-setup', { state: { redirectTo: '/cbt-portal/dashboard' } });
+          navigate('/login', { state: { redirectTo: '/cbt-portal/dashboard' } });
           return;
         }
         // Fetch profile from Supabase

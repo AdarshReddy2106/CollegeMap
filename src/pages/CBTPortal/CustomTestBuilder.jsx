@@ -36,7 +36,7 @@ const CustomTestBuilder = () => {
     if (!userProfile) {
       const emailStored = sessionStorage.getItem('userEmail');
       if (!emailStored) {
-        navigate('/profile-setup', { state: { returnTo: '/cbt-portal/custom-test' } });
+        navigate('/login', { state: { redirectTo: '/cbt-portal/custom-test' } });
         return;
       }
       // Load profile from context
