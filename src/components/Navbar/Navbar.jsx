@@ -8,6 +8,7 @@ import { useLocation } from "react-router-dom";
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [pyqDropdownOpen, setPyqDropdownOpen] = useState(false);
     const { isLoggedIn, logout } = useAuth();
     const navigate = useNavigate();
     const menuRef = useRef(null);
@@ -57,7 +58,26 @@ const Navbar = () => {
                      {/* <li><Link to="/AboutIITs" onClick={() => setIsMenuOpen(false)}>About IITs</Link></li> */}
                     <li><Link to="/resources" onClick={() => setIsMenuOpen(false)}>Top Resources</Link></li>
                     <li><Link to="/cbt-portal" onClick={() => setIsMenuOpen(false)}>Exam Portal</Link></li>
-                    <li><Link to="/pyq" onClick={() => setIsMenuOpen(false)}>PYQ</Link></li>
+                    <li 
+                        className="nav-dropdown"
+                        onClick={() => setPyqDropdownOpen(!pyqDropdownOpen)}
+                    >
+                        <span className="dropdown-trigger">PYQ ▾</span>
+                        {pyqDropdownOpen && (
+                            <ul className="dropdown-menu">
+                                <li>
+                                    <Link to="/pyq" onClick={() => { setIsMenuOpen(false); setPyqDropdownOpen(false); }}>
+                                        JEE Mains
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/pyq-advanced" onClick={() => { setIsMenuOpen(false); setPyqDropdownOpen(false); }}>
+                                        JEE Advanced
+                                    </Link>
+                                </li>
+                            </ul>
+                        )}
+                    </li>
                     <li><Link to="/branch-comparison" onClick={() => setIsMenuOpen(false)}>College Finder</Link></li>
                     <li><Link to="/college-predictor" onClick={() => setIsMenuOpen(false)}>College Predictor</Link></li>
                     <li><Link to="/study-with-iitians" onClick={() => setIsMenuOpen(false)}>Study with IITians</Link></li>

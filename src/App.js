@@ -30,6 +30,7 @@ import CustomTestBuilder from "./pages/CBTPortal/CustomTestBuilder";
 import CBTDashboard from "./pages/CBTPortal/CBTDashboard";
 import HomePage from "./pages/Home/HomePage";
 import PYQPage from "./pages/PYQPage/PYQPage";
+import PYQAdvancedPage from "./pages/PYQAdvancedPage/PYQAdvancedPage";
 import EnergyBatch from "./pages/EnergyBatch/EnergyBatch";
 import StudyWithIITians from "./pages/StudyWithIITians/StudyWithIITians";
 import Home2 from "./pages/Home_2/Home2";
@@ -91,6 +92,7 @@ function App() {
           <Route path="/seminar" element={<SeminarPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
           <Route path="/pyq" element={<PYQPage />} />
+          <Route path="/pyq-advanced" element={<PYQAdvancedPage />} />
           <Route path="/news" element={<NewsPage />} />
           <Route path="/branch-comparison" element={<BranchComparison />} />
           <Route path="/college-predictor" element={<CollegePredictor />} />
