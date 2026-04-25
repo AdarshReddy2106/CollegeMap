@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 // import SplashScreen from "./components/SplashScreen/SplashScreen";
 import Layout from "./components/Layout/Layout";
 import LandingPage from "./pages/LandingPage/LandingPage";
@@ -36,6 +36,26 @@ import StudyWithIITians from "./pages/StudyWithIITians/StudyWithIITians";
 import Home2 from "./pages/Home_2/Home2";
 import Login2 from "./pages/Login_2/login2";
 
+function RouteAnalyticsTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (typeof window.gtag !== "function") {
+      return;
+    }
+
+    const pagePath = `${location.pathname}${location.search}${location.hash}`;
+
+    window.gtag("event", "page_view", {
+      page_path: pagePath,
+      page_location: window.location.href,
+      page_title: document.title,
+    });
+  }, [location.pathname, location.search, location.hash]);
+
+  return null;
+}
+
 function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -70,6 +90,7 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
+      <RouteAnalyticsTracker />
       <Layout isLoggedIn={isLoggedIn}>
         <Routes>
           <Route path="/lp" element={<LandingPage />} />
