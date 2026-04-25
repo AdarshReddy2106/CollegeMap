@@ -13,8 +13,9 @@ const PHONE_DIGITS_MAX = 15;
 const normalizePhone = (value) => value.replace(/\D/g, "");
 
 const getAuthRedirectUrl = () => {
-	const explicitBase = (process.env.REACT_APP_AUTH_REDIRECT_URL || "").trim();
-	const base = explicitBase || window.location.origin;
+	const explicitUrl = (process.env.REACT_APP_AUTH_REDIRECT_URL || "").trim();
+	if (explicitUrl) return explicitUrl;
+	const base = window.location.origin;
 	return `${base.replace(/\/+$/, "")}/login`;
 };
 
