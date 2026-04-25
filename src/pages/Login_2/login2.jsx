@@ -12,6 +12,12 @@ const PHONE_DIGITS_MAX = 15;
 
 const normalizePhone = (value) => value.replace(/\D/g, "");
 
+const getAuthRedirectUrl = () => {
+	const explicitBase = (process.env.REACT_APP_AUTH_REDIRECT_URL || "").trim();
+	const base = explicitBase || window.location.origin;
+	return `${base.replace(/\/+$/, "")}/login`;
+};
+
 const getFriendlyError = (message) => {
 	if (!message) return "Unable to sign in. Please try again.";
 	const normalized = message.toLowerCase();
@@ -65,6 +71,8 @@ const Login2 = () => {
 	const redirectTo = useMemo(() => {
 		return location.state?.redirectTo || "/";
 	}, [location.state]);
+
+	const authRedirectUrl = useMemo(() => getAuthRedirectUrl(), []);
 
 	useEffect(() => {
 		const hash = location.hash || window.location.hash;
@@ -196,7 +204,7 @@ const Login2 = () => {
 				email: email.trim().toLowerCase(),
 				password,
 				options: {
-					emailRedirectTo: `${window.location.origin}/login`,
+					emailRedirectTo: authRedirectUrl,
 					data: {
 						display_name: fullName.trim(),
 						name: fullName.trim(),
@@ -273,7 +281,7 @@ const Login2 = () => {
 				type: "signup",
 				email: email.trim().toLowerCase(),
 				options: {
-					emailRedirectTo: `${window.location.origin}/login`,
+					emailRedirectTo: authRedirectUrl,
 				},
 			});
 
@@ -322,7 +330,7 @@ const Login2 = () => {
 		setLoading(true);
 		try {
 			const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
-				redirectTo: `${window.location.origin}/login`,
+				redirectTo: authRedirectUrl,
 			});
 
 			if (resetError) {
