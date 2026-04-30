@@ -1,22 +1,22 @@
 :root {
-  --login2-bg-a: #08142c;
-  --login2-bg-b: #102f5a;
-  --login2-accent: #ffcb5b;
-  --login2-accent-dark: #f2ad08;
+  --login2-bg-a: #f5f5f5;
+  --login2-bg-b: #ffffff;
+  --login2-accent: #10c3bc;
+  --login2-accent-dark: #0d9488;
   --login2-card-bg: #ffffff;
-  --login2-ink: #112244;
-  --login2-muted: #51607a;
+  --login2-ink: #111;
+  --login2-muted: #666;
   --login2-danger-bg: #ffe9ea;
   --login2-danger-text: #a81f2f;
-  --login2-input-border: #d2d9e6;
+  --login2-input-border: #ddd;
 }
 
 .login2-page {
   min-height: calc(100vh - 70px);
   padding: 48px 20px;
   background:
-    radial-gradient(circle at 10% 20%, rgba(255, 203, 91, 0.2), transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(90, 153, 255, 0.2), transparent 40%),
+    radial-gradient(circle at 10% 20%, rgba(16, 195, 188, 0.15), transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(13, 148, 136, 0.1), transparent 40%),
     linear-gradient(135deg, var(--login2-bg-a), var(--login2-bg-b));
   font-family: "Space Grotesk", "Trebuchet MS", "Segoe UI", sans-serif;
 }
@@ -33,14 +33,14 @@
 .login2-brand,
 .login2-card {
   border-radius: 22px;
-  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8px 30px rgba(16, 195, 188, 0.25);
 }
 
 .login2-brand {
   color: #f8fbff;
   padding: 34px;
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
-  backdrop-filter: blur(2px);
+  background: linear-gradient(135deg, #0d9488, #10c3bc);
+  box-shadow: 0 8px 30px rgba(16, 195, 188, 0.35);
   animation: login2Slide 500ms ease-out;
 }
 
@@ -49,20 +49,21 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #dbe8ff;
+  color: #ffffff;
 }
 
 .login2-brand h1 {
   margin: 10px 0 12px;
   font-size: clamp(2rem, 4vw, 2.7rem);
   line-height: 1.1;
-  color: var(--login2-accent);
+  color: #ffffff;
 }
 
 .login2-brand p {
   margin: 0;
-  color: #e8f0ff;
+  color: #ffffff;
   line-height: 1.6;
+  opacity: 0.95;
 }
 
 .login2-points {
@@ -89,14 +90,14 @@
   gap: 8px;
   padding: 6px;
   border-radius: 12px;
-  background: #eef3fb;
+  background: #f0f0f0;
   margin-bottom: 18px;
 }
 
 .login2-switch-btn {
   border: none;
   background: transparent;
-  color: #496084;
+  color: #666;
   border-radius: 10px;
   padding: 9px 14px;
   font-weight: 700;
@@ -106,8 +107,8 @@
 
 .login2-switch-btn.active {
   background: #ffffff;
-  color: #17356e;
-  box-shadow: 0 2px 9px rgba(20, 39, 87, 0.13);
+  color: #0d9488;
+  box-shadow: 0 2px 9px rgba(13, 148, 136, 0.15);
 }
 
 .login2-subtitle {
@@ -130,8 +131,8 @@
 
 .login2-resend-btn {
   border: none;
-  background: #f3f6fc;
-  color: #224891;
+  background: #f0f0f0;
+  color: #10c3bc;
   font-weight: 700;
   border-radius: 10px;
   padding: 9px 12px;
@@ -140,7 +141,7 @@
 }
 
 .login2-resend-btn:hover {
-  background: #e6eefc;
+  background: #e6f9f8;
 }
 
 .login2-notice {
@@ -178,7 +179,7 @@
 .login2-inline-link {
   border: none;
   background: transparent;
-  color: #2a4d95;
+  color: #10c3bc;
   font-weight: 700;
   cursor: pointer;
   padding: 0;
@@ -200,8 +201,8 @@
 }
 
 .login2-form input:focus {
-  border-color: #4e79d5;
-  box-shadow: 0 0 0 3px rgba(78, 121, 213, 0.15);
+  border-color: #10c3bc;
+  box-shadow: 0 0 0 3px rgba(16, 195, 188, 0.15);
   outline: none;
 }
 
@@ -229,7 +230,7 @@
   transform: translateY(-50%);
   border: none;
   background: transparent;
-  color: #3963bc;
+  color: #10c3bc;
   font-weight: 700;
   cursor: pointer;
 }
@@ -239,8 +240,8 @@
   border: none;
   border-radius: 12px;
   padding: 13px 18px;
-  background: linear-gradient(135deg, var(--login2-accent), var(--login2-accent-dark));
-  color: #1f2636;
+  background: linear-gradient(135deg, #0d9488, #10c3bc);
+  color: #ffffff;
   font-size: 1rem;
   font-weight: 800;
   letter-spacing: 0.01em;
@@ -250,7 +251,7 @@
 
 .login2-submit:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 18px rgba(242, 173, 8, 0.33);
+  box-shadow: 0 10px 18px rgba(16, 195, 188, 0.33);
 }
 
 .login2-alt {
@@ -259,7 +260,7 @@
 }
 
 .login2-alt a {
-  color: #284d9c;
+  color: #10c3bc;
   font-weight: 700;
   text-decoration: none;
 }

@@ -121,7 +121,6 @@ function App() {
           <Route path="/college-predictor/results" element={<CollegePredictorResults />} />
           <Route path="/energy-batch" element={<EnergyBatch />} />
           <Route path="/study-with-iitians" element={<StudyWithIITians />} />
-          <Route path="/home-2" element={<Home2 />} />
           <Route path="/cbt-portal" element={<CBTPortal />} />
           <Route path="/cbt-portal/custom-test" element={<CustomTestBuilder />} />
           <Route path="/cbt-portal/test/:testId" element={<TestInterface />} />
