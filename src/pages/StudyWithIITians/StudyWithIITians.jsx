@@ -9,7 +9,7 @@ import thumbnailTwo from "../../assets/Thumbnails/1.png";
 const EXTERNAL_LINKS = {
 	youtube: "https://www.youtube.com/@CollegeMap-in?sub_confirmation=1",
 	community:
-		"https://chat.whatsapp.com/Jv5KBBAeP62L9EzNqHHImwr?mode=ems_copy_t",
+		"https://chat.whatsapp.com/Jv5KBBAeP62L9EzNqHHmwr?mode=ems_copy_t",
 	availability: "https://wa.link/7dgukf",
 	talkToIITian: "https://wa.link/1j0y0o",
 };

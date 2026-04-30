@@ -102,6 +102,7 @@
         cursor: pointer;
         line-height: 0;
         border-radius: 6px;
+        pointer-events: none;
 
         &:hover {
           color: #10c3bc;
