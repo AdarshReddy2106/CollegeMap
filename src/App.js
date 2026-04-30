@@ -93,6 +93,7 @@ function App() {
       <RouteAnalyticsTracker />
       <Layout isLoggedIn={isLoggedIn}>
         <Routes>
+          <Route path="/home" element={<Home2 />} />
           <Route path="/lp" element={<LandingPage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/Questionaire" element={<Questionaire />} />
