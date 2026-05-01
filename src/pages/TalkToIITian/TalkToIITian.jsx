@@ -1,5 +1,5 @@
 import React from "react";
-import "./StudyWithIITians.css";
+import "./TalkToIITian.css";
 import thumbnailAsk from "../../assets/Thumbnails/Ask me anything.png";
 import thumbnailLive from "../../assets/Thumbnails/Live Slef Studies.png";
 import thumbnailMaxx from "../../assets/Thumbnails/MAXX.png";
@@ -79,11 +79,11 @@ const YouTubeIcon = () => (
 	</svg>
 );
 
-const StudyWithIITians = () => {
+const TalkToIITian = () => {
 	return (
 		<main className="study-with-iitians-page">
 			<section className="swi-layout">
-				<p className="swi-page-label">Study with IITians</p>
+				<p className="swi-page-label">Talk To IITians</p>
 
 				<div className="swi-panel">
 					<h1 className="swi-title">Top level guidance - From the top of the nation</h1>
@@ -188,4 +188,4 @@ const StudyWithIITians = () => {
 	);
 };
 
-export default StudyWithIITians;
+export default TalkToIITian;

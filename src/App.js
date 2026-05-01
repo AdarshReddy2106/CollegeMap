@@ -32,7 +32,7 @@ import HomePage from "./pages/Home/HomePage";
 import PYQPage from "./pages/PYQPage/PYQPage";
 import PYQAdvancedPage from "./pages/PYQAdvancedPage/PYQAdvancedPage";
 import EnergyBatch from "./pages/EnergyBatch/EnergyBatch";
-import StudyWithIITians from "./pages/StudyWithIITians/StudyWithIITians";
+import TalkToIITian from "./pages/TalkToIITian/TalkToIITian";
 import Home2 from "./pages/Home_2/Home2";
 import Login2 from "./pages/Login_2/login2";
 
@@ -120,7 +120,7 @@ function App() {
           <Route path="/college-predictor" element={<CollegePredictor />} />
           <Route path="/college-predictor/results" element={<CollegePredictorResults />} />
           <Route path="/energy-batch" element={<EnergyBatch />} />
-          <Route path="/study-with-iitians" element={<StudyWithIITians />} />
+          <Route path="/talk-to-iitians" element={<TalkToIITian />} />
           <Route path="/cbt-portal" element={<CBTPortal />} />
           <Route path="/cbt-portal/custom-test" element={<CustomTestBuilder />} />
           <Route path="/cbt-portal/test/:testId" element={<TestInterface />} />

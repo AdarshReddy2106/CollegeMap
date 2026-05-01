@@ -55,10 +55,10 @@ const Navbar = () => {
                 <div className={`nav-links ${isMenuOpen ? "open" : ""}`} ref={menuRef}>
                     {/* <li><Link to="/HowItWorks" onClick={() => setIsMenuOpen(false)}>How It Works?</Link></li>
                     <li><Link to="/AboutUs" onClick={() => setIsMenuOpen(false)}>About Us</Link></li> */}
-                     {/* <li><Link to="/AboutIITs" onClick={() => setIsMenuOpen(false)}>About IITs</Link></li> */}
+                    {/* <li><Link to="/AboutIITs" onClick={() => setIsMenuOpen(false)}>About IITs</Link></li> */}
                     <li><Link to="/resources" onClick={() => setIsMenuOpen(false)}>Top Resources</Link></li>
                     <li><Link to="/cbt-portal" onClick={() => setIsMenuOpen(false)}>Exam Portal</Link></li>
-                    <li 
+                    <li
                         className="nav-dropdown"
                         onClick={() => setPyqDropdownOpen(!pyqDropdownOpen)}
                     >
@@ -80,9 +80,9 @@ const Navbar = () => {
                     </li>
                     <li><Link to="/branch-comparison" onClick={() => setIsMenuOpen(false)}>College Finder</Link></li>
                     <li><Link to="/college-predictor" onClick={() => setIsMenuOpen(false)}>College Predictor</Link></li>
-                    <li><Link to="/study-with-iitians" onClick={() => setIsMenuOpen(false)}>Study with IITians</Link></li>
-                    
-                    
+                    <li><Link to="/talk-to-iitians" onClick={() => setIsMenuOpen(false)}>Talk To IITian</Link></li>
+
+
                     {/* <li><Link to="https://collegemap1.wordpress.com/" onClick={() => setIsMenuOpen(false)}>IIT News</Link></li> */}
                     {/* <li><Link to="https://wa.link/lo05a1" onClick={() => setIsMenuOpen(false)}>Talk to an IITian</Link></li> */}
                     {/* <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>IIT News</Link></li> */}
