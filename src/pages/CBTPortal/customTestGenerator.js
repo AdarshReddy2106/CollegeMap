@@ -116,9 +116,32 @@ const TEST_REGISTRY = [
   }
 ];
 
+// Registry of Question Bank chapters (chapter-wise practice questions)
+const QUESTION_BANK_REGISTRY = [
+  // Physics chapters
+  { folder: 'Kinemtaics', chapterId: 'kinemtaics', chapterName: 'Kinematics', subject: 'physics' },
+  { folder: 'Laws-of-Motion', chapterId: 'laws-of-motion', chapterName: 'Laws of Motion', subject: 'physics' },
+  { folder: 'Rotational-Motion', chapterId: 'rotational-motion', chapterName: 'Rotational Motion', subject: 'physics' },
+  { folder: 'Units-and-Measurements', chapterId: 'units-and-measurements', chapterName: 'Units and Measurements', subject: 'physics' },
+  { folder: 'Work,-Energy-and-Power', chapterId: 'work,-energy-and-power', chapterName: 'Work, Energy and Power', subject: 'physics' },
+  // Chemistry chapters
+  { folder: 'Atomic-Structure', chapterId: 'atomic-structure', chapterName: 'Atomic Structure', subject: 'chemistry' },
+  { folder: 'Chemical-Bonding-and-Molecular-Structure', chapterId: 'chemical-bonding-and-molecular-structure', chapterName: 'Chemical Bonding and Molecular Structure', subject: 'chemistry' },
+  { folder: 'Chemical-Thermodynamics', chapterId: 'chemical-thermodynamics', chapterName: 'Chemical Thermodynamics', subject: 'chemistry' },
+  { folder: 'Solutions', chapterId: 'solutions', chapterName: 'Solutions', subject: 'chemistry' },
+  { folder: 'Some-Basic-Concepts-in-Chemistry', chapterId: 'some-basic-concepts-in-chemistry', chapterName: 'Some Basic Concepts in Chemistry', subject: 'chemistry' },
+  // Mathematics chapters
+  { folder: 'Binomial-Theorem-and-Its-Simple-Applications', chapterId: 'binomial-theorem-and-its-simple-applications', chapterName: 'Binomial Theorem and Its Simple Applications', subject: 'mathematics' },
+  { folder: 'Complex-Numbers-and-Quadratic-Equations', chapterId: 'complex-numbers-and-quadratic-equations', chapterName: 'Complex Numbers and Quadratic Equations', subject: 'mathematics' },
+  { folder: 'Matrices-and-Determinants', chapterId: 'matrices-and-determinants', chapterName: 'Matrices and Determinants', subject: 'mathematics' },
+  { folder: 'Permutations-and-Combinations', chapterId: 'permutations-and-combinations', chapterName: 'Permutations and Combinations', subject: 'mathematics' },
+  { folder: 'Sets,-Relations-and-Functions', chapterId: 'sets,-relations-and-functions', chapterName: 'Sets, Relations and Functions', subject: 'mathematics' },
+];
+
 // Cache for loaded metadata
 let metadataCache = {};
 let answerKeyCache = {};
+let questionBankCache = {};
 
 /**
  * Load the difficulty/lesson metadata JSON for a test folder
@@ -190,6 +213,100 @@ const loadAnswerKeyForTest = async (testFolder) => {
 };
 
 /**
+ * Load a Question Bank chapter and return question objects.
+ * Each chapter has an answer key JSON and difficulty folders with question images.
+ */
+const loadQuestionBankChapter = async (chapterInfo) => {
+  if (questionBankCache[chapterInfo.chapterId]) {
+    return questionBankCache[chapterInfo.chapterId];
+  }
+
+  const questions = [];
+
+  try {
+    // Build the URL path using standard encodeURI like Phase 1 does
+    const answerKeyPath = `/QUESTION_BANK/${chapterInfo.folder}/${chapterInfo.chapterId}-answer-key.json`;
+    const encodedPath = encodeURI(answerKeyPath);
+    
+    const response = await fetch(encodedPath);
+    
+    if (!response.ok) {
+      console.warn(`[QB Debug] HTTP ${response.status} for ${chapterInfo.chapterName}: ${encodedPath}`);
+      return questions;
+    }
+
+    // CRA dev server returns index.html (200 OK) for non-existent static files
+    const responseText = await response.text();
+    
+    if (responseText.trim().startsWith('<')) {
+      console.warn(`[QB Debug] Got HTML instead of JSON for ${chapterInfo.chapterName} — file not found at: ${encodedPath}`);
+      return questions;
+    }
+
+    let answerKeyData;
+    try {
+      answerKeyData = JSON.parse(responseText);
+    } catch (parseErr) {
+      console.warn(`[QB Debug] JSON parse error for ${chapterInfo.chapterName}:`, parseErr.message);
+      return questions;
+    }
+
+    const normalizedSubject = chapterInfo.subject;
+    const subjectDisplayName = normalizedSubject === 'mathematics' ? 'Mathematics' :
+      normalizedSubject.charAt(0).toUpperCase() + normalizedSubject.slice(1);
+
+    // Process each difficulty level
+    if (answerKeyData.difficulties && Array.isArray(answerKeyData.difficulties)) {
+      for (const difficultyGroup of answerKeyData.difficulties) {
+        const difficulty = difficultyGroup.difficultyId; // 'easy', 'medium', 'hard'
+
+        if (difficultyGroup.questions && Array.isArray(difficultyGroup.questions)) {
+          for (const qData of difficultyGroup.questions) {
+            const qNum = qData.questionNumber;
+
+            const questionObj = {
+              questionNumber: qNum,
+              subject: normalizedSubject,
+              subjectDisplayName,
+              lesson: chapterInfo.chapterName,
+              difficulty,
+              type: qData.questionType === 'single-correct' ? 'MCQ' : 'Numerical',
+              testFolder: `QB-${chapterInfo.chapterId}`,
+              subjectFolder: '',
+              hasAnswerKey: true,
+              source: 'question-bank',
+              // Image path matching Phase 1 encoding pattern
+              imagePath: encodeURI(`/QUESTION_BANK/${chapterInfo.folder}/${difficulty}/${qNum}.png`),
+              questionType: qData.questionType || 'single-correct',
+              correctAnswer: qData.correctAnswer || [],
+              correctIntegerAnswer: qData.correctIntegerAnswer || null,
+              correctAnswerKeys: qData.correctAnswer || [],
+              options: qData.options || [
+                { optionId: 'A', optionText: 'A' },
+                { optionId: 'B', optionText: 'B' },
+                { optionId: 'C', optionText: 'C' },
+                { optionId: 'D', optionText: 'D' }
+              ],
+              marks: qData.marks || 4,
+              negativeMarks: qData.negativeMarks || -1
+            };
+
+            questions.push(questionObj);
+          }
+        }
+      }
+    }
+
+    questionBankCache[chapterInfo.chapterId] = questions;
+    console.log(`[QB Debug] ✅ Loaded ${questions.length} questions for "${chapterInfo.chapterName}"`);
+  } catch (error) {
+    console.warn(`[QB Debug] Exception for ${chapterInfo.chapterName}:`, error);
+  }
+
+  return questions;
+};
+
+/**
  * Build the complete question pool from all registered tests.
  * Returns { questions: [...], lessonsBySubject: {...}, allLessons: [...] }
  */
@@ -201,6 +318,7 @@ export const buildQuestionPool = async () => {
     mathematics: new Set()
   };
 
+  // --- Phase 1: Load questions from previous year test papers ---
   for (const testInfo of TEST_REGISTRY) {
     try {
       const metadata = await loadTestMetadataJSON(testInfo.folder);
@@ -285,6 +403,27 @@ export const buildQuestionPool = async () => {
     }
   }
 
+  // --- Phase 2: Load questions from QUESTION BANK (chapter-wise) ---
+  console.log(`[QB Debug] Starting Phase 2: Loading ${QUESTION_BANK_REGISTRY.length} chapters from QUESTION BANK...`);
+  let totalChaptersLoaded = 0;
+  for (const chapterInfo of QUESTION_BANK_REGISTRY) {
+    try {
+      const chapterQuestions = await loadQuestionBankChapter(chapterInfo);
+      console.log(`[QB Debug] Chapter "${chapterInfo.chapterName}": loaded ${chapterQuestions.length} questions`);
+      if (chapterQuestions.length > 0) {
+        totalChaptersLoaded++;
+        for (const q of chapterQuestions) {
+          lessonsBySubject[q.subject].add(q.lesson);
+          questions.push(q);
+        }
+      }
+    } catch (error) {
+      console.warn(`Failed to load question bank chapter ${chapterInfo.chapterName}:`, error);
+    }
+  }
+
+  console.log(`Question Bank: Loaded ${totalChaptersLoaded} chapters with questions from QUESTION BANK`);
+
   // Convert sets to sorted arrays
   const lessonsBySubjectArray = {};
   for (const [subject, lessons] of Object.entries(lessonsBySubject)) {
@@ -301,7 +440,8 @@ export const buildQuestionPool = async () => {
     questions,
     lessonsBySubject: lessonsBySubjectArray,
     allLessons,
-    totalTests: TEST_REGISTRY.length
+    totalTests: TEST_REGISTRY.length,
+    totalChapters: totalChaptersLoaded
   };
 };
 

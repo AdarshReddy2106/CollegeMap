@@ -14,6 +14,7 @@ const CustomTestBuilder = () => {
   const [questionPool, setQuestionPool] = useState([]);
   const [lessonsBySubject, setLessonsBySubject] = useState({});
   const [totalTestsLoaded, setTotalTestsLoaded] = useState(0);
+  const [totalChaptersLoaded, setTotalChaptersLoaded] = useState(0);
 
   // Filter state
   const [selectedSubjects, setSelectedSubjects] = useState([]);
@@ -21,7 +22,7 @@ const CustomTestBuilder = () => {
   const [selectedLessons, setSelectedLessons] = useState([]);
   const [questionCount, setQuestionCount] = useState(25);
   const [questionType, setQuestionType] = useState('all'); // 'all', 'mcq', 'numerical'
-  
+
   // UI state
   const [showLessonPicker, setShowLessonPicker] = useState(false);
   const [lessonSearch, setLessonSearch] = useState('');
@@ -50,6 +51,7 @@ const CustomTestBuilder = () => {
         setQuestionPool(pool.questions);
         setLessonsBySubject(pool.lessonsBySubject);
         setTotalTestsLoaded(pool.totalTests);
+        setTotalChaptersLoaded(pool.totalChapters || 0);
         setLoading(false);
       })
       .catch(err => {
@@ -68,12 +70,12 @@ const CustomTestBuilder = () => {
   }), [selectedSubjects, selectedLessons, selectedDifficulties, questionType]);
 
   // Filtered questions and counts
-  const filteredQuestions = useMemo(() => 
+  const filteredQuestions = useMemo(() =>
     filterQuestions(questionPool, currentFilters),
     [questionPool, currentFilters]
   );
 
-  const availableCounts = useMemo(() => 
+  const availableCounts = useMemo(() =>
     getAvailableCounts(questionPool, currentFilters),
     [questionPool, currentFilters]
   );
@@ -108,7 +110,7 @@ const CustomTestBuilder = () => {
   // Handlers
   const toggleSubject = (subject) => {
     setSelectedSubjects(prev => {
-      const next = prev.includes(subject) 
+      const next = prev.includes(subject)
         ? prev.filter(s => s !== subject)
         : [...prev, subject];
       // Clear lessons that aren't available in new subject selection
@@ -142,9 +144,9 @@ const CustomTestBuilder = () => {
 
   const handleGenerate = () => {
     if (filteredQuestions.length === 0) return;
-    
+
     setGenerating(true);
-    
+
     try {
       const config = {
         subjects: selectedSubjects,
@@ -153,7 +155,7 @@ const CustomTestBuilder = () => {
         questionType,
         questionCount
       };
-      
+
       const testData = generateCustomTest(filteredQuestions, questionCount, config);
       setGeneratedTestId(testData.paperId);
       setShowGuidelines(true);
@@ -195,8 +197,7 @@ const CustomTestBuilder = () => {
       <div className="custom-test-builder">
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <h2>Loading Question Bank...</h2>
-          <p>Scanning {TEST_REGISTRY_COUNT} test papers for available questions</p>
+          <h2>Loading...</h2>
         </div>
       </div>
     );
@@ -217,7 +218,7 @@ const CustomTestBuilder = () => {
   return (
     <div className="custom-test-builder">
       {/* Header */}
-      <motion.div 
+      <motion.div
         className="builder-header"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -230,14 +231,15 @@ const CustomTestBuilder = () => {
         </div>
         <h1>📝 Custom Test Builder</h1>
         <p className="subtitle">
-          Build your own practice test from <strong>{questionPool.length}</strong> questions 
+          Build your own practice test from <strong>{questionPool.length}</strong> questions
           across <strong>{totalTestsLoaded}</strong> JEE Main papers
+          {totalChaptersLoaded > 0 && <> + <strong>{totalChaptersLoaded}</strong> chapter-wise question banks</>}
         </p>
       </motion.div>
 
       <div className="builder-content">
         {/* Left Panel - Filters */}
-        <motion.div 
+        <motion.div
           className="filters-panel"
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
@@ -258,7 +260,7 @@ const CustomTestBuilder = () => {
                   onClick={() => toggleSubject(subject.id)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  style={selectedSubjects.includes(subject.id) 
+                  style={selectedSubjects.includes(subject.id)
                     ? { borderColor: subject.color, backgroundColor: `${subject.color}15` }
                     : {}
                   }
@@ -308,23 +310,23 @@ const CustomTestBuilder = () => {
               Select Topics
             </h3>
             <p className="section-hint">
-              {selectedLessons.length === 0 
+              {selectedLessons.length === 0
                 ? 'Leave empty for all topics'
                 : `${selectedLessons.length} topic${selectedLessons.length > 1 ? 's' : ''} selected`
               }
             </p>
-            
-            <button 
+
+            <button
               className="topic-picker-button"
               onClick={() => setShowLessonPicker(!showLessonPicker)}
             >
-              {showLessonPicker ? '▲ Hide Topics' : '▼ Choose Topics'} 
+              {showLessonPicker ? '▲ Hide Topics' : '▼ Choose Topics'}
               ({uniqueAvailableLessons.length} available)
             </button>
 
             <AnimatePresence>
               {showLessonPicker && (
-                <motion.div 
+                <motion.div
                   className="lesson-picker"
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
@@ -452,7 +454,7 @@ const CustomTestBuilder = () => {
         </motion.div>
 
         {/* Right Panel - Preview & Generate */}
-        <motion.div 
+        <motion.div
           className="preview-panel"
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
@@ -460,7 +462,7 @@ const CustomTestBuilder = () => {
         >
           <div className="preview-card">
             <h3>Test Preview</h3>
-            
+
             <div className="preview-stats">
               <div className="stat-item">
                 <span className="stat-value">{Math.min(questionCount, filteredQuestions.length)}</span>
@@ -488,16 +490,16 @@ const CustomTestBuilder = () => {
                 {Object.entries(availableCounts.bySubject).map(([subject, count]) => (
                   <div key={subject} className="breakdown-row">
                     <span className="breakdown-label">
-                      {subject === 'mathematics' ? 'Mathematics' : 
-                       subject.charAt(0).toUpperCase() + subject.slice(1)}
+                      {subject === 'mathematics' ? 'Mathematics' :
+                        subject.charAt(0).toUpperCase() + subject.slice(1)}
                     </span>
                     <div className="breakdown-bar">
-                      <div 
+                      <div
                         className="bar-fill"
-                        style={{ 
+                        style={{
                           width: `${(count / filteredQuestions.length) * 100}%`,
                           backgroundColor: subject === 'physics' ? '#4CAF50' :
-                                          subject === 'chemistry' ? '#FF9800' : '#2196F3'
+                            subject === 'chemistry' ? '#FF9800' : '#2196F3'
                         }}
                       />
                     </div>
@@ -514,23 +516,23 @@ const CustomTestBuilder = () => {
                 {Object.entries(availableCounts.byDifficulty)
                   .filter(([, count]) => count > 0)
                   .map(([diff, count]) => (
-                  <div key={diff} className="breakdown-row">
-                    <span className="breakdown-label">
-                      {diff.charAt(0).toUpperCase() + diff.slice(1)}
-                    </span>
-                    <div className="breakdown-bar">
-                      <div 
-                        className="bar-fill"
-                        style={{ 
-                          width: `${(count / filteredQuestions.length) * 100}%`,
-                          backgroundColor: diff === 'easy' ? '#4CAF50' :
-                                          diff === 'medium' ? '#FF9800' : '#f44336'
-                        }}
-                      />
+                    <div key={diff} className="breakdown-row">
+                      <span className="breakdown-label">
+                        {diff.charAt(0).toUpperCase() + diff.slice(1)}
+                      </span>
+                      <div className="breakdown-bar">
+                        <div
+                          className="bar-fill"
+                          style={{
+                            width: `${(count / filteredQuestions.length) * 100}%`,
+                            backgroundColor: diff === 'easy' ? '#4CAF50' :
+                              diff === 'medium' ? '#FF9800' : '#f44336'
+                          }}
+                        />
+                      </div>
+                      <span className="breakdown-count">{count}</span>
                     </div>
-                    <span className="breakdown-count">{count}</span>
-                  </div>
-                ))}
+                  ))}
               </div>
             )}
 
@@ -538,7 +540,7 @@ const CustomTestBuilder = () => {
             <div className="practice-notice">
               <span className="notice-icon">ℹ️</span>
               <p>
-                Questions sourced from JEE Main papers. Some questions may be in 
+                Questions sourced from JEE Main papers. Some questions may be in
                 <strong> practice mode</strong> (no auto-scoring) if answer keys are unavailable.
               </p>
             </div>
@@ -611,8 +613,8 @@ const CustomTestBuilder = () => {
 
                 <div className="declaration-box">
                   <label className="checkbox-container">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       checked={termsAccepted}
                       onChange={(e) => setTermsAccepted(e.target.checked)}
                     />
@@ -625,8 +627,8 @@ const CustomTestBuilder = () => {
 
                 <div className="proceed-button-container">
                   <button className="proceed-btn" onClick={handleConfirmStartTest}>PROCEED</button>
-                  <button 
-                    className="cancel-btn" 
+                  <button
+                    className="cancel-btn"
                     onClick={() => { setShowGuidelines(false); setGeneratedTestId(null); }}
                   >
                     CANCEL
