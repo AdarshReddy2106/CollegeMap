@@ -9,7 +9,7 @@ const ResourcesPage = () => {
   const location = useLocation();
   const [resources, setResources] = useState([]);
   const [filteredResources, setFilteredResources] = useState([]);
-  const [activeSubject, setActiveSubject] = useState('Physics');
+  const [activeSubject, setActiveSubject] = useState('All');
   const [activeType, setActiveType] = useState('JEE Busters');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBookSource, setSelectedBookSource] = useState(null);
