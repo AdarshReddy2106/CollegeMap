@@ -497,7 +497,7 @@ const TestInterface = () => {
       for (const ext of extensions) {
         const testUrl = `${question.questionImage}${ext}`;
         try {
-          const response = await fetch(testUrl, { method: 'HEAD' });
+          const response = await fetch(testUrl, { method: 'GET' });
           if (response.ok) {
             setImageUrls(prev => ({
               ...prev,
@@ -1360,13 +1360,13 @@ const TestInterface = () => {
                 ) : (
                   <img 
                     src={imageUrls[currentQuestionData.questionId] || 
-                         `${currentQuestionData.questionImage}.jpg`} 
+                         (currentQuestionData.questionImage.match(/\.(png|jpe?g)$/i) ? currentQuestionData.questionImage : `${currentQuestionData.questionImage}.png`)} 
                     alt={`Question ${currentQuestionData.questionNumber}`} 
                     className="question-image"
                     onError={(e) => {
                       // Try all extensions systematically
-                      const basePath = currentQuestionData.questionImage;
-                      const extensions = ['.jpg', '.jpeg', '.png'];
+                      const basePath = currentQuestionData.questionImage.replace(/\.(png|jpe?g)$/i, '');
+                      const extensions = ['.png', '.jpg', '.jpeg'];
                       const currentSrc = e.target.src;
                       
                       // Find which extension we tried

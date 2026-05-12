@@ -203,85 +203,6 @@ const CBTPortal = () => {
         </div>
       </motion.div>
 
-      {/* ─── Previous Year Tests Section ─── */}
-      <motion.div
-        className="pyt-section"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        <div className="pyt-header">
-          <h2>JEE Mains Previous Year Tests</h2>
-        </div>
-
-        <div className="pyt-filters">
-          {/* Year */}
-          <div className="filter-dropdown">
-            <select value={filterYear} onChange={e => handleYearChange(e.target.value)}>
-              <option value="">YEAR</option>
-              {availableYears.map(y => <option key={y} value={y}>{y}</option>)}
-            </select>
-            <span className="dropdown-arrow">▼</span>
-          </div>
-
-          {/* Session */}
-          <div className="filter-dropdown">
-            <select value={filterSession} onChange={e => handleSessionChange(e.target.value)} disabled={!filterYear}>
-              <option value="">Session</option>
-              {availableSessions.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-            <span className="dropdown-arrow">▼</span>
-          </div>
-
-          {/* Date */}
-          <div className="filter-dropdown">
-            <select value={filterDate} onChange={e => handleDateChange(e.target.value)} disabled={!filterSession}>
-              <option value="">Date</option>
-              {availableDates.map(d => <option key={d} value={d}>{d}</option>)}
-            </select>
-            <span className="dropdown-arrow">▼</span>
-          </div>
-
-          {/* Shift */}
-          <div className="filter-dropdown">
-            <select value={filterShift} onChange={e => handleShiftChange(e.target.value)} disabled={!filterDate}>
-              <option value="">Shift</option>
-              {availableShifts.map(s => <option key={s} value={s}>Shift {s}</option>)}
-            </select>
-            <span className="dropdown-arrow">▼</span>
-          </div>
-        </div>
-
-        {/* Filtered test results */}
-        <AnimatePresence>
-          {filterYear && filteredTests.length > 0 && (
-            <motion.div
-              className="pyt-results"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-            >
-              {filteredTests.map(test => (
-                <motion.div className="pyt-test-card" key={test.id} whileHover={{ scale: 1.01 }}>
-                  <div className="pyt-test-info">
-                    <h4>{test.title}</h4>
-                    <span className="pyt-meta">{test.duration} &middot; {test.totalQuestions} Questions</span>
-                  </div>
-                  <button className="pyt-start-btn" onClick={() => handleStartTest(test.id)}>
-                    Start Test
-                  </button>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-          {filterYear && filteredTests.length === 0 && (
-            <motion.p className="pyt-empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              No tests match the selected filters.
-            </motion.p>
-          )}
-        </AnimatePresence>
-      </motion.div>
-
       {/* ─── Make-your-own Test Section ─── */}
       <motion.div
         className="custom-test-section"
@@ -512,6 +433,85 @@ const CBTPortal = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ─── Previous Year Tests Section ─── */}
+      <motion.div
+        className="pyt-section"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <div className="pyt-header">
+          <h2>JEE Mains Previous Year Tests</h2>
+        </div>
+
+        <div className="pyt-filters">
+          {/* Year */}
+          <div className="filter-dropdown">
+            <select value={filterYear} onChange={e => handleYearChange(e.target.value)}>
+              <option value="">YEAR</option>
+              {availableYears.map(y => <option key={y} value={y}>{y}</option>)}
+            </select>
+            <span className="dropdown-arrow">▼</span>
+          </div>
+
+          {/* Session */}
+          <div className="filter-dropdown">
+            <select value={filterSession} onChange={e => handleSessionChange(e.target.value)} disabled={!filterYear}>
+              <option value="">Session</option>
+              {availableSessions.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <span className="dropdown-arrow">▼</span>
+          </div>
+
+          {/* Date */}
+          <div className="filter-dropdown">
+            <select value={filterDate} onChange={e => handleDateChange(e.target.value)} disabled={!filterSession}>
+              <option value="">Date</option>
+              {availableDates.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <span className="dropdown-arrow">▼</span>
+          </div>
+
+          {/* Shift */}
+          <div className="filter-dropdown">
+            <select value={filterShift} onChange={e => handleShiftChange(e.target.value)} disabled={!filterDate}>
+              <option value="">Shift</option>
+              {availableShifts.map(s => <option key={s} value={s}>Shift {s}</option>)}
+            </select>
+            <span className="dropdown-arrow">▼</span>
+          </div>
+        </div>
+
+        {/* Filtered test results */}
+        <AnimatePresence>
+          {filterYear && filteredTests.length > 0 && (
+            <motion.div
+              className="pyt-results"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              {filteredTests.map(test => (
+                <motion.div className="pyt-test-card" key={test.id} whileHover={{ scale: 1.01 }}>
+                  <div className="pyt-test-info">
+                    <h4>{test.title}</h4>
+                    <span className="pyt-meta">{test.duration} &middot; {test.totalQuestions} Questions</span>
+                  </div>
+                  <button className="pyt-start-btn" onClick={() => handleStartTest(test.id)}>
+                    Start Test
+                  </button>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+          {filterYear && filteredTests.length === 0 && (
+            <motion.p className="pyt-empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              No tests match the selected filters.
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 };

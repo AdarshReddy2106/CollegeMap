@@ -424,12 +424,12 @@ const CBTDashboard = () => {
                                   let url = await resolveImageUrl(question.questionImage);
                                   
                                   // If that fails, try extensions
-                                  if (!url) {
+                                    const basePath = question.questionImage.replace(/\.(png|jpe?g)$/i, '');
                                     const extensions = ['.png', '.jpg', '.jpeg'];
                                     for (const ext of extensions) {
-                                      const testUrl = `${question.questionImage}${ext}`;
+                                      const testUrl = `${basePath}${ext}`;
                                       try {
-                                        const response = await fetch(testUrl, { method: 'HEAD' });
+                                        const response = await fetch(testUrl, { method: 'GET' });
                                         if (response.ok) {
                                           url = testUrl;
                                           break;
@@ -438,7 +438,6 @@ const CBTDashboard = () => {
                                         // Continue to next extension
                                       }
                                     }
-                                  }
                                   
                                   if (url) {
                                     resolved[question.questionId] = url;
@@ -529,12 +528,13 @@ const CBTDashboard = () => {
                       {question.questionImage && (
                         <div className="question-image-container">
                           <img 
-                            src={resolvedImageUrls[question.questionId] || question.questionImage} 
+                            src={resolvedImageUrls[question.questionId] || 
+                                 (question.questionImage.match(/\.(png|jpe?g)$/i) ? question.questionImage : `${question.questionImage}.png`)} 
                             alt={`Question ${question.questionNumber}`} 
                             className="question-image"
                             onError={(e) => {
                               // Try different extensions if current fails
-                              const basePath = question.questionImage;
+                              const basePath = question.questionImage.replace(/\.(png|jpe?g)$/i, '');
                               const extensions = ['.png', '.jpg', '.jpeg'];
                               const currentSrc = e.target.src;
                               
@@ -548,11 +548,11 @@ const CBTDashboard = () => {
                               }
                               
                               // Try next extension
-                              if (currentExtIndex < extensions.length - 1) {
+                              if (currentExtIndex !== -1 && currentExtIndex < extensions.length - 1) {
                                 const nextExt = extensions[currentExtIndex + 1];
                                 e.target.src = `${basePath}${nextExt}`;
                                 console.log(`🔄 Trying ${nextExt} for Q${question.questionNumber}`);
-                              } else if (currentExtIndex === -1) {
+                              } else if (currentExtIndex === -1 && !currentSrc.includes('.png')) {
                                 // First attempt, try .png
                                 e.target.src = `${basePath}.png`;
                               } else {

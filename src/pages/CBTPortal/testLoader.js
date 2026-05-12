@@ -75,12 +75,13 @@ export const loadAnswerKey = async (testName) => {
  */
 export const checkImageExists = async (imagePath) => {
   // Try .png first since all images are .png files
+  const basePath = imagePath.replace(/\.(png|jpe?g)$/i, '');
   const extensions = ['.png', '.PNG', '.jpg', '.JPG', '.jpeg', '.JPEG'];
   
   for (const ext of extensions) {
     try {
-      const fullPath = `${imagePath}${ext}`;
-      const response = await fetch(fullPath, { method: 'HEAD' });
+      const fullPath = `${basePath}${ext}`;
+      const response = await fetch(fullPath, { method: 'GET' });
       if (response.ok) {
         console.log(`✅ Found image: ${fullPath}`);
         return fullPath;

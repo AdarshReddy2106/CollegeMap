@@ -282,7 +282,7 @@ const loadQuestionBankChapter = async (chapterInfo) => {
               hasAnswerKey: true,
               source: 'question-bank',
               // Image path matching encoding pattern, without explicit encodeURI for Dev Server compat
-              imagePath: `/QUESTION_BANK/${chapterInfo.folder}/${difficulty}/${qNum}.png`,
+              imagePath: `/QUESTION_BANK/${chapterInfo.folder}/${difficulty}/${qNum}`,
               questionType: qData.questionType || 'single-correct',
               correctAnswer: qData.correctAnswer || [],
               correctIntegerAnswer: qData.correctIntegerAnswer || null,

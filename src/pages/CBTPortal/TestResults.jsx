@@ -54,12 +54,12 @@ const TestResults = ({ results, testData, imageUrls = {}, userProfile = {} }) =>
             resolved[question.questionId] = resolvedUrl;
           } else {
             // Fallback to original path with extensions
-            const basePath = question.questionImage;
-            const extensions = ['.jpg', '.jpeg', '.png'];
+            const basePath = question.questionImage.replace(/\.(png|jpe?g)$/i, '');
+            const extensions = ['.png', '.jpg', '.jpeg'];
             for (const ext of extensions) {
               const testUrl = `${basePath}${ext}`;
               try {
-                const response = await fetch(testUrl, { method: 'HEAD' });
+                const response = await fetch(testUrl, { method: 'GET' });
                 if (response.ok) {
                   resolved[question.questionId] = testUrl;
                   break;
@@ -314,13 +314,14 @@ const TestResults = ({ results, testData, imageUrls = {}, userProfile = {} }) =>
                     {question.questionImage && (
                       <div className="question-image-container">
                         <img 
-                          src={resolvedImageUrls[question.questionId] || imageUrls[question.questionId] || question.questionImage} 
+                          src={resolvedImageUrls[question.questionId] || imageUrls[question.questionId] || 
+                               (question.questionImage.match(/\.(png|jpe?g)$/i) ? question.questionImage : `${question.questionImage}.png`)} 
                           alt={`Question ${question.questionNumber}`} 
                           className="question-image"
                           onError={(e) => {
                             // Try different extensions if current fails
-                            const basePath = question.questionImage;
-                            const extensions = ['.jpg', '.jpeg', '.png'];
+                            const basePath = question.questionImage.replace(/\.(png|jpe?g)$/i, '');
+                            const extensions = ['.png', '.jpg', '.jpeg'];
                             let currentExt = 0;
                             
                             const tryNextExtension = () => {
