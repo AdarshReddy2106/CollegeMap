@@ -114,7 +114,7 @@ function App() {
           <Route path="/seminar" element={<SeminarPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
           <Route path="/pyq" element={<PYQPage />} />
-          <Route path="/pyq-advanced" element={<PYQAdvancedPage />} />
+          {/* <Route path="/pyq-advanced" element={<PYQAdvancedPage />} /> */}
           <Route path="/news" element={<NewsPage />} />
           <Route path="/branch-comparison" element={<BranchComparison />} />
           <Route path="/college-predictor" element={<CollegePredictor />} />
