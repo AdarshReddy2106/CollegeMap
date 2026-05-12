@@ -11,17 +11,6 @@
 
 // Registry of all available test papers with metadata
 const TEST_REGISTRY = [
-  // 2022, 2023 tests WITH answer keys
-  {
-    folder: 'jee-main-2022-27th-jan-shift-1',
-    hasAnswerKey: true,
-    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'mathematics' }
-  },
-  {
-    folder: 'jee-main-2023-25th-jan-shift-2',
-    hasAnswerKey: true,
-    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'mathematics' }
-  },
   // 2026 tests - 21-jan use capitalized folders; 22-jan through 28th use lowercase (Linux case-sensitive)
   {
     folder: 'jee-main-2026-21-jan-shift-1',
@@ -100,17 +89,17 @@ const TEST_REGISTRY = [
     subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
   },
   {
-    folder: 'JEE Main 2025 (28 Jan Shift 2)',
+    folder: 'jee-main-2025-28th-jan-shift-2',
     hasAnswerKey: true,
     subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
   },
   {
-    folder: 'JEE Main 2025 (29 Jan Shift 1)',
+    folder: 'jee-main-2025-29th-jan-shift-1',
     hasAnswerKey: true,
     subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
   },
   {
-    folder: 'JEE Main 2025 (29 Jan Shift 2)',
+    folder: 'jee-main-2025-29th-jan-shift-2',
     hasAnswerKey: true,
     subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
   }
@@ -119,23 +108,62 @@ const TEST_REGISTRY = [
 // Registry of Question Bank chapters (chapter-wise practice questions)
 const QUESTION_BANK_REGISTRY = [
   // Physics chapters
+  { folder: 'Atoms-and-Nuclei', chapterId: 'atoms-and-nuclei', chapterName: 'Atoms and Nuclei', subject: 'physics' },
+  { folder: 'Current-Electricity', chapterId: 'current-electricity', chapterName: 'Current Electricity', subject: 'physics' },
+  { folder: 'Dual-Nature-of-Matter-and-Radiation', chapterId: 'dual-nature-of-matter-and-radiation', chapterName: 'Dual Nature of Matter and Radiation', subject: 'physics' },
+  { folder: 'Electromagnetic-Induction-and-Alternating-Currents', chapterId: 'electromagnetic-induction-and-alternating-currents', chapterName: 'Electromagnetic Induction and Alternating Currents', subject: 'physics' },
+  { folder: 'Electromagnetic-Waves', chapterId: 'electromagnetic-waves', chapterName: 'Electromagnetic Waves', subject: 'physics' },
+  { folder: 'Electronic-Devices', chapterId: 'electronic-devices', chapterName: 'Electronic Devices', subject: 'physics' },
+  { folder: 'Electrostatics', chapterId: 'electrostatics', chapterName: 'Electrostatics', subject: 'physics' },
+  { folder: 'Experimental-Skills', chapterId: 'experimental-skills', chapterName: 'Experimental Skills', subject: 'physics' },
+  { folder: 'Gravitation', chapterId: 'gravitation', chapterName: 'Gravitation', subject: 'physics' },
   { folder: 'Kinemtaics', chapterId: 'kinemtaics', chapterName: 'Kinematics', subject: 'physics' },
+  { folder: 'Kinetic-Theory-of-Gases', chapterId: 'kinetic-theory-of-gases', chapterName: 'Kinetic Theory of Gases', subject: 'physics' },
   { folder: 'Laws-of-Motion', chapterId: 'laws-of-motion', chapterName: 'Laws of Motion', subject: 'physics' },
+  { folder: 'Magnetic-Effects-of-Current-and-Magnetism', chapterId: 'magnetic-effects-of-current-and-magnetism', chapterName: 'Magnetic Effects of Current and Magnetism', subject: 'physics' },
+  { folder: 'Optics', chapterId: 'optics', chapterName: 'Optics', subject: 'physics' },
+  { folder: 'Oscillations-and-Waves', chapterId: 'oscillations-and-waves', chapterName: 'Oscillations and Waves', subject: 'physics' },
+  { folder: 'Properties-of-Solids-and-Liquids', chapterId: 'properties-of-solids-and-liquids', chapterName: 'Properties of Solids and Liquids', subject: 'physics' },
   { folder: 'Rotational-Motion', chapterId: 'rotational-motion', chapterName: 'Rotational Motion', subject: 'physics' },
+  { folder: 'Thermodynamics', chapterId: 'thermodynamics', chapterName: 'Thermodynamics', subject: 'physics' },
   { folder: 'Units-and-Measurements', chapterId: 'units-and-measurements', chapterName: 'Units and Measurements', subject: 'physics' },
   { folder: 'Work,-Energy-and-Power', chapterId: 'work,-energy-and-power', chapterName: 'Work, Energy and Power', subject: 'physics' },
   // Chemistry chapters
   { folder: 'Atomic-Structure', chapterId: 'atomic-structure', chapterName: 'Atomic Structure', subject: 'chemistry' },
+  { folder: 'Biomolecules', chapterId: 'biomolecules', chapterName: 'Biomolecules', subject: 'chemistry' },
+  { folder: 'Chemical-Kinetics', chapterId: 'chemical-kinetics', chapterName: 'Chemical Kinetics', subject: 'chemistry' },
   { folder: 'Chemical-Bonding-and-Molecular-Structure', chapterId: 'chemical-bonding-and-molecular-structure', chapterName: 'Chemical Bonding and Molecular Structure', subject: 'chemistry' },
   { folder: 'Chemical-Thermodynamics', chapterId: 'chemical-thermodynamics', chapterName: 'Chemical Thermodynamics', subject: 'chemistry' },
+  { folder: 'Classification-of-Elements-and-Periodicity-in-Properties', chapterId: 'classification-of-elements-and-periodicity-in-properties', chapterName: 'Classification of Elements and Periodicity in Properties', subject: 'chemistry' },
+  { folder: 'Coordination-Compounds', chapterId: 'coordination-compounds', chapterName: 'Coordination Compounds', subject: 'chemistry' },
+  { folder: 'd--and-f-Block-Elements', chapterId: 'd--and-f-block-elements', chapterName: 'd- and f-Block Elements', subject: 'chemistry' },
+  { folder: 'Equilibrium', chapterId: 'equilibrium', chapterName: 'Equilibrium', subject: 'chemistry' },
+  { folder: 'Hydrocarbons', chapterId: 'hydrocarbons', chapterName: 'Hydrocarbons', subject: 'chemistry' },
+  { folder: 'Organic-Compounds-Containing-Halogens', chapterId: 'organic-compounds-containing-halogens', chapterName: 'Organic Compounds Containing Halogens', subject: 'chemistry' },
+  { folder: 'Organic-Compounds-Containing-Nitrogen', chapterId: 'organic-compounds-containing-nitrogen', chapterName: 'Organic Compounds Containing Nitrogen', subject: 'chemistry' },
+  { folder: 'Organic-Compounds-Containing-Oxygen', chapterId: 'organic-compounds-containing-oxygen', chapterName: 'Organic Compounds Containing Oxygen', subject: 'chemistry' },
+  { folder: 'p-Block-Elements', chapterId: 'p-block-elements', chapterName: 'p-Block Elements', subject: 'chemistry' },
+  { folder: 'Principles-Related-to-Practical-Chemistry', chapterId: 'principles-related-to-practical-chemistry', chapterName: 'Principles Related to Practical Chemistry', subject: 'chemistry' },
+  { folder: 'Purification-and-Characterisation-of-Organic-Compounds', chapterId: 'purification-and-characterisation-of-organic-compounds', chapterName: 'Purification and Characterisation of Organic Compounds', subject: 'chemistry' },
+  { folder: 'Redox-Reactions-and-Electrochemistry', chapterId: 'redox-reactions-and-electrochemistry', chapterName: 'Redox Reactions and Electrochemistry', subject: 'chemistry' },
   { folder: 'Solutions', chapterId: 'solutions', chapterName: 'Solutions', subject: 'chemistry' },
+  { folder: 'Some-Basic-Principles-of-Organic-Chemistry', chapterId: 'some-basic-principles-of-organic-chemistry', chapterName: 'Some Basic Principles of Organic Chemistry', subject: 'chemistry' },
   { folder: 'Some-Basic-Concepts-in-Chemistry', chapterId: 'some-basic-concepts-in-chemistry', chapterName: 'Some Basic Concepts in Chemistry', subject: 'chemistry' },
   // Mathematics chapters
   { folder: 'Binomial-Theorem-and-Its-Simple-Applications', chapterId: 'binomial-theorem-and-its-simple-applications', chapterName: 'Binomial Theorem and Its Simple Applications', subject: 'mathematics' },
+  { folder: 'Co-ordinate-Geometry', chapterId: 'co-ordinate-geometry', chapterName: 'Co-ordinate Geometry', subject: 'mathematics' },
   { folder: 'Complex-Numbers-and-Quadratic-Equations', chapterId: 'complex-numbers-and-quadratic-equations', chapterName: 'Complex Numbers and Quadratic Equations', subject: 'mathematics' },
+  { folder: 'Differential-Equations', chapterId: 'differential-equations', chapterName: 'Differential Equations', subject: 'mathematics' },
+  { folder: 'Integral-Calculus', chapterId: 'integral-calculus', chapterName: 'Integral Calculus', subject: 'mathematics' },
+  { folder: 'Limit,-Continuity-and-Differentiability', chapterId: 'limit,-continuity-and-differentiability', chapterName: 'Limit, Continuity and Differentiability', subject: 'mathematics' },
   { folder: 'Matrices-and-Determinants', chapterId: 'matrices-and-determinants', chapterName: 'Matrices and Determinants', subject: 'mathematics' },
   { folder: 'Permutations-and-Combinations', chapterId: 'permutations-and-combinations', chapterName: 'Permutations and Combinations', subject: 'mathematics' },
+  { folder: 'Sequence-and-Series', chapterId: 'sequence-and-series', chapterName: 'Sequence and Series', subject: 'mathematics' },
   { folder: 'Sets,-Relations-and-Functions', chapterId: 'sets,-relations-and-functions', chapterName: 'Sets, Relations and Functions', subject: 'mathematics' },
+  { folder: 'Statistics-and-Probability', chapterId: 'statistics-and-probability', chapterName: 'Statistics and Probability', subject: 'mathematics' },
+  { folder: 'Three-Dimensional-Geometry', chapterId: 'three-dimensional-geometry', chapterName: 'Three Dimensional Geometry', subject: 'mathematics' },
+  { folder: 'Trigonometry', chapterId: 'trigonometry', chapterName: 'Trigonometry', subject: 'mathematics' },
+  { folder: 'Vector-Algebra', chapterId: 'vector-algebra', chapterName: 'Vector Algebra', subject: 'mathematics' },
 ];
 
 // Cache for loaded metadata
@@ -166,27 +194,6 @@ const loadTestMetadataJSON = async (testFolder) => {
       }
     } catch (e) {
       // Try next path
-    }
-  }
-
-  // For space-containing folder names, try specific mappings
-  const folderToJsonMap = {
-    'JEE Main 2025 (28 Jan Shift 2)': 'jee-main-2025-28th-jan-shift-2',
-    'JEE Main 2025 (29 Jan Shift 1)': 'jee-main-2025-29th-jan-shift-1',
-    'JEE Main 2025 (29 Jan Shift 2)': 'jee-main-2025-29th-jan-shift-2'
-  };
-
-  if (folderToJsonMap[testFolder]) {
-    try {
-      const jsonName = folderToJsonMap[testFolder];
-      const response = await fetch(`/tests/${encodeURI(testFolder)}/${jsonName}.json`);
-      if (response.ok) {
-        const data = await response.json();
-        metadataCache[testFolder] = data;
-        return data;
-      }
-    } catch (e) {
-      // Failed
     }
   }
 
@@ -224,22 +231,21 @@ const loadQuestionBankChapter = async (chapterInfo) => {
   const questions = [];
 
   try {
-    // Build the URL path using standard encodeURI like Phase 1 does
+    // Build the URL path using standard path mapping
     const answerKeyPath = `/QUESTION_BANK/${chapterInfo.folder}/${chapterInfo.chapterId}-answer-key.json`;
-    const encodedPath = encodeURI(answerKeyPath);
-    
-    const response = await fetch(encodedPath);
-    
+
+    const response = await fetch(answerKeyPath);
+
     if (!response.ok) {
-      console.warn(`[QB Debug] HTTP ${response.status} for ${chapterInfo.chapterName}: ${encodedPath}`);
+      console.warn(`[QB Debug] HTTP ${response.status} for ${chapterInfo.chapterName}: ${answerKeyPath}`);
       return questions;
     }
 
     // CRA dev server returns index.html (200 OK) for non-existent static files
     const responseText = await response.text();
-    
+
     if (responseText.trim().startsWith('<')) {
-      console.warn(`[QB Debug] Got HTML instead of JSON for ${chapterInfo.chapterName} — file not found at: ${encodedPath}`);
+      console.warn(`[QB Debug] Got HTML instead of JSON for ${chapterInfo.chapterName} — file not found at: ${answerKeyPath}`);
       return questions;
     }
 
@@ -275,8 +281,8 @@ const loadQuestionBankChapter = async (chapterInfo) => {
               subjectFolder: '',
               hasAnswerKey: true,
               source: 'question-bank',
-              // Image path matching Phase 1 encoding pattern
-              imagePath: encodeURI(`/QUESTION_BANK/${chapterInfo.folder}/${difficulty}/${qNum}.png`),
+              // Image path matching encoding pattern, without explicit encodeURI for Dev Server compat
+              imagePath: `/QUESTION_BANK/${chapterInfo.folder}/${difficulty}/${qNum}.png`,
               questionType: qData.questionType || 'single-correct',
               correctAnswer: qData.correctAnswer || [],
               correctIntegerAnswer: qData.correctIntegerAnswer || null,
@@ -333,15 +339,15 @@ export const buildQuestionPool = async () => {
       // Process each subject section
       for (const [subjectKey, questionsMap] of Object.entries(metadata.sections)) {
         const normalizedSubject = subjectKey.toLowerCase() === 'maths' ? 'mathematics' : subjectKey.toLowerCase();
-        
+
         if (!lessonsBySubject[normalizedSubject]) continue;
 
         // Get answer key data for this section if available
         let answerKeyQuestions = {};
         if (answerKey) {
           const answerSection = answerKey.sections?.find(
-            s => s.sectionId.toLowerCase() === normalizedSubject || 
-                 s.sectionId.toLowerCase() === subjectKey.toLowerCase()
+            s => s.sectionId.toLowerCase() === normalizedSubject ||
+              s.sectionId.toLowerCase() === subjectKey.toLowerCase()
           );
           if (answerSection) {
             answerSection.questions.forEach(q => {
@@ -354,7 +360,7 @@ export const buildQuestionPool = async () => {
           const lesson = qData.lesson || 'Unknown';
           const difficulty = (qData.difficulty || 'medium').toLowerCase();
           const type = qData.type || 'MCQ';
-          
+
           lessonsBySubject[normalizedSubject].add(lesson);
 
           // Get the correct subject folder name for image paths
@@ -454,10 +460,10 @@ export const filterQuestions = (pool, filters) => {
   return pool.filter(q => {
     // Subject filter
     if (subjects.length > 0 && !subjects.includes(q.subject)) return false;
-    
+
     // Lesson filter
     if (lessons.length > 0 && !lessons.includes(q.lesson)) return false;
-    
+
     // Difficulty filter
     if (difficulties.length > 0 && !difficulties.includes(q.difficulty)) return false;
 
@@ -474,7 +480,7 @@ export const filterQuestions = (pool, filters) => {
  */
 export const getAvailableCounts = (pool, filters) => {
   const filtered = filterQuestions(pool, filters);
-  
+
   const bySubject = {};
   const byDifficulty = { easy: 0, medium: 0, hard: 0 };
   const byLesson = {};
@@ -536,30 +542,30 @@ export const generateCustomTest = (filteredQuestions, questionCount, config) => 
 
     const processedQuestions = ordered.map((q, index) => {
       const questionNumber = index + 1;
-    
+
       const optionsWithKeys = q.options?.length > 0
         ? q.options.map((opt, idx) => ({
-            ...opt,
-            optionKey: opt.optionKey || `${subject}-q${questionNumber}-opt-${idx + 1}`
-          }))
+          ...opt,
+          optionKey: opt.optionKey || `${subject}-q${questionNumber}-opt-${idx + 1}`
+        }))
         : [
-            { optionId: 'A', optionKey: `${subject}-q${questionNumber}-opt-1` },
-            { optionId: 'B', optionKey: `${subject}-q${questionNumber}-opt-2` },
-            { optionId: 'C', optionKey: `${subject}-q${questionNumber}-opt-3` },
-            { optionId: 'D', optionKey: `${subject}-q${questionNumber}-opt-4` }
-          ];
-    
+          { optionId: 'A', optionKey: `${subject}-q${questionNumber}-opt-1` },
+          { optionId: 'B', optionKey: `${subject}-q${questionNumber}-opt-2` },
+          { optionId: 'C', optionKey: `${subject}-q${questionNumber}-opt-3` },
+          { optionId: 'D', optionKey: `${subject}-q${questionNumber}-opt-4` }
+        ];
+
       const questionType =
         q.questionType || (q.type === 'MCQ' ? 'single-correct' : 'integer');
-    
+
       // ✅ NORMALIZATION FIX STARTS HERE
       const rawCorrect =
         q.correctAnswerKeys?.length > 0
           ? q.correctAnswerKeys
           : (q.correctAnswer || []);
-    
+
       let normalizedCorrectKeys = rawCorrect;
-    
+
       if (questionType === 'single-correct' && optionsWithKeys.length > 0) {
         normalizedCorrectKeys = rawCorrect.map(ans => {
           const match = optionsWithKeys.find(o => o.optionId === ans);
@@ -567,7 +573,7 @@ export const generateCustomTest = (filteredQuestions, questionCount, config) => 
         });
       }
       // ✅ NORMALIZATION FIX ENDS HERE
-    
+
       return {
         questionId: `${subject}-q${questionNumber}`,
         questionNumber,
@@ -582,14 +588,14 @@ export const generateCustomTest = (filteredQuestions, questionCount, config) => 
           questionType === 'integer' || q.type === 'Numerical'
             ? []
             : optionsWithKeys,
-    
+
         correctAnswer: rawCorrect,
         correctAnswerKeys: normalizedCorrectKeys,
         correctIntegerAnswer: q.correctIntegerAnswer,
-    
+
         marks: q.marks ?? 4,
         negativeMarks: q.negativeMarks ?? -1,
-    
+
         originalTestFolder: q.testFolder,
         originalQuestionNumber: q.questionNumber,
         hasAnswerKey: q.hasAnswerKey
@@ -597,7 +603,7 @@ export const generateCustomTest = (filteredQuestions, questionCount, config) => 
     });
 
     const sectionName = subject === 'mathematics' ? 'Mathematics' :
-                        subject.charAt(0).toUpperCase() + subject.slice(1);
+      subject.charAt(0).toUpperCase() + subject.slice(1);
 
     sections.push({
       sectionId: subject,
@@ -618,8 +624,8 @@ export const generateCustomTest = (filteredQuestions, questionCount, config) => 
   );
 
   // Build title from filters
-  const difficultyLabel = config.difficulties?.length === 1 
-    ? config.difficulties[0].charAt(0).toUpperCase() + config.difficulties[0].slice(1) 
+  const difficultyLabel = config.difficulties?.length === 1
+    ? config.difficulties[0].charAt(0).toUpperCase() + config.difficulties[0].slice(1)
     : 'Mixed';
   const subjectLabel = config.subjects?.length === 1
     ? (config.subjects[0] === 'mathematics' ? 'Mathematics' : config.subjects[0].charAt(0).toUpperCase() + config.subjects[0].slice(1))
