@@ -35,6 +35,7 @@ import EnergyBatch from "./pages/EnergyBatch/EnergyBatch";
 import TalkToIITian from "./pages/TalkToIITian/TalkToIITian";
 import Home2 from "./pages/Home_2/Home2";
 import Login2 from "./pages/Login_2/login2";
+import UserTypeModal from "./components/UserTypeModal/UserTypeModal";
 
 function RouteAnalyticsTracker() {
   const location = useLocation();
@@ -89,6 +90,7 @@ function App() {
 
   return (
     <Router>
+      <UserTypeModal />
       <ScrollToTop />
       <RouteAnalyticsTracker />
       <Layout isLoggedIn={isLoggedIn}>
