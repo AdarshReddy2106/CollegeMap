@@ -30,7 +30,7 @@ const UserTypeModal = () => {
             className="user-type-btn jee-btn"
             onClick={() => handleSelection('jee')}
           >
-            I am preparing for JEE
+            I'm a JEE Aspirant
           </button>
           <button 
             className="user-type-btn college-btn"

@@ -123,7 +123,7 @@ const Navbar = () => {
                                 }}
                             >
                                 <span className="dropdown-trigger" style={{ gap: '5px' }}>
-                                    Read About Colleges <span style={{ fontSize: '0.8em', marginTop: '2px' }}>{collegeDropdownOpen ? "▲" : "▼"}</span>
+                                    Colleges <span style={{ fontSize: '0.8em', marginTop: '2px' }}>{collegeDropdownOpen ? "▲" : "▼"}</span>
                                 </span>
                                 {collegeDropdownOpen && (
                                     <ul className="dropdown-menu">
@@ -135,10 +135,10 @@ const Navbar = () => {
                                                 Switch to Find Colleges
                                             </button>
                                         </li>
-                                        <li><Link to="/home" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
-                                        <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>Talk to IITian</Link></li>
+                                        <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>Talk to IITians</Link></li>
                                         <li><Link to="/branch-comparison" onClick={() => setIsMenuOpen(false)}>Branch Comparison</Link></li>
                                         <li><Link to="/college-predictor" onClick={() => setIsMenuOpen(false)}>College Predictor</Link></li>
+                                        <li><Link to="/aboutiits" onClick={() => setIsMenuOpen(false)}>Read About Colleges</Link></li>
                                     </ul>
                                 )}
                             </li>
@@ -149,6 +149,7 @@ const Navbar = () => {
                             <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>Talk to IITian</Link></li>
                             <li><Link to="/branch-comparison" onClick={() => setIsMenuOpen(false)}>Branch Comparison</Link></li>
                             <li><Link to="/college-predictor" onClick={() => setIsMenuOpen(false)}>College Predictor</Link></li>
+                            <li><Link to="/aboutiits" onClick={() => setIsMenuOpen(false)}>Read About Colleges</Link></li>
                             
                             <li
                                 className="nav-dropdown"
