@@ -36,6 +36,7 @@ import TalkToIITian from "./pages/TalkToIITian/TalkToIITian";
 import Home2 from "./pages/Home_2/Home2";
 import Login2 from "./pages/Login_2/login2";
 import UserTypeModal from "./components/UserTypeModal/UserTypeModal";
+import StudyWithIITian from "./pages/StudyWithIITians/StudyWithIITians";
 
 function RouteAnalyticsTracker() {
   const location = useLocation();
@@ -122,7 +123,8 @@ function App() {
           <Route path="/college-predictor" element={<CollegePredictor />} />
           <Route path="/college-predictor/results" element={<CollegePredictorResults />} />
           <Route path="/energy-batch" element={<EnergyBatch />} />
-          <Route path="/talk-to-iitians" element={<TalkToIITian />} />
+          <Route path="/StudyWithIITians" element={<StudyWithIITian/>} />
+          {/* <Route path="/talk-to-iitians" element={<TalkToIITian />} /> */}
           <Route path="/cbt-portal" element={<CBTPortal />} />
           <Route path="/cbt-portal/custom-test" element={<CustomTestBuilder />} />
           <Route path="/cbt-portal/test/:testId" element={<TestInterface />} />
