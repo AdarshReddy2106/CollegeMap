@@ -79,7 +79,7 @@ const YouTubeIcon = () => (
 	</svg>
 );
 
-const TalkToIITian = () => {
+const StudyWithIITian = () => {
 	return (
 		<main className="study-with-iitians-page">
 			<section className="swi-layout">

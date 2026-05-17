@@ -238,7 +238,7 @@ const BranchComparison = () => {
 
       <div className="branch-comparison-container branch-comparison-container--form-wide">
         <header className="branch-comparison-page-head">
-          <h2>College Finder</h2>
+          <h2>Branch Comparision</h2>
           <p className="branch-comparison-page-sub">
             Pick two branches — we&apos;ll help you see how they stack up.
           </p>

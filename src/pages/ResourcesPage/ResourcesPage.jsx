@@ -279,19 +279,28 @@ const ResourcesPage = () => {
         transition={{ duration: 0.5, delay: 0.3 }}
       >
         {showBooks ? (
-          <div className="books-selection">
+          <div className="resources-grid">
             {bookSources.map((source) => (
               <motion.div
-                className="books-card"
+                className="resource-card"
                 key={source}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.03, boxShadow: '0 10px 20px rgba(0,0,0,0.25)' }}
                 transition={{ type: "spring", stiffness: 300 }}
-                onClick={() => handleBooksClick(source)}
               >
-                <div className="books-content">
-                  <div className="books-icon">📚</div>
-                  <h2>{source}</h2>
-                  <p>Click to view all available books</p>
+                <div className="resource-content">
+                  <span className={`type-indicator Books`}>Books</span>
+                  <div className="resource-details">
+                    <h3>{source}</h3>
+                    <p className="resource-subject">{activeSubject === 'All' ? 'All Subjects' : activeSubject}</p>
+                    <div className="resource-actions">
+                      <button 
+                        onClick={() => handleBooksClick(source)} 
+                        className="view-button"
+                      >
+                        View
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             ))}

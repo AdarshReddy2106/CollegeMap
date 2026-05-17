@@ -500,13 +500,21 @@
       padding: 1.35rem 1.15rem;
     }
 
-    .resources-header-text h1 {
-      font-size: 1.85rem;
+    .resources-header-text {
+      flex: none;
+      width: 100%;
+      
+      h1 {
+        font-size: 1.85rem;
+      }
     }
 
     .resources-header-search {
       max-width: none;
       margin-left: 0;
+      flex: none;
+      width: 100%;
+      padding: 1rem;
     }
     
     .filter-section {
