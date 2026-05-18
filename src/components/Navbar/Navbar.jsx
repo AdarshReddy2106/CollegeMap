@@ -87,7 +87,7 @@ const Navbar = () => {
                 <div className={`nav-links ${isMenuOpen ? "open" : ""}`} ref={menuRef}>
                     {userType === 'jee' ? (
                         <>
-                            <li><Link to="/resources" onClick={() => setIsMenuOpen(false)}>Top Resources</Link></li>
+                            <li><Link to="/Resources" onClick={() => setIsMenuOpen(false)}>Top Resources</Link></li>
                             <li><Link to="/StudyWithIITians" onClick={() => setIsMenuOpen(false)}>Study With IITians</Link></li>
                             <li><Link to="/energy-batch" onClick={() => setIsMenuOpen(false)}>Energy Batch</Link></li>
                             
@@ -174,7 +174,7 @@ const Navbar = () => {
                                                 Switch to JEE Preparation
                                             </button>
                                         </li>
-                                        <li><Link to="/resources" onClick={() => setIsMenuOpen(false)}>Top Resources</Link></li>
+                                        <li><Link to="/Resources" onClick={() => setIsMenuOpen(false)}>Top Resources</Link></li>
                                         <li><Link to="/StudyWithIITians" onClick={() => setIsMenuOpen(false)}>Study With IITians</Link></li>
                                         <li><Link to="/energy-batch" onClick={() => setIsMenuOpen(false)}>Energy Batch</Link></li>
                                         <li><Link to="/cbt-portal" onClick={() => setIsMenuOpen(false)}>Test Portal</Link></li>

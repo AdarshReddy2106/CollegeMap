@@ -54,19 +54,19 @@ const JoinFamily = () => {
         {/* Scrolling Evidence Banner */}
         <div className="evidence-scroll-banner">
           <div className="scroll-track">
-            <span className="scroll-item">🎥 50+ Live Google Meet Sessions</span>
-            <span className="scroll-item">👨‍🎓 150+ Students Supported</span>
-            <span className="scroll-item">📝 1000+ Practice Questions</span>
-            <span className="scroll-item">💬 24/7 Doubt Support</span>
-            <span className="scroll-item">🏆 IITian Mentors from Top IITs</span>
-            <span className="scroll-item">📊 Free Mock Tests & Analysis</span>
+            <span className="scroll-item">50+ Live Google Meet Sessions</span>
+            <span className="scroll-item">150+ Students Supported</span>
+            <span className="scroll-item">5000+ Practice Questions</span>
+            <span className="scroll-item">24/7 Doubt Support</span>
+            <span className="scroll-item">IITian Mentors from Top IITs</span>
+            <span className="scroll-item">Free Mock Tests & Analysis</span>
             {/* Duplicate for seamless loop */}
-            <span className="scroll-item">🎥 50+ Live Google Meet Sessions</span>
-            <span className="scroll-item">👨‍🎓 150+ Students Supported</span>
-            <span className="scroll-item">📝 1000+ Practice Questions</span>
-            <span className="scroll-item">💬 24/7 Doubt Support</span>
-            <span className="scroll-item">🏆 IITian Mentors from Top IITs</span>
-            <span className="scroll-item">📊 Free Mock Tests & Analysis</span>
+            <span className="scroll-item">50+ Live Google Meet Sessions</span>
+            <span className="scroll-item">150+ Students Supported</span>
+            <span className="scroll-item">1000+ Practice Questions</span>
+            <span className="scroll-item">24/7 Doubt Support</span>
+            <span className="scroll-item">IITian Mentors from Top IITs</span>
+            <span className="scroll-item">Free Mock Tests & Analysis</span>
           </div>
         </div>
 

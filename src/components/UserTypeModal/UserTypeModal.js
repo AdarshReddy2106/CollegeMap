@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './UserTypeModal.css';
 
 const UserTypeModal = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const userType = localStorage.getItem('userType');
@@ -16,6 +18,10 @@ const UserTypeModal = () => {
     setIsOpen(false);
     // Dispatch an event so other components (like navbar) can update if needed
     window.dispatchEvent(new Event('userTypeChanged'));
+    
+    if (type === 'college') {
+      navigate('/home');
+    }
   };
 
   if (!isOpen) return null;

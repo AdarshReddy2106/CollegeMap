@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import './ResourcesPage.scss';
 import { resourcesData } from './ResourcesData';
 import { collegemapApiUrl } from '../../collegemapApiOrigin';
 
 const ResourcesPage = () => {
   const location = useLocation();
+  const { resourceType } = useParams();
+  const navigate = useNavigate();
   const [resources, setResources] = useState([]);
   const [filteredResources, setFilteredResources] = useState([]);
   const [activeSubject, setActiveSubject] = useState('All');
   const [activeType, setActiveType] = useState('JEE Busters');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBookSource, setSelectedBookSource] = useState(null);
+  const [selectedReferenceBookSource, setSelectedReferenceBookSource] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
   const [resourceAnalytics, setResourceAnalytics] = useState(null);
@@ -23,26 +25,41 @@ const ResourcesPage = () => {
     setFilteredResources(resourcesData);
   }, []);
 
-  // Handle URL query parameters for filtering
+  // Handle URL route parameters for filtering
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const filterParam = searchParams.get('filter');
-    
-    if (filterParam) {
-      // Map URL filter parameter to activeType
-      const filterMap = {
-        'jee-busters': 'JEE Busters',
-        'short-notes': 'Cheatsheets',
-        'practice': 'Practice'
+    if (resourceType) {
+      const typeMap = {
+        'jeebusters': 'JEE Busters',
+        'shortnotes': 'Cheatsheets',
+        'cheatsheets': 'Cheatsheets',
+        'practice': 'Practice',
+        'referencebooks': 'Reference Books'
       };
       
-      const mappedType = filterMap[filterParam];
+      const mappedType = typeMap[resourceType.toLowerCase()];
       if (mappedType) {
         setActiveType(mappedType);
-        setActiveSubject('All'); // Set to All to show all subjects for the type
+      }
+    } else {
+      // Fallback to legacy query parameter logic
+      const searchParams = new URLSearchParams(location.search);
+      const filterParam = searchParams.get('filter');
+      
+      if (filterParam) {
+        const filterMap = {
+          'jee-busters': 'JEE Busters',
+          'short-notes': 'Cheatsheets',
+          'practice': 'Practice'
+        };
+        
+        const mappedType = filterMap[filterParam];
+        if (mappedType) {
+          setActiveType(mappedType);
+          setActiveSubject('All');
+        }
       }
     }
-  }, [location.search]);
+  }, [resourceType, location.search]);
 
   // Track resource event (silently in background)
   const trackResourceEvent = async (resource, actionType) => {
@@ -99,12 +116,12 @@ const ResourcesPage = () => {
       result = result.filter(resource => resource.type === activeType);
     }
     
-    // For Books type, only show if a book source is selected
-    if (activeType === 'Books') {
-      if (!selectedBookSource) {
+    // For Reference Books type, only show if a Reference Book source is selected
+    if (activeType === 'Reference Books') {
+      if (!selectedReferenceBookSource) {
         result = [];
       } else {
-        result = result.filter(resource => resource.bookSource === selectedBookSource);
+        result = result.filter(resource => resource.ReferenceBookSource === selectedReferenceBookSource);
       }
     }
     
@@ -120,32 +137,43 @@ const ResourcesPage = () => {
     result = [...result].sort((a, b) => a.title.localeCompare(b.title));
     
     setFilteredResources(result);
-  }, [resources, activeSubject, activeType, searchQuery, selectedBookSource]);
+  }, [resources, activeSubject, activeType, searchQuery, selectedReferenceBookSource]);
 
   // Get unique subjects and types for filters
   const subjects = ['All', ...new Set(resources.map(item => item.subject).filter(s => s !== 'All'))];
-  const types = ['JEE Busters', 'Cheatsheets', 'Practice', 'Books'];
-  const bookSources = [...new Set(
+  const types = ['JEE Busters', 'Cheatsheets', 'Practice', 'Reference Books'];
+  const ReferenceBookSources = [...new Set(
     resources
-      .filter(item => item.type === 'Books' && (activeSubject === 'All' || item.subject === activeSubject))
-      .map(item => item.bookSource)
+      .filter(item => item.type === 'Reference Books' && (activeSubject === 'All' || item.subject === activeSubject))
+      .map(item => item.ReferenceBookSource)
       .filter(Boolean)
   )];
-  const showBooks = activeType === 'Books' && !selectedBookSource && bookSources.length > 0;
+  const showReferenceBooks = activeType === 'Reference Books' && !selectedReferenceBookSource && ReferenceBookSources.length > 0;
 
   const handleTypeChange = (type) => {
     setActiveType(type);
-    if (type !== 'Books') {
-      setSelectedBookSource(null);
+    if (type !== 'Reference Books') {
+      setSelectedReferenceBookSource(null);
     }
+    
+    // Update URL when type changes
+    const urlMap = {
+      'JEE Busters': 'JEEBusters',
+      'Cheatsheets': 'ShortNotes',
+      'Practice': 'Practice',
+      'Reference Books': 'ReferenceBooks'
+    };
+    
+    const mappedUrl = urlMap[type] || 'JEEBusters';
+    navigate(`/Resources/${mappedUrl}`, { replace: true });
   };
 
-  const handleBooksClick = (source) => {
-    setSelectedBookSource(source);
+  const handleReferenceBooksClick = (source) => {
+    setSelectedReferenceBookSource(source);
   };
 
-  const handleBackFromBooks = () => {
-    setSelectedBookSource(null);
+  const handleBackFromReferenceBooks = () => {
+    setSelectedReferenceBookSource(null);
   };
 
   // Fetch analytics for a specific resource
@@ -209,7 +237,7 @@ const ResourcesPage = () => {
           <div className="resources-header-text">
             <h1>Top Resources</h1>
             <p className="resources-header-sub">
-              Best recommended resources, curated by IITians
+              Best Resources, curated by IITians
             </p>
           </div>
           <div className="resources-header-search">
@@ -278,9 +306,9 @@ const ResourcesPage = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        {showBooks ? (
+        {showReferenceBooks ? (
           <div className="resources-grid">
-            {bookSources.map((source) => (
+            {ReferenceBookSources.map((source) => (
               <motion.div
                 className="resource-card"
                 key={source}
@@ -288,13 +316,13 @@ const ResourcesPage = () => {
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <div className="resource-content">
-                  <span className={`type-indicator Books`}>Books</span>
+                  <span className={`type-indicator Reference Books`}>Reference Books</span>
                   <div className="resource-details">
                     <h3>{source}</h3>
                     <p className="resource-subject">{activeSubject === 'All' ? 'All Subjects' : activeSubject}</p>
                     <div className="resource-actions">
                       <button 
-                        onClick={() => handleBooksClick(source)} 
+                        onClick={() => handleReferenceBooksClick(source)} 
                         className="view-button"
                       >
                         View
@@ -307,9 +335,9 @@ const ResourcesPage = () => {
           </div>
         ) : (
           <>
-            {selectedBookSource && activeType === 'Books' && (
+            {selectedReferenceBookSource && activeType === 'Reference Books' && (
               <div className="back-button-container">
-                <button className="back-button" onClick={handleBackFromBooks}>
+                <button className="back-button" onClick={handleBackFromReferenceBooks}>
                   ←Back
                 </button>
               </div>
@@ -392,7 +420,7 @@ const ResourcesPage = () => {
                 />
               </div>
               <div className="modal-footer">
-                {selectedResource.type !== 'Books' && (
+                {selectedResource.type !== 'Reference Books' && (
                   <a
                     href={getDownloadLink(selectedResource.downloadUrl)}
                     target="_blank"

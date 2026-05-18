@@ -115,7 +115,8 @@ function App() {
           <Route path="/Terms-and-Conditions" element={<TermsAndConditions />} />
           <Route path="/ComingSoon" element={<ComingSoon />} />
           <Route path="/seminar" element={<SeminarPage />} />
-          <Route path="/resources" element={<ResourcesPage />} />
+          <Route path="/Resources" element={<ResourcesPage />} />
+          <Route path="/Resources/:resourceType" element={<ResourcesPage />} />
           <Route path="/pyq" element={<PYQPage />} />
           {/* <Route path="/pyq-advanced" element={<PYQAdvancedPage />} /> */}
           <Route path="/news" element={<NewsPage />} />
