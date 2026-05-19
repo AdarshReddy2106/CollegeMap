@@ -112,7 +112,6 @@
   padding: 0.45rem 0.65rem;
   box-sizing: border-box;
   cursor: pointer;
-  font-family: inherit;
   text-align: left;
 
   &:hover {
@@ -148,7 +147,6 @@
   border-radius: 8px;
   background: $background;
   color: $text-dark;
-  font-family: inherit;
 }
 
 .cp-btn {
@@ -161,7 +159,6 @@
   background: $primary;
   color: #fff;
   cursor: pointer;
-  font-family: inherit;
   align-self: flex-start;
 }
 
