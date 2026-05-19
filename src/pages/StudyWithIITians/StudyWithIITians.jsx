@@ -83,14 +83,13 @@ const StudyWithIITian = () => {
 	return (
 		<main className="study-with-iitians-page">
 			<section className="swi-layout">
-				<p className="swi-page-label">Talk To IITians</p>
-
+				<p className="swi-page-label">Study With IITians</p>
 				<div className="swi-panel">
 					<h1 className="swi-title">Top level guidance - From the top of the nation</h1>
 
 					<div className="swi-cards-grid">
 						<article className="swi-card">
-							<h2>Join our community</h2>
+							<h2>Join Our Community</h2>
 							<ul className="swi-list">
 								{communityPoints.map((point) => (
 									<li key={point}>{point}</li>
@@ -109,7 +108,7 @@ const StudyWithIITian = () => {
 						</article>
 
 						<article className="swi-card">
-							<h2>High-focus JEE Mains</h2>
+							<h2>Live Paper Attempts</h2>
 							<ul className="swi-list">
 								{highFocusPoints.map((point) => (
 									<li key={point}>{point}</li>

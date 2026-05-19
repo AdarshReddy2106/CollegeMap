@@ -212,13 +212,8 @@ const CBTPortal = () => {
       >
         <h2 className="custom-section-title">Make-your-own Test</h2>
         <p className="custom-section-desc">
-          Choose your subject, topic, difficulty &amp; number of questions to create a personalized practice test from 750+ JEE Main questions
+          Choose your subject, topic, difficulty &amp; number of questions to create a personalized practice test from 1000+ JEE Main and 7500+ special CollgeMap questions
         </p>
-        <div className="custom-tags">
-          <span className="custom-tag"><span className="tag-icon">🎯</span> By Topic</span>
-          <span className="custom-tag"><span className="tag-icon">📊</span> By Difficulty</span>
-          <span className="custom-tag"><span className="tag-icon">🔢</span> Custom Count</span>
-        </div>
         <motion.button
           className="custom-build-btn"
           onClick={() => navigate('/cbt-portal/custom-test')}
@@ -442,7 +437,10 @@ const CBTPortal = () => {
         transition={{ duration: 0.5, delay: 0.2 }}
       >
         <div className="pyt-header">
-          <h2>JEE Mains Previous Year Tests</h2>
+          <div className="pyt-title-wrapper">
+            <h2>JEE Mains Previous Year Tests</h2>
+            <p className="pyt-subtitle">Experience the actual exam environment with official past papers</p>
+          </div>
         </div>
 
         <div className="pyt-filters">

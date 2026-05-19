@@ -109,7 +109,7 @@ const PYQPage = () => {
         <div className="pyq-header-inner">
           <div className="pyq-header-text">
             <h1>Previous Year Question Papers</h1>
-            <p className="pyq-header-sub">Explore JEE Main question papers &amp; answer keys </p>
+            <p className="pyq-header-sub">Explore JEE Main Question Paper PDFs</p>
           </div>
 
           <div className="pyq-header-search">
