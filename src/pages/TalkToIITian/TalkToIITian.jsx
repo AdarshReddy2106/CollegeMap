@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import "./TalkToIITian.css";
 // import thumbnailAsk from "../../assets/Thumbnails/Ask me anything.png";
+import RazorPayment from "../../components/RazorpayPayment/RazorpayPayment";
 
 const TalkToIITian = () => {
+	const [showPaymentGateway, setShowPaymentGateway] = useState(false);
+
 	const handleStartNow = () => {
-		// Replace with the actual URL or payment gateway link when ready
-		window.open("https://wa.link/1j0y0o", "_blank");
+		setShowPaymentGateway(true);
+	};
+
+	const onPaymentSuccess = async () => {
+		setShowPaymentGateway(false);
+		alert("Payment successful! Our team will contact you shortly.");
+		// Add your logic after successful payment if needed
 	};
 
 	return (
@@ -18,7 +26,7 @@ const TalkToIITian = () => {
 					<div className="tti-hero-content">
 						<h1 className="tti-title">
 							Don't Guess.<br />
-							Talk to an IITian.
+							<span>Talk to an IITian.</span>
 						</h1>
 						<ul className="tti-list">
 							<li>Select a college & branch</li>
@@ -27,33 +35,37 @@ const TalkToIITian = () => {
 						</ul>
 					</div>
 					<div className="tti-hero-visual">
-						<div className="tti-visual-placeholder">Visual</div>
+						<div className="tti-visual-placeholder">
+							<div className="tti-visual-inner">
+								1:1 Mentorship
+							</div>
+						</div>
 					</div>
 				</div>
 
 				{/* Middle Section */}
 				<div className="tti-middle-section">
 					<h2 className="tti-middle-heading">
-						Before spending LAKHS on your college , this is the PERFECT Final check , @ Rs. 500 /-
+						Before spending <span>LAKHS</span> on your college,<br/> this is the PERFECT <span>Final check</span>, @ Rs. 500 /-
 					</h2>
 
 					<div className="tti-steps-container">
 						<div className="tti-step">
-							<div className="tti-step-visual">Visual</div>
+							<div className="tti-step-visual">1</div>
 							<p>Tell us YOUR dream college & branch</p>
 						</div>
 						
 						<div className="tti-step-arrow">→</div>
 
 						<div className="tti-step">
-							<div className="tti-step-visual">Visual</div>
+							<div className="tti-step-visual">2</div>
 							<p>WE provide you a student who took the course</p>
 						</div>
 
 						<div className="tti-step-arrow">→</div>
 
 						<div className="tti-step">
-							<div className="tti-step-visual">Visual</div>
+							<div className="tti-step-visual">3</div>
 							<p>Personal meeting to ask all doubts & take the final call</p>
 						</div>
 					</div>
@@ -75,6 +87,23 @@ const TalkToIITian = () => {
 					</button>
 				</div>
 			</div>
+
+			{/* Payment Gateway: Show when Start Now is clicked */}
+			{showPaymentGateway && (
+				<div className="payment-gateway-overlay">
+					<div className="payment-gateway-section">
+						<p>Please complete the payment to proceed with booking your 1:1 session with an IITian.</p>
+						<RazorPayment
+							amount={500}
+							onSuccess={onPaymentSuccess}
+							className="payment_button"
+						/>
+						<button className="cancel-payment tti-cancel-payment" onClick={() => setShowPaymentGateway(false)}>
+							Cancel Payment
+						</button>
+					</div>
+				</div>
+			)}
 		</main>
 	);
 };

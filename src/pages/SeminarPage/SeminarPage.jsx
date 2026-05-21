@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import './SeminarPage.scss';
 import mentorImage from '../../assets/mentor.png';
-import { collegemapApiUrl } from '../../collegemapApiOrigin';
+import { submitSeminarBooking } from '../../services/supabaseService';
 
 // You can replace these with actual icons from a library like react-icons
 const CheckIcon = () => <span className="icon-check">✓</span>;
@@ -61,56 +61,21 @@ const SeminarPage = () => {
     const handleContactSubmit = async (e) => {
         e.preventDefault();
         
-        const submissionData = {
-            ...contactForm,
-            timestamp: new Date().toLocaleString(),
-            id: Date.now()
-        };
-        
-        console.log("Form data to be sent to server:", submissionData);
-        
         try {
-            // First try the direct API endpoint
-            const response = await fetch(collegemapApiUrl('/api/save-booking'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*',
-                },
-                body: JSON.stringify(submissionData)
+            await submitSeminarBooking(contactForm);
+            
+            setShowSuccess(true);
+            // Clear the form
+            setContactForm({
+                name: '',
+                email: '',
+                phone: '',
             });
+            setTimeout(() => setShowSuccess(false), 3000);
             
-            // Try to parse response as JSON regardless of status code
-            const responseData = await response.json().catch(() => null);
-            
-            if (response.ok) {
-                console.log('Server response:', responseData);
-                setShowSuccess(true);
-                
-                // Clear the form
-                setContactForm({
-                    name: '',
-                    email: '',
-                    phone: '',
-                });
-                
-                setTimeout(() => setShowSuccess(false), 3000);
-            } else {
-                console.error('Server error:', response.status);
-                
-                // Handle duplicate booking error (409 Conflict)
-                if (response.status === 409 && responseData?.existingBooking) {
-                    alert(`You have already registered with this email address. Please use a different email or contact support@collegemap.in if you need assistance.`);
-                } else {
-                    // Generic error for other status codes
-                    alert(responseData?.message || 'There was an error submitting your registration. Please try again or contact us directly.');
-                }
-            }
         } catch (error) {
             console.error('Network error:', error);
-            
-            // If CORS error occurs, notify the user with a more helpful message
-            alert('Unable to submit registration through our online system. Please email your details to support@collegemap.in or try again later.');
+            alert('There was an error submitting your registration. Please try again or contact us directly.');
         }
     };
 

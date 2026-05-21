@@ -146,7 +146,7 @@ const Navbar = () => {
                     ) : (
                         <>
                             <li><Link to="/home" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
-                            <li><Link to="/ComingSoon" onClick={() => setIsMenuOpen(false)}>Talk to IITian</Link></li>
+                            <li><Link to="/talk-to-iitians" onClick={() => setIsMenuOpen(false)}>Talk to IITian</Link></li>
                             <li><Link to="/branch-comparison" onClick={() => setIsMenuOpen(false)}>Branch Comparison</Link></li>
                             <li><Link to="/college-predictor" onClick={() => setIsMenuOpen(false)}>College Predictor</Link></li>
                             <li><Link to="/aboutiits" onClick={() => setIsMenuOpen(false)}>Read About Colleges</Link></li>

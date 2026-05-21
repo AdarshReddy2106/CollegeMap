@@ -4,6 +4,7 @@ import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import './ResourcesPage.scss';
 import { resourcesData } from './ResourcesData';
 import { collegemapApiUrl } from '../../collegemapApiOrigin';
+import { trackResourceEventSupabase, getResourceAnalyticsSupabase, getCachedProfile } from '../../services/supabaseService';
 
 const ResourcesPage = () => {
   const location = useLocation();
@@ -64,36 +65,8 @@ const ResourcesPage = () => {
   // Track resource event (silently in background)
   const trackResourceEvent = async (resource, actionType) => {
     try {
-      // FIXED: Better environment detection
-      const isDevelopment = window.location.hostname === 'localhost' ||
-        window.location.hostname === '127.0.0.1';
-
-      const trackUrl = collegemapApiUrl('/api/track-resource');
-      console.log(`🔍 Environment: ${isDevelopment ? 'Development' : 'Production'}`);
-      console.log(`📡 API URL: ${trackUrl}`);
-
-      const response = await fetch(trackUrl, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          resourceId: resource.id,
-          resourceTitle: resource.title,
-          actionType,
-          subject: resource.subject,
-          type: resource.type
-        })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.warn(`⚠️ Tracking failed: ${response.status} - ${errorText}`);
-      } else {
-        const result = await response.json();
-        console.log(`✅ Tracked ${actionType}:`, result);
-      }
+      const userProfile = getCachedProfile();
+      await trackResourceEventSupabase(resource, actionType, userProfile?.email);
     } catch (error) {
       console.error('❌ Failed to track event:', error.message);
       // Silently fail - don't block user experience
@@ -179,20 +152,9 @@ const ResourcesPage = () => {
   // Fetch analytics for a specific resource
   const fetchResourceAnalytics = async (resourceId) => {
     try {
-      const response = await fetch(collegemapApiUrl(`/api/resource-analytics/${resourceId}`), {
-        method: 'GET',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data;
-      }
-      console.warn('⚠️ Analytics fetch failed:', response.status);
-      return { views: 0, downloads: 0 };
+      // Fetch from Supabase
+      const supabaseAnalytics = await getResourceAnalyticsSupabase(resourceId);
+      return supabaseAnalytics;
     } catch (error) {
       console.error('❌ Failed to fetch analytics:', error.message);
       return { views: 0, downloads: 0 };
@@ -200,13 +162,15 @@ const ResourcesPage = () => {
   };
 
   const handleViewResource = async (resource) => {
-    trackResourceEvent(resource, 'view');
     setSelectedResource(resource);
     setShowModal(true);
     
-    // Fetch analytics for this resource
-    const analytics = await fetchResourceAnalytics(resource.id);
-    setResourceAnalytics(analytics);
+    // Fire tracking in background, then update stats so UI isn't blocked
+    trackResourceEvent(resource, 'view').then(() => {
+      fetchResourceAnalytics(resource.id).then(analytics => {
+        setResourceAnalytics(analytics);
+      });
+    });
   };
 
   const handleCloseModal = () => {
@@ -407,9 +371,14 @@ const ResourcesPage = () => {
                 </button>
               </div>
               <div className="modal-body">
-                {resourceAnalytics && resourceAnalytics.views > 0 && (
+                {resourceAnalytics && (resourceAnalytics.views > 0 || resourceAnalytics.downloads > 0) && (
                   <div className="resource-stats">
-                    <span className="views-count">👁️ {resourceAnalytics.views} views</span>
+                    {resourceAnalytics.views > 0 && (
+                      <span className="views-count">👁️ {resourceAnalytics.views} views</span>
+                    )}
+                    {resourceAnalytics.downloads > 0 && (
+                      <span className="downloads-count" style={{ marginLeft: '15px' }}>📥 {resourceAnalytics.downloads} downloads</span>
+                    )}
                   </div>
                 )}
                 <iframe
@@ -427,7 +396,13 @@ const ResourcesPage = () => {
                     rel="noopener noreferrer"
                     className="download-button"
                     download
-                    onClick={() => trackResourceEvent(selectedResource, 'download')}
+                    onClick={(e) => {
+                      trackResourceEvent(selectedResource, 'download').then(() => {
+                        fetchResourceAnalytics(selectedResource.id).then(analytics => {
+                          setResourceAnalytics(analytics);
+                        });
+                      });
+                    }}
                   >
                     Download PDF
                   </a>

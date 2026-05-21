@@ -310,3 +310,112 @@ export const reportQuestion = async (reportData) => {
     return null;
   }
 };
+
+/**
+ * Track a resource view or download in Supabase
+ * @param {Object} resource - The resource data
+ * @param {string} actionType - 'view' or 'download'
+ * @param {string} [userEmail] - Optional user email
+ * @returns {Promise<boolean>} Success status
+ */
+export const trackResourceEventSupabase = async (resource, actionType, userEmail = null) => {
+  if (!supabase) {
+    console.warn('⚠️ Supabase client not initialized, skipping resource tracking');
+    return false;
+  }
+
+  try {
+    const payload = {
+      resource_id: String(resource.id),
+      resource_title: resource.title || 'Unknown',
+      action_type: actionType,
+      subject: resource.subject || null,
+      type: resource.type || null
+    };
+
+    if (userEmail) {
+      payload.user_email = userEmail.toLowerCase();
+    }
+
+    console.log(`⏳ Attempting to insert ${actionType} event for ${resource.title} into Supabase...`, payload);
+    const { data, error, status } = await supabase
+      .from('resource_events')
+      .insert(payload)
+      .select();
+
+    if (error) {
+      console.error('❌ Supabase insertion error:', error);
+      throw error;
+    }
+    
+    console.log(`✅ Tracked ${actionType} for resource: ${resource.title} in Supabase. Response:`, data, status);
+    return true;
+  } catch (error) {
+    console.error('❌ Error tracking resource event in Supabase:', error);
+    return false;
+  }
+};
+
+/**
+ * Fetch analytics for a specific resource from Supabase
+ * @param {string} resourceId - The resource ID
+ * @returns {Promise<Object>} Views and downloads count
+ */
+export const getResourceAnalyticsSupabase = async (resourceId) => {
+  if (!supabase) return { views: 0, downloads: 0 };
+
+  try {
+    const { data, error } = await supabase
+      .from('resource_analytics')
+      .select('views, downloads')
+      .eq('resource_id', String(resourceId))
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No data found - meaning 0 views/downloads
+        return { views: 0, downloads: 0 };
+      }
+      throw error;
+    }
+
+    return {
+      views: data.views || 0,
+      downloads: data.downloads || 0
+    };
+  } catch (error) {
+    console.error('❌ Error fetching resource analytics from Supabase:', error);
+    return { views: 0, downloads: 0 };
+  }
+};
+
+/**
+ * Submit a seminar booking directly to Supabase
+ * @param {Object} bookingData - { name, email, phone }
+ * @returns {Promise<boolean>} Success status
+ */
+export const submitSeminarBooking = async (bookingData) => {
+  if (!supabase) return false;
+  
+  try {
+    const { error } = await supabase
+      .from('seminar_bookings')
+      .insert({
+        name: bookingData.name.trim(),
+        email: bookingData.email.trim().toLowerCase(),
+        phone: bookingData.phone ? bookingData.phone.trim() : null
+      });
+
+    if (error) {
+      console.error('❌ Supabase booking error:', error);
+      throw error;
+    }
+    
+    console.log('✅ Seminar booking saved successfully to Supabase');
+    return true;
+  } catch (error) {
+    // If it's a unique constraint error on email (if added), we can handle it
+    console.error('❌ Error saving seminar booking:', error);
+    throw error; // Throw so UI can catch and display alert
+  }
+};

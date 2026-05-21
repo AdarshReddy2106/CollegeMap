@@ -156,6 +156,51 @@ using (true);
    - No backend server required for CBT portal
    - Easy to query and analyze test data
 
+## 4. resource_events table (NEW - run this in Supabase SQL editor)
+
+This table tracks click/view/download events for the resources portal.
+
+```sql
+-- Create resource_events table to track clicks and opens
+create table if not exists public.resource_events (
+  id bigserial primary key,
+  resource_id text not null,
+  resource_title text not null,
+  action_type text not null, -- 'view' or 'download'
+  subject text,
+  type text,
+  user_email text, -- Optional
+  created_at timestamptz not null default now()
+);
+
+alter table public.resource_events enable row level security;
+
+-- Allow anyone to insert events
+create policy "allow anon insert resource_events"
+on public.resource_events
+for insert
+to anon
+with check (true);
+
+-- Allow anyone to select
+create policy "allow anon select resource_events"
+on public.resource_events
+for select
+to anon
+using (true);
+
+-- Create a view to easily get the counts
+create or replace view public.resource_analytics as
+select 
+  resource_id,
+  min(resource_title) as resource_title,
+  count(case when action_type = 'view' then 1 end) as views,
+  count(case when action_type = 'download' then 1 end) as downloads,
+  max(created_at) as last_activity
+from public.resource_events
+group by resource_id;
+```
+
 ## Next Steps After Running SQL
 
 1. Restart React dev server
