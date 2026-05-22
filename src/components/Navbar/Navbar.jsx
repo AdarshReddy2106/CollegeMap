@@ -64,14 +64,18 @@ const Navbar = () => {
         setIsMenuOpen(!isMenuOpen);
     };
 
-    const handleSwitchNav = (type) => {
+    const handleSwitchNav = (type, path) => {
         localStorage.setItem('userType', type);
         window.dispatchEvent(new Event('userTypeChanged'));
         setIsMenuOpen(false);
-        if (type === 'college') {
-            navigate('/home');
+        if (path) {
+            navigate(path);
         } else {
-            navigate('/');
+            if (type === 'college') {
+                navigate('/home');
+            } else {
+                navigate('/');
+            }
         }
     };
 
@@ -135,10 +139,10 @@ const Navbar = () => {
                                                 Switch to Find Colleges
                                             </button>
                                         </li>
-                                        <li><Link to="/talk-to-iitians" onClick={() => setIsMenuOpen(false)}>Talk to IITians</Link></li>
-                                        <li><Link to="/branch-comparison" onClick={() => setIsMenuOpen(false)}>Branch Comparison</Link></li>
-                                        <li><Link to="/college-predictor" onClick={() => setIsMenuOpen(false)}>College Predictor</Link></li>
-                                        <li><Link to="/aboutiits" onClick={() => setIsMenuOpen(false)}>Read About Colleges</Link></li>
+                                        <li><Link to="/talk-to-iitians" onClick={() => { handleSwitchNav('college', '/talk-to-iitians'); setCollegeDropdownOpen(false); }}>Talk to IITians</Link></li>
+                                        <li><Link to="/branch-comparison" onClick={() => { handleSwitchNav('college', '/branch-comparison'); setCollegeDropdownOpen(false); }}>Branch Comparison</Link></li>
+                                        <li><Link to="/college-predictor" onClick={() => { handleSwitchNav('college', '/college-predictor'); setCollegeDropdownOpen(false); }}>College Predictor</Link></li>
+                                        <li><Link to="/aboutiits" onClick={() => { handleSwitchNav('college', '/aboutiits'); setCollegeDropdownOpen(false); }}>Read About Colleges</Link></li>
                                     </ul>
                                 )}
                             </li>
@@ -174,11 +178,11 @@ const Navbar = () => {
                                                 Switch to JEE Preparation
                                             </button>
                                         </li>
-                                        <li><Link to="/Resources" onClick={() => setIsMenuOpen(false)}>Top Resources</Link></li>
-                                        <li><Link to="/StudyWithIITians" onClick={() => setIsMenuOpen(false)}>Study With IITians</Link></li>
-                                        <li><Link to="/energy-batch" onClick={() => setIsMenuOpen(false)}>Energy Batch</Link></li>
-                                        <li><Link to="/cbt-portal" onClick={() => setIsMenuOpen(false)}>Test Portal</Link></li>
-                                        <li><Link to="/pyq" onClick={() => setIsMenuOpen(false)}>Past Year Papers</Link></li>
+                                        <li><Link to="/Resources" onClick={() => { handleSwitchNav('jee', '/Resources'); setJeeDropdownOpen(false); }}>Top Resources</Link></li>
+                                        <li><Link to="/StudyWithIITians" onClick={() => { handleSwitchNav('jee', '/StudyWithIITians'); setJeeDropdownOpen(false); }}>Study With IITians</Link></li>
+                                        <li><Link to="/energy-batch" onClick={() => { handleSwitchNav('jee', '/energy-batch'); setJeeDropdownOpen(false); }}>Energy Batch</Link></li>
+                                        <li><Link to="/cbt-portal" onClick={() => { handleSwitchNav('jee', '/cbt-portal'); setJeeDropdownOpen(false); }}>Test Portal</Link></li>
+                                        <li><Link to="/pyq" onClick={() => { handleSwitchNav('jee', '/pyq'); setJeeDropdownOpen(false); }}>Past Year Papers</Link></li>
                                     </ul>
                                 )}
                             </li>
