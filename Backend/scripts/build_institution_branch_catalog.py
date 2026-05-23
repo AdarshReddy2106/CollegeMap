@@ -22,6 +22,7 @@ IIT_JSON = DATA / "iitBranchCatalog.json"
 NIT_PDF = ROOT / "Nit_data.pdf"
 IIIT_PDF = ROOT / "IIIT_DATA.pdf"
 OUT_BACKEND = DATA / "institutionBranchCatalog.json"
+PRIVATE_JSON = DATA / "privateBranchCatalog.json"
 OUT_SRC = ROOT / "src" / "data" / "institutionBranchCatalog.json"
 
 try:
@@ -309,16 +310,41 @@ def main() -> None:
     iiit_parsed = parse_iiit(iiit_full) if iiit_full else {}
     iiit_out = merge_iiit_duplicates(iiit_parsed)
 
+
+    private_data = {}
+    if PRIVATE_JSON.is_file():
+        try:
+            private_data = json.loads(PRIVATE_JSON.read_text(encoding="utf8"))
+        except Exception as e:
+            print(f"Error reading private catalog: {e}", file=sys.stderr)
+
     doc = {
         "_meta": {
             "IIT": str(IIT_JSON.relative_to(ROOT)),
             "NIT": str(NIT_PDF.relative_to(ROOT)) if NIT_PDF.is_file() else None,
             "IIIT": str(IIIT_PDF.relative_to(ROOT)) if IIIT_PDF.is_file() else None,
+            "private": str(PRIVATE_JSON.relative_to(ROOT)) if PRIVATE_JSON.is_file() else None,
         },
         "IIT": {"branchesByCollege": iit_out},
         "NIT": {"branchesByCollege": nit_out},
         "IIIT": {"branchesByCollege": iiit_out},
     }
+    
+
+    for key, val in private_data.items():
+        if key != "_meta":
+            doc[key] = val
+
+    # doc = {
+    #     "_meta": {
+    #         "IIT": str(IIT_JSON.relative_to(ROOT)),
+    #         "NIT": str(NIT_PDF.relative_to(ROOT)) if NIT_PDF.is_file() else None,
+    #         "IIIT": str(IIIT_PDF.relative_to(ROOT)) if IIIT_PDF.is_file() else None,
+    #     },
+    #     "IIT": {"branchesByCollege": iit_out},
+    #     "NIT": {"branchesByCollege": nit_out},
+    #     "IIIT": {"branchesByCollege": iiit_out},
+    # }
 
     OUT_BACKEND.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf8")
     OUT_SRC.parent.mkdir(parents=True, exist_ok=True)

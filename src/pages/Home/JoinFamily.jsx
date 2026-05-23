@@ -1,7 +1,8 @@
-import React from 'react';
-import gmeet1 from '../../assets/GMeetphotos/1.png';
+import gmeet1 from '../../assets/GMeetphotos/gm1.jpg';
 import gmeet2 from '../../assets/GMeetphotos/2.png';
-import gmeet3 from '../../assets/GMeetphotos/5.png';
+import gmeet3 from '../../assets/GMeetphotos/gm3f.png';
+import gmeet4 from '../../assets/GMeetphotos/gm5.jpg';
+import gmeet5 from '../../assets/GMeetphotos/gm4.jpg';
 
 const testimonials = [
   {
@@ -23,24 +24,38 @@ const testimonials = [
 
 const gmeetSessions = [
   {
-    image: gmeet3,
+    image: gmeet1,
     alt: "Live Google Meet doubt session",
     title: "Physics Doubt Clearing",
     detail: "JEE 2026 Batch",
   },
   {
-    image: gmeet1,
+    image: gmeet2,
     alt: "Interactive Google Meet strategy session",
     title: "JEE Strategy",
     detail: "Discussion with IITians",
   },
   {
-    image: gmeet2,
+    image: gmeet3,
     alt: "Google Meet mock analysis session",
     title: "Mock Test Analysis",
     detail: "Improvement Tips",
   },
+  {
+    image: gmeet4,
+    alt: "Google Meet live revision session",
+    title: "Formula Revision Live",
+    detail: "Important Topics",
+  },
+  {
+    image: gmeet5,
+    alt: "Google Meet guidance session",
+    title: "1-on-1 Mentorship Session",
+    detail: "Personalized Study Plan",
+  },
 ];
+
+const marqueeGmeet = [...gmeetSessions, ...gmeetSessions];
 
 const JoinFamily = () => {
   return (

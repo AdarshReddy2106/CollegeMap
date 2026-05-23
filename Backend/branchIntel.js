@@ -20,10 +20,10 @@ const MODELS = [
 const INSTITUTION_CATALOG_PATH = path.join(__dirname, 'data', 'institutionBranchCatalog.json');
 const IIT_FALLBACK_PATH = path.join(__dirname, 'data', 'iitBranchCatalog.json');
 
-const TYPES = ['IIT', 'NIT', 'IIIT'];
+const TYPES = ['IIT', 'NIT', 'IIIT', 'BITS', 'VIT', 'SRM','Amrita'];
 
 /** @type {Record<string, Record<string, string[]>>} */
-let byType = { IIT: {}, NIT: {}, IIIT: {} };
+let byType = { IIT: {}, NIT: {}, IIIT: {}, BITS: {}, VIT: {}, SRM: {} ,Amrita: {}};
 
 function loadBranchCatalogs() {
   try {
@@ -31,6 +31,11 @@ function loadBranchCatalogs() {
     byType.IIT = raw.IIT?.branchesByCollege || {};
     byType.NIT = raw.NIT?.branchesByCollege || {};
     byType.IIIT = raw.IIIT?.branchesByCollege || {};
+    byType.BITS = raw.BITS?.branchesByCollege || {};
+    byType.VIT = raw.VIT?.branchesByCollege || {};
+    byType.SRM = raw.SRM?.branchesByCollege || {};
+    byType.Amrita = raw.Amrita?.branchesByCollege || {};
+
     if (Object.keys(byType.IIT).length > 0) {
       return;
     }
@@ -42,9 +47,14 @@ function loadBranchCatalogs() {
     byType.IIT = raw.branchesByCollege || {};
     byType.NIT = {};
     byType.IIIT = {};
+    byType.BITS = {};
+    byType.VIT = {};
+    byType.SRM = {};
+    byType.Amrita = {}
+
   } catch (e) {
     console.error('[branch-intel] Missing IIT catalog fallback:', e.message);
-    byType = { IIT: {}, NIT: {}, IIIT: {} };
+    byType = { IIT: {}, NIT: {}, IIIT: {}, BITS: {}, VIT: {}, SRM: {} ,Amrita: {}};
   }
 }
 

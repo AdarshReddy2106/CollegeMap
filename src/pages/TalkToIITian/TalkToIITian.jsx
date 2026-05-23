@@ -35,11 +35,11 @@ const TalkToIITian = () => {
 						</ul>
 					</div>
 					<div className="tti-hero-visual">
-						<div className="tti-visual-placeholder">
-							<div className="tti-visual-inner">
-								1:1 Mentorship
-							</div>
-						</div>
+						<img
+							src="/talktoiitians.png"
+							alt="Talk to IITians - 1:1 Mentorship"
+							className="tti-visual-img"
+						/>
 					</div>
 				</div>
 
