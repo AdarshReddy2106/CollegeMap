@@ -32,12 +32,21 @@ const parseTestMeta = (id) => {
       date = slugMatch[2];
       month = slugMatch[3].toLowerCase();
       shift = slugMatch[4];
+    } else {
+      // Space format: "JEE Main 2024 1st Feb Shift 1" or "JEE Main 2024 27th Jan Shift 2"
+      const spaceMatch = id.match(/(\d{4})\s+(\d{1,2})(?:st|nd|rd|th)?\s+(\w+)\s+Shift\s+(\d)/i);
+      if (spaceMatch) {
+        year = spaceMatch[1];
+        date = spaceMatch[2];
+        month = spaceMatch[3].toLowerCase();
+        shift = spaceMatch[4];
+      }
     }
   }
 
-  // Determine session from month (Jan = Session 1, Apr = Session 2)
+  // Determine session from month (Jan = Session 1, Apr/Jun = Session 2, Feb = Session 1)
   let session = '';
-  if (month === 'jan' || month === 'january') session = 'Session 1';
+  if (month === 'jan' || month === 'january' || month === 'feb' || month === 'february') session = 'Session 1';
   else if (month === 'apr' || month === 'april') session = 'Session 2';
   else if (month === 'jun' || month === 'june') session = 'Session 2';
   else session = 'Session 1'; // default
@@ -212,7 +221,7 @@ const CBTPortal = () => {
       >
         <h2 className="custom-section-title">Make-your-own Test</h2>
         <p className="custom-section-desc">
-          Choose your subject, topic, difficulty &amp; number of questions to create a personalized practice test from 1000+ JEE Main and 7500+ special CollgeMap questions
+          Choose your subject, topic, difficulty &amp; number of questions to create a personalized practice test from 10000+ JEE Main and 7500+ special CollgeMap questions
         </p>
         <motion.button
           className="custom-build-btn"
@@ -253,7 +262,7 @@ const CBTPortal = () => {
 
                 <div className="instruction-section">
                   <h3 className="section-heading">General Instructions:</h3>
-                  
+
                   <ol className="instruction-list">
                     <li>
                       <span className="instruction-number">1.</span>
@@ -302,7 +311,7 @@ const CBTPortal = () => {
 
                 <div className="instruction-section">
                   <h3 className="section-heading">Navigating to a Question:</h3>
-                  
+
                   <ol className="instruction-list" start="6">
                     <li>
                       <span className="instruction-number">6.</span>
@@ -318,7 +327,7 @@ const CBTPortal = () => {
 
                 <div className="instruction-section">
                   <h3 className="section-heading">Answering a Question:</h3>
-                  
+
                   <ol className="instruction-list" start="7">
                     <li>
                       <span className="instruction-number">7.</span>
@@ -340,7 +349,7 @@ const CBTPortal = () => {
 
                 <div className="instruction-section">
                   <h3 className="section-heading">Navigating through sections:</h3>
-                  
+
                   <ol className="instruction-list" start="9">
                     <li>
                       <span className="instruction-number">9.</span>
@@ -367,9 +376,9 @@ const CBTPortal = () => {
 
                 <div className="declaration-box">
                   <label className="checkbox-container">
-                    <input 
-                      type="checkbox" 
-                      id="terms-checkbox" 
+                    <input
+                      type="checkbox"
+                      id="terms-checkbox"
                       checked={termsAccepted}
                       onChange={(e) => setTermsAccepted(e.target.checked)}
                     />
@@ -381,8 +390,8 @@ const CBTPortal = () => {
                 </div>
 
                 <div className="proceed-button-container">
-                  <button 
-                    className="proceed-btn" 
+                  <button
+                    className="proceed-btn"
                     onClick={handleConfirmStartTest}
                   >
                     PROCEED
@@ -415,8 +424,8 @@ const CBTPortal = () => {
                     <div className="warning-icon">⚠</div>
                     <h3>Warning!</h3>
                     <p>Please accept terms and conditions before proceeding.</p>
-                    <button 
-                      className="ok-btn" 
+                    <button
+                      className="ok-btn"
                       onClick={() => setShowWarning(false)}
                     >
                       OK
