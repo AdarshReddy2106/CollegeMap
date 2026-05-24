@@ -37,6 +37,8 @@ import Home2 from "./pages/Home_2/Home2";
 import Login2 from "./pages/Login_2/login2";
 import UserTypeModal from "./components/UserTypeModal/UserTypeModal";
 import StudyWithIITian from "./pages/StudyWithIITians/StudyWithIITians";
+import CollegePredictortool from './pages/CollegePredictor/CollegePredictortool';
+import BranchComparisonIntro from './pages/BranchComparison/BranchComparisonIntro';
 
 function RouteAnalyticsTracker() {
   const location = useLocation();
@@ -120,7 +122,7 @@ function App() {
           <Route path="/pyq" element={<PYQPage />} />
           {/* <Route path="/pyq-advanced" element={<PYQAdvancedPage />} /> */}
           <Route path="/news" element={<NewsPage />} />
-          <Route path="/branch-comparison" element={<BranchComparison />} />
+          {/* <Route path="/branch-comparison" element={<BranchComparison />} /> */}
           <Route path="/college-predictor" element={<CollegePredictor />} />
           <Route path="/college-predictor/results" element={<CollegePredictorResults />} />
           <Route path="/energy-batch" element={<EnergyBatch />} />
@@ -130,6 +132,9 @@ function App() {
           <Route path="/cbt-portal/custom-test" element={<CustomTestBuilder />} />
           <Route path="/cbt-portal/test/:testId" element={<TestInterface />} />
           <Route path="/cbt-portal/dashboard" element={<CBTDashboard />} />
+          <Route path="/college-predictor/tool" element={<CollegePredictortool />} />
+          <Route path="/branch-comparison" element={<BranchComparisonIntro />} />
+          <Route path="/branch-comparison/tool" element={<BranchComparison />} />
           {/* Add other routes as needed */}
         </Routes>
       </Layout>

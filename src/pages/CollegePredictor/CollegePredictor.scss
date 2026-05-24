@@ -3,6 +3,7 @@
 .cp-page {
   min-height: 78vh;
   padding: 2rem 1rem 2.5rem;
+  padding-bottom: 80px;
   background: linear-gradient(120deg, $accent-light 0%, $background-alt 100%);
 }
 
@@ -177,5 +178,212 @@
   .cp-row {
     grid-template-columns: 1fr;
     gap: 0.25rem;
+  }
+}
+
+.cp-hero {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 90px 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 70px;
+}
+
+.cp-hero-left {
+  flex: 1;
+}
+
+.cp-small-heading {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #0f9892;
+  margin-bottom: 34px;
+  text-transform: uppercase;
+}
+
+.cp-main-heading {
+  font-size: 42px;
+  line-height: 1.15;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 38px;
+  max-width: 520px;
+}
+.cp-main-heading span {
+  color: #0f9892;
+}
+
+.cp-question-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 540px;
+}
+
+.cp-tag {
+  background: transparent;
+  border-left: 4px solid #1cc7c7;
+  padding: 6px 0 6px 22px;
+  font-size: 18px;
+  line-height: 1.8;
+  font-style: italic;
+  color: #555;
+}
+
+.cp-tag b {
+  color: black;
+}
+
+.cp-hero-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.cp-image-box {
+  width: 470px;
+  height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.cp-image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cp-info-section {
+  max-width: 1200px;
+  margin: 40px auto 80px;
+  padding: 0 40px;
+}
+
+.cp-info-section h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 24px;
+}
+
+.cp-info-section p {
+  font-size: 18px;
+  line-height: 1.9;
+  color: #333;
+  margin-bottom: 24px;
+  max-width: 1100px;
+}
+
+
+.cp-dropdown {
+  width: 100%;
+}
+
+.cp-dropdown-head {
+  list-style: none;
+  cursor: pointer;
+  border: 1px solid #43d6d6;
+  border-radius: 12px;
+  padding: 10px 18px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 500;
+  background: white;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.cp-dropdown-head::-webkit-details-marker {
+  display: none;
+}
+
+.cp-dropdown-head::after {
+  content: "⌄";
+  float: right;
+  font-size: 18px;
+}
+
+.cp-dropdown[open] .cp-dropdown-head::after {
+  content: "⌃";
+}
+
+.cp-branch-list {
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid #43d6d6;
+  border-radius: 12px;
+  padding: 8px 0;
+  background: white;
+}
+
+/* ── Tool-only page wrapper ── */
+.cp-tool-page {
+  min-height: 78vh;
+  padding: 3rem 1rem 3rem;
+  background: linear-gradient(120deg, $accent-light 0%, $background-alt 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* ── Bottom nav bar (mirrors Talk-to-IITian style) ── */
+.cp-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: #ffffff;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.07);
+  padding: 16px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;   /* center everything together */
+  gap: 32px;
+  box-sizing: border-box;
+  z-index: 100;
+}
+
+.cp-bottom-nav-steps {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #1a5c6b;           /* same dark teal as the reference pic */
+  font-size: 15px;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+
+.cp-nav-arrow {
+  color: $primary;           /* teal — matches the button color */
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cp-start-btn {
+  background: $primary;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 32px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 0.88;
   }
 }

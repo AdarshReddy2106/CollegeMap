@@ -6,7 +6,7 @@ import catalogStatic from '../../data/institutionBranchCatalog.json';
 import BranchComparisonResults from './BranchComparisonResults';
 import BranchComparisonLoadingOverlay from './BranchComparisonLoadingOverlay';
 
-const INSTITUTION_TYPES = ['IIT', 'NIT', 'IIIT'];
+const INSTITUTION_TYPES = ['IIT', 'NIT', 'IIIT','BITS','VIT','SRM','Amrita'];
 
 function staticCatalog() {
   const byType = {};

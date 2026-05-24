@@ -5,7 +5,8 @@ import './EnergyBatch.scss';
 /** Replace with your WhatsApp deep link or wa.me number for 1-to-1 inquiries */
 const INQUIRE_WHATSAPP_URL = 'https://wa.link/lo05a1';
 
-const MENTORSHIP_IMG = `${process.env.PUBLIC_URL || ''}/Images_energy/mentor_student_illustration.svg`;
+const MENTORSHIP_IMG = `${process.env.PUBLIC_URL || ''}/studywithiitians.png`;
+//const MENTORSHIP_IMG = `${process.env.PUBLIC_URL || ''}/Images_energy/mentor_student_illustration.svg`;
 
 function WhatsAppIcon() {
   return (
@@ -67,15 +68,16 @@ export default function EnergyBatch() {
         {/* —— 1-to-1 hero —— */}
         <header className="eb-hero">
           <h1 className="eb-hero-title">
-            <span className="eb-hero-top">Top</span>{' '}
-            <span className="eb-hero-rest">1-to-1 guidance for JEE preparation</span>
+            <span className="eb-hero-rest">Top </span>
+            <span className="eb-hero-top">1-to-1 guidance</span>
+            <span className="eb-hero-rest"> for JEE preparation</span>
           </h1>
 
           <div className="eb-hero-split">
             <ul className="eb-quotes" aria-label="What students say">
-              <li>&ldquo;I&apos;m not able to focus.&rdquo;</li>
-              <li>&ldquo;I&apos;m not finishing my syllabus.&rdquo;</li>
-              <li>&ldquo;I&apos;m not scoring good marks.&rdquo;</li>
+            <li>&ldquo;I&apos;m not able to <strong>focus</strong>.&rdquo;</li>
+            <li>&ldquo;I&apos;m not finishing my <strong>syllabus</strong>.&rdquo;</li>
+            <li>&ldquo;I&apos;m not scoring <strong>good marks</strong>.&rdquo;</li>
             </ul>
             <figure className="eb-hero-visual">
               <img
@@ -95,14 +97,14 @@ export default function EnergyBatch() {
               Struggling with your JEE preparation? Putting in the hard work and still not getting good marks?
             </p>
             <p>
-              Get <em className="eb-em">top</em> guidance from IITians to give shape to your hard work — daily
+              Get top guidance from IITians to give shape to your hard work — daily
               schedules, timely sessions, and someone you can reach out to when things feel overwhelming.
             </p>
-            <p className="eb-tagline">One mentor — one student.</p>
-            <p className="eb-tagline eb-tagline-muted">You put in the work; we give it the right direction.</p>
+            {/* <p className="eb-tagline">One mentor — one student.</p>
+            <p className="eb-tagline eb-tagline-muted">You put in the work; we give it the right direction.</p> */}
           </div>
 
-          <a
+          {/* <a
             href={INQUIRE_WHATSAPP_URL}
             className="eb-cta"
             target="_blank"
@@ -110,7 +112,7 @@ export default function EnergyBatch() {
           >
             <WhatsAppIcon />
             Inquire for availability
-          </a>
+          </a> */}
         </header>
 
         {/* —— Other programmes —— */}
@@ -196,6 +198,17 @@ export default function EnergyBatch() {
           {' '}or use the WhatsApp button above.
         </p>
       </div>
+      <div className="eb-bottom-nav">
+        <div className="eb-bottom-nav-steps">
+          <span>Share your goal</span>
+          <span className="eb-nav-arrow">→</span>
+          <span>Get matched with an IITian</span>
+          <span className="eb-nav-arrow">→</span>
+          <span>Personal meeting</span>
+        </div>
+        <a href={INQUIRE_WHATSAPP_URL} className="eb-start-btn" target="_blank" rel="noopener noreferrer">Inquire now</a>
+      </div>
+      
     </div>
   );
 }

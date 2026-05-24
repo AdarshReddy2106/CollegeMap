@@ -1,10 +1,13 @@
 import React from "react";
 import "./StudyWithIITians.css";
-import thumbnailAsk from "../../assets/Thumbnails/Ask me anything.png";
-import thumbnailLive from "../../assets/Thumbnails/Live Slef Studies.png";
-import thumbnailMaxx from "../../assets/Thumbnails/MAXX.png";
-import thumbnailPaper from "../../assets/Thumbnails/2.png";
-import thumbnailTwo from "../../assets/Thumbnails/1.png";
+import thumbnailOne from "../../assets/Thumbnails/yt1.jpeg";
+import thumbnailTwo from "../../assets/Thumbnails/yt2.jpeg";
+import thumbnailThree from "../../assets/Thumbnails/yt3.jpeg";
+import thumbnailFour from "../../assets/Thumbnails/yt4.jpeg";
+import thumbnailFive from "../../assets/Thumbnails/yt5.jpeg";
+import thumbnailSix from "../../assets/Thumbnails/yt6.jpeg";
+import thumbnailSeven from "../../assets/Thumbnails/yt7.jpeg";
+
 
 const EXTERNAL_LINKS = {
 	youtube: "https://www.youtube.com/@CollegeMap-in?sub_confirmation=1",
@@ -28,25 +31,34 @@ const highFocusPoints = [
 
 const youtubeThumbnails = [
 	{
-		src: thumbnailAsk,
-		alt: "YouTube session thumbnail: Ask me anything",
-	},
-	{
-		src: thumbnailLive,
-		alt: "YouTube session thumbnail: Live self studies",
-	},
-	{
-		src: thumbnailMaxx,
-		alt: "YouTube session thumbnail: Score max in JEE",
-	},
-	{
-		src: thumbnailPaper,
-		alt: "YouTube session thumbnail: Paper series launch",
+		src: thumbnailOne,
+		alt: "YouTube session thumbnail: Self study session",
 	},
 	{
 		src: thumbnailTwo,
-		alt: "YouTube session thumbnail: JEE 2026 prep",
+		alt: "YouTube session thumbnail: FAQ session",
 	},
+	{
+		src: thumbnailThree,
+		alt: "YouTube session thumbnail: Mocktest series",
+	},
+	{
+		src: thumbnailFour,
+		alt: "YouTube session thumbnail: Avoid these mistakes",
+	},
+	{
+		src: thumbnailFive,
+		alt: "YouTube session thumbnail: Life at IIT BOMBAY",
+	},
+	{
+		src: thumbnailSix,
+		alt: "YouTube session thumbnail: Here's my score",
+	},
+	{
+		src: thumbnailSeven,
+		alt: "YouTube session thumbnail: Comeback plan",
+	}
+	
 ];
 
 const marqueeSessions = [...youtubeThumbnails, ...youtubeThumbnails];

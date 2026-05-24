@@ -6,13 +6,13 @@ import 'slick-carousel/slick/slick-theme.css';
 const bannerSlides = [
   {
     id: 1,
-    image: '/banner.png',
+    image: '/banner_n1.jpg',
     alt: 'CollegeMap - Your JEE Preparation Platform',
     link: '/Questionaire',
   },
   {
     id: 2,
-    image: '/banner_3.png',
+    image: '/banner_n2.jpg',
     alt: 'CollegeMap - JEE Mock Tests & Resources',
     link: '/resources',
   },
