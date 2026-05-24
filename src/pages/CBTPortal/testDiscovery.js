@@ -144,10 +144,15 @@ export const loadTestMetadata = async (testFolder) => {
     if (!response.ok) {
       return null;
     }
-    const data = await response.json();
-    return data;
+    // On deployed SPAs, missing static files return 200 + index.html instead of 404.
+    // Guard against that by reading text first and checking for HTML.
+    const text = await response.text();
+    if (!text || text.trimStart().startsWith('<')) {
+      return null; // file not on server yet
+    }
+    return JSON.parse(text);
   } catch (error) {
-    console.error(`Error loading metadata for ${testFolder}:`, error);
+    // Silently skip — file simply isn't available on this environment
     return null;
   }
 };
