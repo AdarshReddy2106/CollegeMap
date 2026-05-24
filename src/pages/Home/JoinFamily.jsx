@@ -1,5 +1,5 @@
 import gmeet1 from '../../assets/GMeetphotos/gm1.jpg';
-import gmeet2 from '../../assets/GMeetphotos/2.png';
+import gmeet2 from '../../assets/GMeetphotos/3.png';
 import gmeet3 from '../../assets/GMeetphotos/gm3f.png';
 import gmeet4 from '../../assets/GMeetphotos/gm5.jpg';
 import gmeet5 from '../../assets/GMeetphotos/gm4.jpg';

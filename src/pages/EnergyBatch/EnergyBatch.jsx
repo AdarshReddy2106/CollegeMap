@@ -100,11 +100,11 @@ export default function EnergyBatch() {
               Get top guidance from IITians to give shape to your hard work — daily
               schedules, timely sessions, and someone you can reach out to when things feel overwhelming.
             </p>
-            <p className="eb-tagline">One mentor — one student.</p>
-            <p className="eb-tagline eb-tagline-muted">You put in the work; we give it the right direction.</p>
+            {/* <p className="eb-tagline">One mentor — one student.</p>
+            <p className="eb-tagline eb-tagline-muted">You put in the work; we give it the right direction.</p> */}
           </div>
 
-          <a
+          {/* <a
             href={INQUIRE_WHATSAPP_URL}
             className="eb-cta"
             target="_blank"
@@ -112,7 +112,7 @@ export default function EnergyBatch() {
           >
             <WhatsAppIcon />
             Inquire for availability
-          </a>
+          </a> */}
         </header>
 
         {/* —— Other programmes —— */}
@@ -198,6 +198,17 @@ export default function EnergyBatch() {
           {' '}or use the WhatsApp button above.
         </p>
       </div>
+      <div className="eb-bottom-nav">
+        <div className="eb-bottom-nav-steps">
+          <span>Share your goal</span>
+          <span className="eb-nav-arrow">→</span>
+          <span>Get matched with an IITian</span>
+          <span className="eb-nav-arrow">→</span>
+          <span>Personal meeting</span>
+        </div>
+        <a href={INQUIRE_WHATSAPP_URL} className="eb-start-btn" target="_blank" rel="noopener noreferrer">Inquire now</a>
+      </div>
+      
     </div>
   );
 }
