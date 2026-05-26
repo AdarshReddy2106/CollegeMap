@@ -1,17 +1,84 @@
 import React, { useState } from "react";
 import "./TalkToIITian.css";
-import RazorPayment from "../../components/RazorpayPayment/RazorpayPayment";
 
 const TalkToIITian = () => {
-  const [showPaymentGateway, setShowPaymentGateway] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleStartNow = () => {
-    setShowPaymentGateway(true);
+  const loadScript = (src) => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
   };
 
-  const onPaymentSuccess = async () => {
-    setShowPaymentGateway(false);
-    alert("Payment successful! Our team will contact you shortly.");
+  const handleStartNow = async () => {
+    setIsProcessing(true);
+    const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+
+    if (!res) {
+      alert("Razorpay SDK failed to load. Are you online?");
+      setIsProcessing(false);
+      return;
+    }
+
+    try {
+      const baseUrl = "http://localhost:4000";
+      // Create Razorpay Order
+      const data = await fetch(`${baseUrl}/order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 50000, currency: "INR", receipt: "tti_receipt_01" })
+      }).then((t) => t.json());
+
+      const options = {
+        key: process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_SsglEeEz90a4Z9", 
+        amount: data.amount,
+        currency: data.currency,
+        name: "CollegeMap",
+        description: "Talk to IITian - 1:1 Mentorship",
+        order_id: data.id,
+        handler: async function (response) {
+          try {
+            const validateRes = await fetch(`${baseUrl}/order/validate`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+            const jsonRes = await validateRes.json();
+            if (jsonRes.msg === "success") {
+              alert(`Payment successful! \n\nYour Payment ID is: ${response.razorpay_payment_id}\n\nPlease take a screenshot or copy this ID. Redirecting you to our WhatsApp to schedule your meeting...`);
+              window.location.href = "https://wa.link/lo05a1";
+            } else {
+              alert("Payment Validation Failed");
+            }
+          } catch (validateErr) {
+            console.error("Validation Error:", validateErr);
+            alert("Payment successful but validation failed. Please contact support.");
+          }
+        },
+        theme: { color: "#ff6c00" },
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      
+      paymentObject.on("payment.failed", function (response) {
+        alert(`Payment Failed: ${response.error.description}`);
+      });
+
+      paymentObject.open();
+    } catch (error) {
+      console.error("Payment Order Error:", error);
+      alert("Something went wrong while initiating the payment. Is the backend server running?");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -83,30 +150,11 @@ const TalkToIITian = () => {
             <span className="tti-arrow">→</span>
             <span>Personal meeting</span>
           </div>
-          <button className="tti-start-now-btn" onClick={handleStartNow}>
-            Start Now
+          <button className="tti-start-now-btn" onClick={handleStartNow} disabled={isProcessing}>
+            {isProcessing ? "Processing..." : "Start Now"}
           </button>
         </div>
       </div>
-
-      {showPaymentGateway && (
-        <div className="payment-gateway-overlay">
-          <div className="payment-gateway-section">
-            <p>Please complete the payment to proceed with booking your 1:1 session with an IITian.</p>
-            <RazorPayment
-              amount={500}
-              onSuccess={onPaymentSuccess}
-              className="payment_button"
-            />
-            <button
-              className="cancel-payment tti-cancel-payment"
-              onClick={() => setShowPaymentGateway(false)}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
     </main>
   );
 };
