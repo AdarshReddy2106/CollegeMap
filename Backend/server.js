@@ -7,6 +7,12 @@ const { parseNTARSS } = require('./rssParser');
 const { registerBranchIntelRoutes } = require('./branchIntel');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
+const { createClient } = require('@supabase/supabase-js');
+
+// Supabase client
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -71,6 +77,81 @@ app.post("/order/validate", async (req, res) => {
     orderId: razorpay_order_id,
     paymentId: razorpay_payment_id,
   });
+});
+
+// ─── Talk to IITian — Form Submission Routes ───────────────────────────────────
+
+// Submit the form after successful payment
+app.post("/api/tti/submit-form", async (req, res) => {
+  try {
+    const { name, phone, college, branch, queries, razorpay_payment_id, razorpay_order_id } = req.body;
+
+    // Validate required fields
+    if (!name || !phone || !college || !branch || !razorpay_payment_id || !razorpay_order_id) {
+      return res.status(400).json({ success: false, error: "Missing required fields." });
+    }
+
+    if (!supabase) {
+      console.error("[TTI] Supabase not configured");
+      return res.status(500).json({ success: false, error: "Database not configured." });
+    }
+
+    // Check for duplicate payment ID
+    const { data: existing } = await supabase
+      .from("tti_form_submissions")
+      .select("id")
+      .eq("razorpay_payment_id", razorpay_payment_id)
+      .maybeSingle();
+
+    if (existing) {
+      return res.status(409).json({ success: false, error: "Form already submitted for this payment." });
+    }
+
+    // Insert into Supabase
+    const { data, error } = await supabase
+      .from("tti_form_submissions")
+      .insert([{
+        name,
+        phone,
+        college_of_interest: college,
+        branch_of_interest: branch,
+        specific_queries: queries || null,
+        razorpay_payment_id,
+        razorpay_order_id,
+      }])
+      .select();
+
+    if (error) {
+      console.error("[TTI] Supabase insert error:", error);
+      return res.status(500).json({ success: false, error: "Failed to save form data." });
+    }
+
+    console.log(`[TTI] ✅ Form submitted: ${name} — ${college} / ${branch} (payment: ${razorpay_payment_id})`);
+    res.json({ success: true, id: data?.[0]?.id });
+  } catch (err) {
+    console.error("[TTI] Submit form error:", err);
+    res.status(500).json({ success: false, error: "Internal server error." });
+  }
+});
+
+// Check if a payment ID already has a form submission (recovery flow)
+app.get("/api/tti/check-payment/:paymentId", async (req, res) => {
+  try {
+    if (!supabase) {
+      return res.status(500).json({ success: false, error: "Database not configured." });
+    }
+
+    const { data } = await supabase
+      .from("tti_form_submissions")
+      .select("id")
+      .eq("razorpay_payment_id", req.params.paymentId)
+      .maybeSingle();
+
+    res.json({ success: true, formSubmitted: !!data });
+  } catch (err) {
+    console.error("[TTI] Check payment error:", err);
+    res.status(500).json({ success: false, error: "Internal server error." });
+  }
 });
 
 // NTA Updates Cache
