@@ -1,6 +1,33 @@
-# Supabase Setup for CBT Portal
+# Supabase Setup for CBT Portal & Payments
 
 ## Tables to Create
+
+### Branch Comparison Payments
+```sql
+create table if not exists public.branch_compare_payments (
+  id uuid primary key default gen_random_uuid(),
+  email text not null,
+  razorpay_payment_id text,
+  razorpay_order_id text,
+  expires_at timestamptz not null,
+  created_at timestamptz not null default now()
+);
+
+-- Note: Adjust RLS policies depending on your usage. For example:
+alter table public.branch_compare_payments enable row level security;
+
+create policy "allow public insert for branch payments"
+on public.branch_compare_payments
+for insert
+to public
+with check (true);
+
+create policy "allow public read for branch payments"
+on public.branch_compare_payments
+for select
+to public
+using (true);
+```
 
 ### 1. portal_users table (already created)
 ```sql

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import "./TalkToIITian.css";
 
-const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
-const RAZORPAY_KEY = process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_SsglEeEz90a4Z9";
+const BASE_URL = process.env.REACT_APP_API_URL || "https://collegemapbackend.vercel.app";
+const RAZORPAY_KEY = process.env.REACT_APP_RAZORPAY_KEY_ID;
 const PAYMENT_AMOUNT = 50000; // ₹500
 
 // ── localStorage keys ────────────────────────────────────────────────────
@@ -156,6 +156,10 @@ const TalkToIITian = () => {
           receipt: `tti_${Date.now()}`,
         }),
       });
+      if (!orderRes.ok) {
+        const errData = await orderRes.json().catch(() => ({}));
+        throw new Error(errData.error || `Order creation failed (HTTP ${orderRes.status})`);
+      }
       const orderData = await orderRes.json();
 
       const options = {
@@ -177,6 +181,10 @@ const TalkToIITian = () => {
                 razorpay_signature: response.razorpay_signature,
               }),
             });
+            if (!validateRes.ok) {
+              const errData = await validateRes.json().catch(() => ({}));
+              throw new Error(errData.msg || `Validation failed (HTTP ${validateRes.status})`);
+            }
             const validateData = await validateRes.json();
 
             if (validateData.msg === "success") {

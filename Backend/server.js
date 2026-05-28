@@ -52,13 +52,13 @@ app.post("/order", async (req, res) => {
     const order = await razorpay.orders.create(options);
 
     if (!order) {
-      return res.status(500).send("Error");
+      return res.status(500).json({ error: "Order creation failed" });
     }
 
     res.json(order);
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Error");
+    console.error("Razorpay order error:", err);
+    res.status(500).json({ error: err.message || "Internal Server Error" });
   }
 });
 
@@ -77,6 +77,60 @@ app.post("/order/validate", async (req, res) => {
     orderId: razorpay_order_id,
     paymentId: razorpay_payment_id,
   });
+});
+
+// Branch Comparison: validate payment AND save access with server-side expiry
+app.post("/order/validate-bc", async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, email } = req.body;
+
+  // Validate required fields
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !email) {
+    return res.status(400).json({ msg: "Missing required fields." });
+  }
+
+  // Verify Razorpay signature
+  const sha = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
+  sha.update(`${razorpay_order_id}|${razorpay_payment_id}`);
+  const digest = sha.digest("hex");
+  if (digest !== razorpay_signature) {
+    return res.status(400).json({ msg: "Transaction is not legit!" });
+  }
+
+  // Save payment with server-computed expiry
+  if (!supabase) {
+    console.error("[BC] Supabase not configured");
+    return res.status(500).json({ msg: "Database not configured." });
+  }
+
+  try {
+    const expiresAt = new Date();
+    expiresAt.setMonth(expiresAt.getMonth() + 6); // 6 months access
+
+    const { error } = await supabase
+      .from("branch_compare_payments")
+      .insert({
+        email: email.toLowerCase(),
+        razorpay_payment_id,
+        razorpay_order_id,
+        expires_at: expiresAt.toISOString(),
+      });
+
+    if (error) {
+      console.error("[BC] Supabase insert error:", error);
+      return res.status(500).json({ msg: "Failed to save payment record." });
+    }
+
+    console.log(`[BC] ✅ Payment saved: ${email} — expires ${expiresAt.toISOString()}`);
+    res.json({
+      msg: "success",
+      orderId: razorpay_order_id,
+      paymentId: razorpay_payment_id,
+      expiresAt: expiresAt.toISOString(),
+    });
+  } catch (err) {
+    console.error("[BC] Validate-bc error:", err);
+    res.status(500).json({ msg: "Internal server error." });
+  }
 });
 
 // ─── Talk to IITian — Form Submission Routes ───────────────────────────────────
