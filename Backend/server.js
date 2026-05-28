@@ -1,4 +1,5 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const cron = require('node-cron');
@@ -13,6 +14,35 @@ const { createClient } = require('@supabase/supabase-js');
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
+
+// Telegram notification config
+async function sendTelegramNotification(message) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+
+  if (!token || !chatId) {
+    console.warn('[Telegram] Bot token or chat ID not configured, skipping notification');
+    return;
+  }
+  try {
+    const url = `https://api.telegram.org/bot${token}/sendMessage`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        parse_mode: 'HTML',
+      }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      console.error('[Telegram] Failed to send notification:', err);
+    }
+  } catch (err) {
+    console.error('[Telegram] Error sending notification:', err.message);
+  }
+}
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -181,6 +211,21 @@ app.post("/api/tti/submit-form", async (req, res) => {
     }
 
     console.log(`[TTI] ✅ Form submitted: ${name} — ${college} / ${branch} (payment: ${razorpay_payment_id})`);
+
+    // Send Telegram notification (fire-and-forget — don't block the response)
+    const tgMessage = `🎓 <b>New Talk to IITian Booking!</b>
+
+👤 <b>Name:</b> ${name}
+📞 <b>Phone:</b> ${phone}
+🏫 <b>College:</b> ${college}
+📚 <b>Branch:</b> ${branch}
+${queries ? `❓ <b>Queries:</b> ${queries}` : ''}
+
+💳 <b>Payment ID:</b> <code>${razorpay_payment_id}</code>
+📋 <b>Order ID:</b> <code>${razorpay_order_id}</code>
+⏰ <b>Time:</b> ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`;
+    await sendTelegramNotification(tgMessage);
+
     res.json({ success: true, id: data?.[0]?.id });
   } catch (err) {
     console.error("[TTI] Submit form error:", err);
