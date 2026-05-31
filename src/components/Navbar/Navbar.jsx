@@ -71,11 +71,8 @@ const Navbar = () => {
         if (path) {
             navigate(path);
         } else {
-            if (type === 'college') {
-                navigate('/home');
-            } else {
-                navigate('/');
-            }
+            // Both JEE and college home live at '/' — SmartHome picks the right view
+            navigate('/');
         }
     };
 
@@ -91,6 +88,7 @@ const Navbar = () => {
                 <div className={`nav-links ${isMenuOpen ? "open" : ""}`} ref={menuRef}>
                     {userType === 'jee' ? (
                         <>
+                            <li><Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
                             <li><Link to="/Resources" onClick={() => setIsMenuOpen(false)}>Top Resources</Link></li>
                             <li><Link to="/StudyWithIITians" onClick={() => setIsMenuOpen(false)}>Study With IITians</Link></li>
                             <li><Link to="/energy-batch" onClick={() => setIsMenuOpen(false)}>Energy Batch</Link></li>

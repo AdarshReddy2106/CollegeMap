@@ -58,7 +58,7 @@ const youtubeThumbnails = [
 		src: thumbnailSeven,
 		alt: "YouTube session thumbnail: Comeback plan",
 	}
-	
+
 ];
 
 const marqueeSessions = [...youtubeThumbnails, ...youtubeThumbnails];
@@ -127,7 +127,7 @@ const StudyWithIITian = () => {
 								))}
 							</ul>
 							<a
-								className="swi-action-btn swi-action-btn-outline"
+								className="swi-action-btn"
 								href={EXTERNAL_LINKS.availability}
 								target="_blank"
 								rel="noopener noreferrer"

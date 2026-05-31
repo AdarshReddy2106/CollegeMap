@@ -65,20 +65,20 @@ const JoinFamily = () => {
         <p className="join-description">
           Be part of a <strong>thriving community</strong> where students learn, grow, and achieve their <strong>IIT dreams</strong> together with <strong>IITian mentors</strong>.
         </p>
-        
+
         {/* Scrolling Evidence Banner */}
         <div className="evidence-scroll-banner">
           <div className="scroll-track">
             <span className="scroll-item">50+ Live Google Meet Sessions</span>
             <span className="scroll-item">150+ Students Supported</span>
-            <span className="scroll-item">5000+ Practice Questions</span>
+            <span className="scroll-item">10000+ Practice Questions</span>
             <span className="scroll-item">24/7 Doubt Support</span>
             <span className="scroll-item">IITian Mentors from Top IITs</span>
             <span className="scroll-item">Free Mock Tests & Analysis</span>
             {/* Duplicate for seamless loop */}
             <span className="scroll-item">50+ Live Google Meet Sessions</span>
             <span className="scroll-item">150+ Students Supported</span>
-            <span className="scroll-item">1000+ Practice Questions</span>
+            <span className="scroll-item">10000+ Practice Questions</span>
             <span className="scroll-item">24/7 Doubt Support</span>
             <span className="scroll-item">IITian Mentors from Top IITs</span>
             <span className="scroll-item">Free Mock Tests & Analysis</span>
@@ -135,7 +135,7 @@ const JoinFamily = () => {
               <div className="stat-label">Students Supported</div>
             </div>
             <div className="stat-item">
-              <div className="stat-number">1000+</div>
+              <div className="stat-number">10000+</div>
               <div className="stat-label">Practice Questions</div>
             </div>
             <div className="stat-item">

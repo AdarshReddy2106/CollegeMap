@@ -1,12 +1,21 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Select from 'react-select';
+import { useNavigate } from 'react-router-dom';
 import './BranchComparison.scss';
 import { fetchBranchCatalog, compareBranches } from '../../services/branchIntelApi';
 import catalogStatic from '../../data/institutionBranchCatalog.json';
 import BranchComparisonResults from './BranchComparisonResults';
 import BranchComparisonLoadingOverlay from './BranchComparisonLoadingOverlay';
+import { useAuth } from '../../context/AuthContext';
+import { checkBranchComparisonAccess } from '../../services/supabaseService';
 
-const INSTITUTION_TYPES = ['IIT', 'NIT', 'IIIT','BITS','VIT','SRM','Amrita', 'Other top colleges'];
+
+const RAZORPAY_KEY = process.env.REACT_APP_RAZORPAY_KEY_ID;
+const BASE_URL = process.env.REACT_APP_API_URL || "https://collegemapbackend.vercel.app";
+const PAYMENT_AMOUNT = 30000; // ₹300 in paise
+
+const INSTITUTION_TYPES = ['IIT', 'NIT', 'IIIT', 'BITS', 'VIT', 'SRM', 'Amrita','Other top colleges'];
+
 
 function staticCatalog() {
   const byType = {};
@@ -81,6 +90,14 @@ function collegeOptionsList(catalog, type) {
 }
 
 const BranchComparison = () => {
+  const navigate = useNavigate();
+  const { user, isLoggedIn } = useAuth();
+
+  const [hasAccess, setHasAccess] = useState(false);
+  const [checkingAccess, setCheckingAccess] = useState(true);
+  const [paying, setPaying] = useState(false);
+
+
   const [catalog, setCatalog] = useState(null);
   const [loadError, setLoadError] = useState('');
   const [type1, setType1] = useState('IIT');
@@ -121,6 +138,21 @@ const BranchComparison = () => {
   useEffect(() => {
     setBranch1((prev) => (prev && branchesFor1.includes(prev) ? prev : ''));
   }, [college1, branchesFor1]);
+
+  useEffect(() => {
+    const verifyAccess = async () => {
+      if (!isLoggedIn || !user?.email) {
+        setHasAccess(false);
+        setCheckingAccess(false);
+        return;
+      }
+      setCheckingAccess(true);
+      const access = await checkBranchComparisonAccess(user.email);
+      setHasAccess(access);
+      setCheckingAccess(false);
+    };
+    verifyAccess();
+  }, [isLoggedIn, user]);
 
   useEffect(() => {
     setBranch2((prev) => (prev && branchesFor2.includes(prev) ? prev : ''));
@@ -195,6 +227,112 @@ const BranchComparison = () => {
     }
   }, []);
 
+  const loadRazorpay = useCallback(() => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) return resolve(true);
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  }, []);
+
+  const handlePayment = async () => {
+    if (!isLoggedIn) {
+      alert("Please log in first to make a payment.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      setPaying(true);
+      const loaded = await loadRazorpay();
+      if (!loaded) {
+        alert("Razorpay SDK failed to load. Please check your internet connection.");
+        setPaying(false);
+        return;
+      }
+
+      // Create order
+      const orderRes = await fetch(`${BASE_URL}/order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: PAYMENT_AMOUNT,
+          currency: "INR",
+          receipt: `bc_${Date.now()}`,
+        }),
+      });
+      if (!orderRes.ok) {
+        const errData = await orderRes.json().catch(() => ({}));
+        throw new Error(errData.error || `Order creation failed (HTTP ${orderRes.status})`);
+      }
+      const orderData = await orderRes.json();
+
+      const options = {
+        key: RAZORPAY_KEY,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "CollegeMap",
+        description: "Branch Comparison — 6 Months Access",
+        order_id: orderData.id,
+        prefill: {
+          email: user?.email || '',
+        },
+        handler: async (response) => {
+          try {
+            // Validate payment AND save access on backend (server-side expiry)
+            const validateRes = await fetch(`${BASE_URL}/order/validate-bc`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                email: user.email,
+              }),
+            });
+            if (!validateRes.ok) {
+              const errData = await validateRes.json().catch(() => ({}));
+              throw new Error(errData.msg || `Validation failed (HTTP ${validateRes.status})`);
+            }
+            const validateData = await validateRes.json();
+
+            if (validateData.msg === "success") {
+              setHasAccess(true);
+              alert("Payment successful! You now have 6 months of access to Branch Comparison.");
+            } else {
+              alert("Payment validation failed. Please contact support.");
+            }
+          } catch (err) {
+            console.error("Payment validation error:", err);
+            alert(`Payment received but an error occurred: ${err.message}. Please contact support with your payment ID: ${response.razorpay_payment_id}`);
+          } finally {
+            setPaying(false);
+          }
+        },
+        theme: { color: "#10c3bc" },
+        modal: {
+          ondismiss: () => setPaying(false),
+        },
+      };
+
+      const paymentObject = new window.Razorpay(options);
+
+      paymentObject.on("payment.failed", (response) => {
+        alert(`Payment failed: ${response.error.description}`);
+        setPaying(false);
+      });
+
+      paymentObject.open();
+    } catch (err) {
+      console.error("Payment init error:", err);
+      alert("Failed to initialize payment. Please try again.");
+      setPaying(false);
+    }
+  };
+
   const selectStyles = useMemo(
     () => ({
       menuPortal: (base) => ({ ...base, zIndex: 10002 }),
@@ -217,6 +355,59 @@ const BranchComparison = () => {
       <div className="branch-comparison-bg branch-comparison-bg--results">
         <div className="branch-comparison-container branch-comparison-container--wide">
           <BranchComparisonResults data={result} onNewComparison={handleNewComparison} />
+        </div>
+      </div>
+    );
+  }
+
+  if (checkingAccess) {
+    return (
+      <div className="branch-comparison-bg">
+        <div className="branch-comparison-container">
+          <p style={{ textAlign: "center", padding: "2rem" }}>Checking your access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasAccess) {
+    return (
+      <div className="branch-comparison-bg">
+        <div className="branch-comparison-container" style={{ textAlign: "center", padding: "2rem 1.5rem" }}>
+          <h2>Branch Comparison Premium</h2>
+          <p style={{ margin: "0.5rem 0 1.5rem", fontSize: "1.05rem", color: "#555" }}>
+            Watch this quick demo to see how our tool helps you make a smarter choice.
+          </p>
+          <div style={{ maxWidth: "100%", margin: "0 auto 1.5rem", borderRadius: "12px", overflow: "hidden", background: "#000", maxHeight: "350px", display: "flex", justifyContent: "center" }}>
+            <video
+              controls
+              playsInline
+              poster="/talktoiitians.png"
+              style={{ width: "100%", maxHeight: "350px", objectFit: "contain", display: "block" }}
+            >
+              <source src="/videos/talk-to-iitian-demo.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+
+          <p style={{ margin: "0 0 1.5rem", fontSize: "1.1rem", color: "#555" }}>
+            Get 6 months of unrestricted access to our powerful Branch Comparison tool for just ₹300.
+          </p>
+
+          {!isLoggedIn ? (
+            <>
+              <div style={{ background: "#fff3cd", color: "#856404", padding: "1rem", borderRadius: "8px", marginBottom: "1.5rem", border: "1px solid #ffeeba" }}>
+                <strong>Note:</strong> You must be logged in to purchase and use the premium tool.
+              </div>
+              <button className="branch-intel-btn" onClick={() => navigate('/login')}>
+                Log In to Purchase
+              </button>
+            </>
+          ) : (
+            <button className="branch-intel-btn" onClick={handlePayment} disabled={paying}>
+              {paying ? "Opening Payment Gateway..." : "Pay ₹300 for 6 Months Access"}
+            </button>
+          )}
         </div>
       </div>
     );

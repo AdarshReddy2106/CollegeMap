@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 // import SplashScreen from "./components/SplashScreen/SplashScreen";
 import Layout from "./components/Layout/Layout";
 import LandingPage from "./pages/LandingPage/LandingPage";
@@ -39,6 +39,29 @@ import UserTypeModal from "./components/UserTypeModal/UserTypeModal";
 import StudyWithIITian from "./pages/StudyWithIITians/StudyWithIITians";
 import CollegePredictortool from './pages/CollegePredictor/CollegePredictortool';
 import BranchComparisonIntro from './pages/BranchComparison/BranchComparisonIntro';
+
+// Smart home that switches between JEE home (HomePage) and College home (Home2)
+// based on the cached userType preference — same URL for both.
+function SmartHome() {
+  const [userType, setUserType] = useState(
+    () => localStorage.getItem('userType') || 'jee'
+  );
+
+  useEffect(() => {
+    const handler = () => {
+      setUserType(localStorage.getItem('userType') || 'jee');
+    };
+    window.addEventListener('userTypeChanged', handler);
+    window.addEventListener('storage', handler);
+    return () => {
+      window.removeEventListener('userTypeChanged', handler);
+      window.removeEventListener('storage', handler);
+    };
+  }, []);
+
+  return userType === 'college' ? <Home2 /> : <HomePage />;
+}
+
 
 function RouteAnalyticsTracker() {
   const location = useLocation();
@@ -98,9 +121,10 @@ function App() {
       <RouteAnalyticsTracker />
       <Layout isLoggedIn={isLoggedIn}>
         <Routes>
-          <Route path="/home" element={<Home2 />} />
+          {/* /home now redirects to / — SmartHome picks the right page from cache */}
+          <Route path="/home" element={<Navigate to="/" replace />} />
           <Route path="/lp" element={<LandingPage />} />
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<SmartHome />} />
           <Route path="/Questionaire" element={<Questionaire />} />
           {/* <Route path="/ResultsPage" element={<ResultsPage />} /> */}
           <Route path="/results" element={<ResultsPage />} />

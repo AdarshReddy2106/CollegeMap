@@ -106,16 +106,6 @@
 	color: #ffffff;
 }
 
-.swi-action-btn-outline {
-	background: #f0faf9;
-	color: #0d9488;
-}
-
-.swi-action-btn-outline:hover {
-	background: #e0f2f1;
-	color: #0d9488;
-}
-
 .swi-action-btn:focus-visible,
 .swi-youtube-row:focus-visible,
 .swi-thumbnail-card:focus-visible {
@@ -245,6 +235,7 @@
 	from {
 		transform: translateX(0);
 	}
+
 	to {
 		transform: translateX(-50%);
 	}
@@ -298,7 +289,7 @@
 	.swi-talk-section {
 		padding: 1.5rem;
 	}
-	
+
 	.swi-talk-section h2 {
 		font-size: 1.4rem;
 	}

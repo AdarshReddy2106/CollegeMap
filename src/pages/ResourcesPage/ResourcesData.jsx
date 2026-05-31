@@ -962,4 +962,18 @@ export const resourcesData = [
   subject: "Chemistry",
   downloadUrl: "https://drive.google.com/file/d/1CadR53RAzidBP-l5rHrmAHCCgkRm3ase/view?usp=drive_link",
 },
+{
+  id: 136,
+  title: "Class 11 JEE Syllabus Timeline",
+  type: "JEE Busters",
+  subject: "All",
+  downloadUrl: "https://drive.google.com/file/d/17tmaxBLKOK7GkIK_FJd_JAzaolDgRnJO/view?usp=drive_link",
+},
+{
+  id: 137,
+  title: "Class 12 JEE Syllabus Timeline",
+  type: "JEE Busters",
+  subject: "All",
+  downloadUrl: "https://drive.google.com/file/d/19Z4TTBjrObRzLeFUGcoEOE8K1c0uGQSq/view?usp=drive_link",
+},
 ];

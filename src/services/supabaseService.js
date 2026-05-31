@@ -419,3 +419,57 @@ export const submitSeminarBooking = async (bookingData) => {
     throw error; // Throw so UI can catch and display alert
   }
 };
+
+/**
+ * Check if the user has active access to Branch Comparison
+ * @param {string} userEmail - User's email
+ * @returns {Promise<boolean>} True if paid and not expired
+ */
+export const checkBranchComparisonAccess = async (userEmail) => {
+  if (!supabase || !userEmail) return false;
+  try {
+    const { data, error } = await supabase
+      .from('branch_compare_payments')
+      .select('expires_at')
+      .eq('email', userEmail.toLowerCase())
+      .order('expires_at', { ascending: false })
+      .limit(1);
+    
+    if (error || !data || data.length === 0) return false;
+    
+    const expiresAt = new Date(data[0].expires_at);
+    return expiresAt > new Date();
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Save Branch Comparison payment
+ * @param {string} userEmail - User's email
+ * @param {string} paymentId - Razorpay Payment ID
+ * @param {string} orderId - Razorpay Order ID
+ * @returns {Promise<boolean>} Success status
+ */
+export const saveBranchComparisonPayment = async (userEmail, paymentId, orderId) => {
+  if (!supabase || !userEmail) return false;
+  try {
+    const expiresAt = new Date();
+    expiresAt.setMonth(expiresAt.getMonth() + 6); // 6 months access
+    
+    const { error } = await supabase
+      .from('branch_compare_payments')
+      .insert({
+        email: userEmail.toLowerCase(),
+        razorpay_payment_id: paymentId,
+        razorpay_order_id: orderId,
+        expires_at: expiresAt.toISOString()
+      });
+      
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    console.error('Error saving payment:', err);
+    return false;
+  }
+};

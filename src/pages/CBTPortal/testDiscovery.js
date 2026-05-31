@@ -47,6 +47,27 @@ export const discoverTests = async () => {
       // 2025 January tests
       'jee-main-2025-24th-jan-shift-1',
       'jee-main-2025-23rd-jan-shift-2',
+      // 2024 Session 2 (April) tests
+      'jee-main-2024-4th-apr-shift-1',
+      'jee-main-2024-4th-apr-shift-2',
+      'jee-main-2024-5th-apr-shift-1',
+      'jee-main-2024-5th-apr-shift-2',
+      'jee-main-2024-6th-apr-shift-1',
+      'jee-main-2024-6th-apr-shift-2',
+      'jee-main-2024-8th-apr-shift-1',
+      'jee-main-2024-8th-apr-shift-2',
+      'jee-main-2024-9th-apr-shift-1',
+      'jee-main-2024-9th-apr-shift-2',
+      // 2024 Session 1 (January / February) tests
+      'jee-main-2024-27th-jan-shift-1',
+      'jee-main-2024-27th-jan-shift-2',
+      'jee-main-2024-29th-jan-shift-1',
+      'jee-main-2024-29th-jan-shift-2',
+      'jee-main-2024-30th-jan-shift-1',
+      'jee-main-2024-30th-jan-shift-2',
+      'jee-main-2024-31st-jan-shift-1',
+      'jee-main-2024-1st-feb-shift-1',
+      'jee-main-2024-1st-feb-shift-2',
       // 2023, 2022
       'jee-main-2023-25th-jan-shift-2',
       'jee-main-2022-27th-jan-shift-1'
@@ -123,10 +144,15 @@ export const loadTestMetadata = async (testFolder) => {
     if (!response.ok) {
       return null;
     }
-    const data = await response.json();
-    return data;
+    // On deployed SPAs, missing static files return 200 + index.html instead of 404.
+    // Guard against that by reading text first and checking for HTML.
+    const text = await response.text();
+    if (!text || text.trimStart().startsWith('<')) {
+      return null; // file not on server yet
+    }
+    return JSON.parse(text);
   } catch (error) {
-    console.error(`Error loading metadata for ${testFolder}:`, error);
+    // Silently skip — file simply isn't available on this environment
     return null;
   }
 };

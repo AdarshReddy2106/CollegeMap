@@ -1,7 +1,7 @@
 /**
  * Custom Test Generator
  * 
- * Pools questions from ALL available test papers (2022, 2023, 2025)
+ * Pools questions from ALL available test papers (2022, 2023, 2024, 2025, 2026)
  * and generates custom tests based on student-selected filters:
  * - Subject(s)
  * - Lesson/Topic(s)
@@ -102,6 +102,103 @@ const TEST_REGISTRY = [
     folder: 'jee-main-2025-29th-jan-shift-2',
     hasAnswerKey: true,
     subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
+  },
+  // 2024 Session 1 (January / February) tests
+  {
+    folder: 'jee-main-2024-27th-jan-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-27th-jan-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-29th-jan-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-29th-jan-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-30th-jan-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-30th-jan-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-31st-jan-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-1st-feb-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-1st-feb-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  // 2024 Session 2 (April) tests
+  {
+    folder: 'jee-main-2024-4th-apr-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-4th-apr-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-5th-apr-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-5th-apr-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-6th-apr-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-6th-apr-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-8th-apr-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-8th-apr-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-9th-apr-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2024-9th-apr-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
   }
 ];
 
@@ -177,9 +274,13 @@ let questionBankCache = {};
 const loadTestMetadataJSON = async (testFolder) => {
   if (metadataCache[testFolder]) return metadataCache[testFolder];
 
-  // Try the standard naming convention: folder-name.json inside the folder
+  // Build candidate JSON filenames to try (kebab-case, underscore variant, and space→hyphen variant)
+  const underscoreVariant = testFolder.replace(/-/g, '_');
   const possibleNames = [
     `${testFolder}/${testFolder}.json`,
+    `${testFolder}/${underscoreVariant}.json`,
+    // Capitalised variant (e.g. JEE_Main_2024_8th_Apr_Shift_1.json)
+    `${testFolder}/${underscoreVariant.replace(/(^|_)(\w)/g, (_, sep, c) => sep + c.toUpperCase())}.json`,
     // For folders with spaces, the JSON file uses hyphenated names
     `${testFolder}/${testFolder.toLowerCase().replace(/[() ]+/g, '-').replace(/-+/g, '-').replace(/-$/, '')}.json`
   ];
@@ -188,7 +289,9 @@ const loadTestMetadataJSON = async (testFolder) => {
     try {
       const response = await fetch(`/tests/${encodeURI(path)}`);
       if (response.ok) {
-        const data = await response.json();
+        const text = await response.text();
+        if (text.trim().startsWith('<')) continue; // CRA returns HTML for 404
+        const data = JSON.parse(text);
         metadataCache[testFolder] = data;
         return data;
       }
