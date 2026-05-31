@@ -20,10 +20,10 @@ const MODELS = [
 const INSTITUTION_CATALOG_PATH = path.join(__dirname, 'data', 'institutionBranchCatalog.json');
 const IIT_FALLBACK_PATH = path.join(__dirname, 'data', 'iitBranchCatalog.json');
 
-const TYPES = ['IIT', 'NIT', 'IIIT', 'BITS', 'VIT', 'SRM','Amrita'];
+const TYPES = ['IIT', 'NIT', 'IIIT', 'BITS', 'VIT', 'SRM','Amrita', 'Other top colleges'];
 
 /** @type {Record<string, Record<string, string[]>>} */
-let byType = { IIT: {}, NIT: {}, IIIT: {}, BITS: {}, VIT: {}, SRM: {} ,Amrita: {}};
+let byType = { IIT: {}, NIT: {}, IIIT: {}, BITS: {}, VIT: {}, SRM: {} ,Amrita: {}, 'Other top colleges': {}};
 
 function loadBranchCatalogs() {
   try {
@@ -35,6 +35,7 @@ function loadBranchCatalogs() {
     byType.VIT = raw.VIT?.branchesByCollege || {};
     byType.SRM = raw.SRM?.branchesByCollege || {};
     byType.Amrita = raw.Amrita?.branchesByCollege || {};
+    byType['Other top colleges'] = raw['Other top colleges']?.branchesByCollege || {};
 
     if (Object.keys(byType.IIT).length > 0) {
       return;
@@ -50,11 +51,12 @@ function loadBranchCatalogs() {
     byType.BITS = {};
     byType.VIT = {};
     byType.SRM = {};
-    byType.Amrita = {}
+    byType.Amrita = {};
+    byType['Other top colleges'] = {};
 
   } catch (e) {
     console.error('[branch-intel] Missing IIT catalog fallback:', e.message);
-    byType = { IIT: {}, NIT: {}, IIIT: {}, BITS: {}, VIT: {}, SRM: {} ,Amrita: {}};
+    byType = { IIT: {}, NIT: {}, IIIT: {}, BITS: {}, VIT: {}, SRM: {} ,Amrita: {}, 'Other top colleges': {}};
   }
 }
 
@@ -178,17 +180,19 @@ function registerBranchIntelRoutes(app) {
   });
 
   app.get(`${PREFIX}/colleges`, (req, res) => {
-    const t = String(req.query.type || 'IIT').toUpperCase();
-    if (TYPES.includes(t)) {
+    const tUpper = String(req.query.type || 'IIT').toUpperCase();
+    const t = TYPES.find(x => x.toUpperCase() === tUpper);
+    if (t) {
       return res.json({ type: t, colleges: collegesForType(t) });
     }
-    return res.status(400).json({ detail: 'Query type must be IIT, NIT, or IIIT.' });
+    return res.status(400).json({ detail: 'Invalid institution type.' });
   });
 
   app.get(`${PREFIX}/branches`, (req, res) => {
-    const t = String(req.query.type || 'IIT').toUpperCase();
+    const tUpper = String(req.query.type || 'IIT').toUpperCase();
+    const t = TYPES.find(x => x.toUpperCase() === tUpper);
     const college = req.query.college || req.query.iit;
-    if (college && TYPES.includes(t)) {
+    if (college && t) {
       return res.json({ type: t, college: String(college), branches: branchesForCollege(t, String(college)) });
     }
     const legacyIit = req.query.iit;
@@ -222,8 +226,10 @@ function registerBranchIntelRoutes(app) {
       user_query: userQuery,
     } = body;
 
-    const t1 = String(institutionType1 || bodyType1 || 'IIT').toUpperCase();
-    const t2 = String(institutionType2 || bodyType2 || 'IIT').toUpperCase();
+    const t1Upper = String(institutionType1 || bodyType1 || 'IIT').toUpperCase();
+    const t2Upper = String(institutionType2 || bodyType2 || 'IIT').toUpperCase();
+    const t1 = TYPES.find(x => x.toUpperCase() === t1Upper);
+    const t2 = TYPES.find(x => x.toUpperCase() === t2Upper);
     const c1 = String(college1 || iit1 || '').trim();
     const c2 = String(college2 || iit2 || '').trim();
 
@@ -234,8 +240,8 @@ function registerBranchIntelRoutes(app) {
       });
     }
 
-    if (!TYPES.includes(t1) || !TYPES.includes(t2)) {
-      return res.status(400).json({ detail: 'institutionType must be IIT, NIT, or IIIT.' });
+    if (!t1 || !t2) {
+      return res.status(400).json({ detail: 'Invalid institutionType. Must be one of: ' + TYPES.join(', ') });
     }
 
     if (!catalogLoaded()) {

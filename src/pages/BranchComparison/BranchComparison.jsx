@@ -9,11 +9,13 @@ import BranchComparisonLoadingOverlay from './BranchComparisonLoadingOverlay';
 import { useAuth } from '../../context/AuthContext';
 import { checkBranchComparisonAccess } from '../../services/supabaseService';
 
+
 const RAZORPAY_KEY = process.env.REACT_APP_RAZORPAY_KEY_ID;
 const BASE_URL = process.env.REACT_APP_API_URL || "https://collegemapbackend.vercel.app";
 const PAYMENT_AMOUNT = 30000; // ₹300 in paise
 
-const INSTITUTION_TYPES = ['IIT', 'NIT', 'IIIT', 'BITS', 'VIT', 'SRM', 'Amrita'];
+const INSTITUTION_TYPES = ['IIT', 'NIT', 'IIIT', 'BITS', 'VIT', 'SRM', 'Amrita','Other top colleges'];
+
 
 function staticCatalog() {
   const byType = {};
@@ -421,168 +423,410 @@ const BranchComparison = () => {
       ? `${branch1} · ${college1} (${type1})  vs  ${branch2} · ${college2} (${type2})`
       : '';
 
+  // return (
+  //   <div className="branch-comparison-bg">
+  //     <BranchComparisonLoadingOverlay active={loading} compareSummary={summaryLine} />
+
+  //     <div className="branch-comparison-container branch-comparison-container--form-wide">
+  //       <header className="branch-comparison-page-head">
+  //         <h2>Branch Comparision</h2>
+  //         <p className="branch-comparison-page-sub">
+  //           Pick two branches — we&apos;ll help you see how they stack up.
+  //         </p>
+  //       </header>
+
+  //       {loadError ? (
+  //         <p className="branch-intel-form-error branch-intel-form-error--soft" role="status">
+  //           {loadError}
+  //         </p>
+  //       ) : null}
+
+  //       <form className="branch-intel-form" onSubmit={handleSubmit} noValidate>
+  //         <div className="branch-intel-grid branch-intel-grid--compare">
+  //           <div className="branch-intel-field">
+  //             <label htmlFor="inst-type-1">Institution 1</label>
+  //             <select
+  //               id="inst-type-1"
+  //               value={type1}
+  //               onChange={(e) => setType1(e.target.value)}
+  //               disabled={loadingLists}
+  //             >
+  //               {INSTITUTION_TYPES.map((t) => (
+  //                 <option key={t} value={t}>
+  //                   {t}
+  //                 </option>
+  //               ))}
+  //             </select>
+  //           </div>
+  //           <div className="branch-intel-field">
+  //             <label htmlFor="inst-type-2">Institution 2</label>
+  //             <select
+  //               id="inst-type-2"
+  //               value={type2}
+  //               onChange={(e) => setType2(e.target.value)}
+  //               disabled={loadingLists}
+  //             >
+  //               {INSTITUTION_TYPES.map((t) => (
+  //                 <option key={t} value={t}>
+  //                   {t}
+  //                 </option>
+  //               ))}
+  //             </select>
+  //           </div>
+
+  //           <div className="branch-intel-field">
+  //             <label htmlFor="college-select-1" className="branch-intel-sublabel">
+  //               College — search
+  //             </label>
+  //             <Select
+  //               inputId="college-select-1"
+  //               className="branch-intel-react-select"
+  //               classNamePrefix="branch-intel-rs"
+  //               isDisabled={loadingLists || !catalog}
+  //               options={options1}
+  //               value={college1 ? { value: college1, label: college1 } : null}
+  //               onChange={(opt) => setCollege1(opt ? opt.value : '')}
+  //               placeholder="Search college…"
+  //               isClearable
+  //               isSearchable
+  //               menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+  //               styles={selectStyles}
+  //               noOptionsMessage={() => 'No colleges match'}
+  //             />
+  //           </div>
+  //           <div className="branch-intel-field">
+  //             <label htmlFor="college-select-2" className="branch-intel-sublabel">
+  //               College — search
+  //             </label>
+  //             <Select
+  //               inputId="college-select-2"
+  //               className="branch-intel-react-select"
+  //               classNamePrefix="branch-intel-rs"
+  //               isDisabled={loadingLists || !catalog}
+  //               options={options2}
+  //               value={college2 ? { value: college2, label: college2 } : null}
+  //               onChange={(opt) => setCollege2(opt ? opt.value : '')}
+  //               placeholder="Search college…"
+  //               isClearable
+  //               isSearchable
+  //               menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+  //               styles={selectStyles}
+  //               noOptionsMessage={() => 'No colleges match'}
+  //             />
+  //           </div>
+
+  //           <div className="branch-intel-field">
+  //             <label htmlFor="branch1">Branch 1</label>
+  //             <select
+  //               id="branch1"
+  //               value={branch1}
+  //               onChange={(e) => setBranch1(e.target.value)}
+  //               disabled={branch1Disabled}
+  //               required
+  //             >
+  //               <option value="">{college1 ? 'Choose branch' : 'Choose college first'}</option>
+  //               {branchesFor1.map((b) => (
+  //                 <option key={b} value={b}>
+  //                   {b}
+  //                 </option>
+  //               ))}
+  //             </select>
+  //           </div>
+  //           <div className="branch-intel-field">
+  //             <label htmlFor="branch2">Branch 2</label>
+  //             <select
+  //               id="branch2"
+  //               value={branch2}
+  //               onChange={(e) => setBranch2(e.target.value)}
+  //               disabled={branch2Disabled}
+  //               required
+  //             >
+  //               <option value="">{college2 ? 'Choose branch' : 'Choose college first'}</option>
+  //               {branchesFor2.map((b) => (
+  //                 <option key={b} value={b}>
+  //                   {b}
+  //                 </option>
+  //               ))}
+  //             </select>
+  //           </div>
+  //         </div>
+
+  //         <div className="branch-intel-field branch-intel-field--full">
+  //           <label htmlFor="user_query">Your question (optional)</label>
+  //           <textarea
+  //             id="user_query"
+  //             value={userQuery}
+  //             onChange={(e) => setUserQuery(e.target.value)}
+  //             placeholder="e.g. Which is better for a very good job?"
+  //             rows={3}
+  //           />
+  //         </div>
+
+  //         {submitError ? (
+  //           <p className="branch-intel-form-error" role="alert">
+  //             {submitError}
+  //           </p>
+  //         ) : null}
+
+  //         <div className="branch-intel-actions">
+  //           <button
+  //             type="submit"
+  //             className="branch-intel-btn"
+  //             disabled={loading || loadingLists || !catalog}
+  //           >
+  //             Compare branches
+  //           </button>
+  //         </div>
+  //         <p className="branch-intel-hint">
+  //           IIT / NIT / IIIT lists come from JoSAA-style PDFs (dropdowns only). You can compare any
+  //           combination across types.
+  //         </p>
+  //       </form>
+  //     </div>
+  //   </div>
+  // );
   return (
     <div className="branch-comparison-bg">
       <BranchComparisonLoadingOverlay active={loading} compareSummary={summaryLine} />
-
-      <div className="branch-comparison-container branch-comparison-container--form-wide">
-        <header className="branch-comparison-page-head">
-          <h2>Branch Comparision</h2>
-          <p className="branch-comparison-page-sub">
-            Pick two branches — we&apos;ll help you see how they stack up.
-          </p>
+  
+      <div className="bc-tool-page">
+  
+        {/* ── Hero header ── */}
+        <header className="bc-tool-header">
+          <div className="bc-tool-header-left">
+            <span className="bc-deco-plus-text bc-deco-plus-text--tl">+</span>
+            <span className="bc-compare-label">COMPARE. DECIDE. SUCCEED.</span>
+            <h2>Branch <span className="bc-teal">comparison</span></h2>
+            <p>Compare two branches side by side and choose the right path for your future.</p>
+          </div>
+          <div className="bc-tool-header-right">
+            {/* Decorative plus marks */}
+            <span className="bc-deco-plus bc-deco-plus--1">+</span>
+            <span className="bc-deco-plus bc-deco-plus--2">+</span>
+            <span className="bc-deco-plus bc-deco-plus--3">+</span>
+            <img
+              src={`${process.env.PUBLIC_URL}/bc-tool.png`}
+              alt="Branch comparison illustration"
+              className="bc-tool-illustration"
+            />
+          </div>
         </header>
-
-        {loadError ? (
+  
+        {loadError && (
           <p className="branch-intel-form-error branch-intel-form-error--soft" role="status">
             {loadError}
           </p>
-        ) : null}
-
-        <form className="branch-intel-form" onSubmit={handleSubmit} noValidate>
-          <div className="branch-intel-grid branch-intel-grid--compare">
-            <div className="branch-intel-field">
-              <label htmlFor="inst-type-1">Institution 1</label>
-              <select
-                id="inst-type-1"
-                value={type1}
-                onChange={(e) => setType1(e.target.value)}
-                disabled={loadingLists}
-              >
-                {INSTITUTION_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
+        )}
+  
+        <form className="bc-tool-form" onSubmit={handleSubmit} noValidate>
+  
+          {/* ── Face-off grid ── */}
+          <div className="bc-faceoff">
+  
+            {/* Branch A */}
+            <div className="bc-branch-card">
+              <div className="bc-branch-card-head">
+                <span className="bc-letter-badge bc-letter-badge--a">A</span>
+                <span className="bc-card-title">Branch A</span>
+              </div>
+  
+              <div className="bc-field-row">
+                {/* <span className="bc-field-icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                  </svg>
+                </span> */}
+                <div className="bc-field-inner">
+                  <label htmlFor="inst-type-1">Institution Type</label>
+                  <select id="inst-type-1" value={type1}
+                    onChange={(e) => setType1(e.target.value)} disabled={loadingLists}>
+                    <option value="" disabled>Select institution type</option>
+                    {INSTITUTION_TYPES.map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+  
+              <div className="bc-field-row">
+                {/* <span className="bc-field-icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                </span> */}
+                <div className="bc-field-inner">
+                  <label htmlFor="college-select-1">College</label>
+                  <Select
+                    inputId="college-select-1"
+                    className="branch-intel-react-select"
+                    classNamePrefix="branch-intel-rs"
+                    isDisabled={loadingLists || !catalog}
+                    options={options1}
+                    value={college1 ? { value: college1, label: college1 } : null}
+                    onChange={(opt) => setCollege1(opt ? opt.value : '')}
+                    placeholder="Search college…"
+                    isClearable isSearchable
+                    menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+                    styles={selectStyles}
+                    noOptionsMessage={() => 'No colleges match'}
+                  />
+                </div>
+              </div>
+  
+              <div className="bc-field-row">
+                {/* <span className="bc-field-icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="16 18 22 12 16 6"/>
+                    <polyline points="8 6 2 12 8 18"/>
+                  </svg>
+                </span> */}
+                <div className="bc-field-inner">
+                  <label htmlFor="branch1">Branch</label>
+                  <select id="branch1" value={branch1}
+                    onChange={(e) => setBranch1(e.target.value)}
+                    disabled={branch1Disabled} required>
+                    <option value="">{college1 ? 'Choose branch' : 'Choose college first'}</option>
+                    {branchesFor1.map((b) => <option key={b} value={b}>{b}</option>)}
+                  </select>
+                </div>
+              </div>
             </div>
-            <div className="branch-intel-field">
-              <label htmlFor="inst-type-2">Institution 2</label>
-              <select
-                id="inst-type-2"
-                value={type2}
-                onChange={(e) => setType2(e.target.value)}
-                disabled={loadingLists}
-              >
-                {INSTITUTION_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
+  
+            {/* VS */}
+            <div className="bc-vs-divider">
+              <div className="bc-vs-line" />
+              <div className="bc-vs-circle">VS</div>
+              <div className="bc-vs-line" />
             </div>
-
-            <div className="branch-intel-field">
-              <label htmlFor="college-select-1" className="branch-intel-sublabel">
-                College — search
-              </label>
-              <Select
-                inputId="college-select-1"
-                className="branch-intel-react-select"
-                classNamePrefix="branch-intel-rs"
-                isDisabled={loadingLists || !catalog}
-                options={options1}
-                value={college1 ? { value: college1, label: college1 } : null}
-                onChange={(opt) => setCollege1(opt ? opt.value : '')}
-                placeholder="Search college…"
-                isClearable
-                isSearchable
-                menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
-                styles={selectStyles}
-                noOptionsMessage={() => 'No colleges match'}
-              />
-            </div>
-            <div className="branch-intel-field">
-              <label htmlFor="college-select-2" className="branch-intel-sublabel">
-                College — search
-              </label>
-              <Select
-                inputId="college-select-2"
-                className="branch-intel-react-select"
-                classNamePrefix="branch-intel-rs"
-                isDisabled={loadingLists || !catalog}
-                options={options2}
-                value={college2 ? { value: college2, label: college2 } : null}
-                onChange={(opt) => setCollege2(opt ? opt.value : '')}
-                placeholder="Search college…"
-                isClearable
-                isSearchable
-                menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
-                styles={selectStyles}
-                noOptionsMessage={() => 'No colleges match'}
-              />
-            </div>
-
-            <div className="branch-intel-field">
-              <label htmlFor="branch1">Branch 1</label>
-              <select
-                id="branch1"
-                value={branch1}
-                onChange={(e) => setBranch1(e.target.value)}
-                disabled={branch1Disabled}
-                required
-              >
-                <option value="">{college1 ? 'Choose branch' : 'Choose college first'}</option>
-                {branchesFor1.map((b) => (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="branch-intel-field">
-              <label htmlFor="branch2">Branch 2</label>
-              <select
-                id="branch2"
-                value={branch2}
-                onChange={(e) => setBranch2(e.target.value)}
-                disabled={branch2Disabled}
-                required
-              >
-                <option value="">{college2 ? 'Choose branch' : 'Choose college first'}</option>
-                {branchesFor2.map((b) => (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
-                ))}
-              </select>
+  
+            {/* Branch B */}
+            <div className="bc-branch-card">
+              <div className="bc-branch-card-head">
+                <span className="bc-letter-badge bc-letter-badge--b">B</span>
+                <span className="bc-card-title">Branch B</span>
+              </div>
+  
+              <div className="bc-field-row">
+                {/* <span className="bc-field-icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                  </svg>
+                </span> */}
+                <div className="bc-field-inner">
+                  <label htmlFor="inst-type-2">Institution Type</label>
+                  <select id="inst-type-2" value={type2}
+                    onChange={(e) => setType2(e.target.value)} disabled={loadingLists}>
+                    <option value="" disabled>Select institution type</option>
+                    {INSTITUTION_TYPES.map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+  
+              <div className="bc-field-row">
+                {/* <span className="bc-field-icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                </span> */}
+                <div className="bc-field-inner">
+                  <label htmlFor="college-select-2">College</label>
+                  <Select
+                    inputId="college-select-2"
+                    className="branch-intel-react-select"
+                    classNamePrefix="branch-intel-rs"
+                    isDisabled={loadingLists || !catalog}
+                    options={options2}
+                    value={college2 ? { value: college2, label: college2 } : null}
+                    onChange={(opt) => setCollege2(opt ? opt.value : '')}
+                    placeholder="Search college…"
+                    isClearable isSearchable
+                    menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+                    styles={selectStyles}
+                    noOptionsMessage={() => 'No colleges match'}
+                  />
+                </div>
+              </div>
+  
+              <div className="bc-field-row">
+                {/* <span className="bc-field-icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="16 18 22 12 16 6"/>
+                    <polyline points="8 6 2 12 8 18"/>
+                  </svg>
+                </span> */}
+                <div className="bc-field-inner">
+                  <label htmlFor="branch2">Branch</label>
+                  <select id="branch2" value={branch2}
+                    onChange={(e) => setBranch2(e.target.value)}
+                    disabled={branch2Disabled} required>
+                    <option value="">{college2 ? 'Choose branch' : 'Choose college first'}</option>
+                    {branchesFor2.map((b) => <option key={b} value={b}>{b}</option>)}
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div className="branch-intel-field branch-intel-field--full">
-            <label htmlFor="user_query">Your question (optional)</label>
-            <textarea
-              id="user_query"
-              value={userQuery}
-              onChange={(e) => setUserQuery(e.target.value)}
-              placeholder="e.g. Which is better for a very good job?"
-              rows={3}
-            />
+  
+          {/* ── Question row ── */}
+          <div className="bc-question-row">
+            <span className="bc-question-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+              </svg>
+            </span>
+            <div className="bc-question-inner">
+              <label htmlFor="user_query">
+                YOUR QUESTION <span className="bc-optional">(optional)</span>
+              </label>
+              <input
+                id="user_query" type="text" value={userQuery}
+                onChange={(e) => setUserQuery(e.target.value)}
+                placeholder="e.g. Which is better for a very good job?"
+              />
+            </div>
           </div>
-
-          {submitError ? (
-            <p className="branch-intel-form-error" role="alert">
-              {submitError}
-            </p>
-          ) : null}
-
-          <div className="branch-intel-actions">
-            <button
-              type="submit"
-              className="branch-intel-btn"
-              disabled={loading || loadingLists || !catalog}
-            >
-              Compare branches
+  
+          {submitError && (
+            <p className="branch-intel-form-error" role="alert">{submitError}</p>
+          )}
+  
+          {/* ── Footer ── */}
+          <div className="bc-tool-footer">
+            <div className="bc-footer-hint-row">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <p className="bc-hint-text">
+                IIT / NIT / IIIT lists come from JoSAA-style PDFs (dropdowns only).
+                You can compare any combination across types.
+              </p>
+            </div>
+            <button type="submit" className="bc-compare-btn"
+              disabled={loading || loadingLists || !catalog}>
+              Compare branches &nbsp;→
             </button>
           </div>
-          <p className="branch-intel-hint">
-            IIT / NIT / IIIT lists come from JoSAA-style PDFs (dropdowns only). You can compare any
-            combination across types.
-          </p>
+  
         </form>
       </div>
     </div>
   );
-};
+          };
 
 export default BranchComparison;

@@ -26,8 +26,8 @@ const gmeetSessions = [
   {
     image: gmeet1,
     alt: "Live Google Meet doubt session",
-    title: "Physics Doubt Clearing",
-    detail: "JEE 2026 Batch",
+    title: "Mentorship by IITians",
+    // detail: "JEE 2026 Batch",
   },
   {
     image: gmeet2,
@@ -38,20 +38,20 @@ const gmeetSessions = [
   {
     image: gmeet3,
     alt: "Google Meet mock analysis session",
-    title: "Mock Test Analysis",
-    detail: "Improvement Tips",
+    title: "Mentorship by IITians",
+    // detail: "Improvement Tips",
   },
   {
     image: gmeet4,
     alt: "Google Meet live revision session",
-    title: "Formula Revision Live",
-    detail: "Important Topics",
+    title: "Group doubt-clearing session",
+    // detail: "Important Topics",
   },
   {
     image: gmeet5,
     alt: "Google Meet guidance session",
-    title: "1-on-1 Mentorship Session",
-    detail: "Personalized Study Plan",
+    title: "College counselling session",
+    // detail: "Personalized Study Plan",
   },
 ];
 

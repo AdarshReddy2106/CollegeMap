@@ -1094,14 +1094,19 @@ section {
   }
 
   .batches-grid {
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
 
   .batch-card {
-    max-width: 500px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     width: 100%;
+  }
+  .batch-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    max-width: 380px;
+    margin: 0 auto;
   }
 
   .batch-year {
@@ -1404,7 +1409,14 @@ section {
   }
 
   .batches-grid {
+    grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+
+  .batch-card:last-child:nth-child(odd) {
+    grid-column: auto;
+    max-width: 100%;
+    margin: 0;
   }
 
   .batch-card {
