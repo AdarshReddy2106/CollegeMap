@@ -5,6 +5,11 @@ import HeroSection from "./HeroSection";
 import CompareSection from "./CompareSection";
 import PathwaysSection from "./PathwaysSection";
 
+import gm1 from '../../assets/GMeetphotos/gm1.jpg';
+import gm2 from '../../assets/GMeetphotos/3.png';
+import gm3 from '../../assets/GMeetphotos/gm3f.png';
+import gm4 from '../../assets/GMeetphotos/gm5.jpg';
+
 const Home2 = () => {
   return (
     <main className="home2-page">
@@ -31,11 +36,17 @@ const Home2 = () => {
           <div className="home2-video-card home2-video-card-centered">
             <div className="home2-graphic-grid home2-graphic-grid-small">
               <div className="home2-graphic-tile home2-graphic-tile-gmeet">
-                <p className="home2-gmeet-text">prev. gmeet session photos & videos</p>
+                <img src={gm1} alt="GMeet session 1" className="home2-gmeet-img" />
               </div>
-              <div className="home2-graphic-tile home2-graphic-tile-gmeet"></div>
-              <div className="home2-graphic-tile home2-graphic-tile-gmeet"></div>
-              <div className="home2-graphic-tile home2-graphic-tile-gmeet"></div>
+              <div className="home2-graphic-tile home2-graphic-tile-gmeet">
+                <img src={gm2} alt="GMeet session 2" className="home2-gmeet-img" />
+              </div>
+              <div className="home2-graphic-tile home2-graphic-tile-gmeet">
+                <img src={gm3} alt="GMeet session 3" className="home2-gmeet-img" />
+              </div>
+              <div className="home2-graphic-tile home2-graphic-tile-gmeet">
+                <img src={gm4} alt="GMeet session 4" className="home2-gmeet-img" />
+              </div>
             </div>
           </div>
         </section>

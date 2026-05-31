@@ -495,20 +495,28 @@
 
 .home2-graphic-grid-small {
   width: 100%;
-  max-width: 300px;
-  gap: 4px;
+
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+
+  max-width: 420px;
 }
 
 .home2-graphic-tile-gmeet {
   min-height: 110px;
   background: var(--home2-soft);
-  border-radius: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 130px;
+  padding: 0;
   border: 1px solid rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 1rem;
+  /* padding: 1rem; */
 }
 
 .home2-gmeet-text {
@@ -600,4 +608,12 @@
   .home2-video-frame::after {
     animation: none;
   }
+}
+
+.home2-gmeet-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
 }

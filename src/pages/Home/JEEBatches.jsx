@@ -15,7 +15,7 @@ const JEEBatches = () => (
         
         {/* JEE 2026 */}
         <div className="batch-card batch-2026">
-          <div className="batch-year">JEE 2026</div>
+          <div className="batch-year">JEE 2027</div>
           <div className="batch-content">
             <h3 className="batch-title">For <strong>Class 12</strong> &amp; Drop Year Aspirants</h3>
             <p className="batch-description">Connect with <strong>fellow JEE aspirants</strong> and <strong>IITians</strong> for last-mile preparation support, doubt solving, and strategy discussions.</p>
@@ -33,7 +33,7 @@ const JEEBatches = () => (
 
         {/* JEE 2027 */}
         <div className="batch-card batch-2027">
-          <div className="batch-year">JEE 2027</div>
+          <div className="batch-year">JEE 2028</div>
           <div className="batch-content">
             <h3 className="batch-title">For <strong>Class 11</strong> Aspirants</h3>
             <p className="batch-description">Start your JEE journey early with a <strong>supportive community</strong> of like-minded students and <strong>IITian mentors</strong>.</p>
@@ -51,7 +51,7 @@ const JEEBatches = () => (
 
         {/* JEE 2028 */}
         <div className="batch-card batch-2028">
-          <div className="batch-year">JEE 2028</div>
+          <div className="batch-year">JEE 2029</div>
           <div className="batch-content">
             <h3 className="batch-title">For <strong>Class 10</strong> Aspirants</h3>
             <p className="batch-description">Begin your <strong>IIT journey early</strong> — build habits, get motivated, and connect with <strong>peers &amp; mentors</strong>.</p>

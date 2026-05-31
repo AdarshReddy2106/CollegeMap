@@ -30,6 +30,9 @@ const HeroSection = () => {
           <Link className="home2-btn home2-btn-ghost" to="/college-predictor">
             College predictor
           </Link>
+          <Link className="home2-btn home2-btn-ghost" to="/talk-to-iitians">
+            Talk to IITian
+          </Link>
         </div>
       </div>
 

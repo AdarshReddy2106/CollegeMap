@@ -926,5 +926,151 @@
         "Artificial Intelligence and Data Science"
       ]
     }
+  },
+  "Other top colleges": {
+    "branchesByCollege": {
+      "Jadavpur University, Kolkata": [
+        "Chemical Engineering",
+        "Civil Engineering",
+        "Computer Science and Engineering",
+        "Construction Engineering",
+        "Electrical Engineering",
+        "Electronics and Telecommunication Engineering",
+        "Food Technology and Biochemical Engineering",
+        "Information Technology",
+        "Instrumentation and Electronics Engineering",
+        "Mechanical Engineering",
+        "Metallurgical Engineering",
+        "Power Engineering",
+        "Production Engineering",
+        "Printing Engineering"
+      ],
+      "Anna University, Chennai": [
+        "Aeronautical Engineering",
+        "Agricultural and Irrigation Engineering",
+        "Biotechnology",
+        "Ceramic Technology",
+        "Chemical Engineering",
+        "Civil Engineering",
+        "Computer Science and Engineering",
+        "Electrical and Electronics Engineering",
+        "Electronics and Communication Engineering",
+        "Industrial Engineering",
+        "Information Technology",
+        "Manufacturing Engineering",
+        "Materials Science and Engineering",
+        "Mechanical Engineering",
+        "Mining Engineering",
+        "Printing Technology",
+        "Production Engineering",
+        "Textile Technology"
+      ],
+      "Jamia Millia Islamia, New Delhi": [
+        "Civil Engineering",
+        "Computer Engineering",
+        "Electrical Engineering",
+        "Electronics and Communication Engineering",
+        "Mechanical Engineering"
+      ],
+      "Delhi Technological University (DTU), New Delhi": [
+        "Biotechnology",
+        "Chemical Engineering",
+        "Civil Engineering",
+        "Computer Engineering",
+        "Electrical Engineering",
+        "Electronics and Communication Engineering",
+        "Engineering Physics",
+        "Environmental Engineering",
+        "Information Technology",
+        "Mathematics and Computing",
+        "Mechanical Engineering",
+        "Mechanical Engineering with specialization in Automotive Engineering",
+        "Production and Industrial Engineering",
+        "Software Engineering"
+      ],
+      "Chandigarh University, Mohali": [
+        "Aerospace Engineering",
+        "Biotechnology",
+        "Chemical Engineering",
+        "Civil Engineering",
+        "Computer Science and Engineering",
+        "Computer Science and Engineering (Artificial Intelligence and Machine Learning)",
+        "Computer Science and Engineering (Internet of Things)",
+        "Electrical Engineering",
+        "Electronics and Communication Engineering",
+        "Food Technology",
+        "Information Technology",
+        "Mechanical Engineering",
+        "Mechatronics Engineering"
+      ],
+      "Kalasalingam Academy of Research and Education, Krishnankoil": [
+        "Agricultural Engineering",
+        "Biotechnology",
+        "Chemical Engineering",
+        "Civil Engineering",
+        "Computer Science and Engineering",
+        "Computer Science and Engineering (Artificial Intelligence and Machine Learning)",
+        "Electrical and Electronics Engineering",
+        "Electronics and Communication Engineering",
+        "Food Technology",
+        "Information Technology",
+        "Mechanical Engineering"
+      ],
+      "KL University (K L College of Engineering), Vaddeswaram": [
+        "Artificial Intelligence and Data Science",
+        "Biotechnology",
+        "Civil Engineering",
+        "Computer Science and Engineering",
+        "Computer Science and Information Technology",
+        "Electrical and Electronics Engineering",
+        "Electronics and Communication Engineering",
+        "Electronics and Computer Science",
+        "Internet of Things (IoT)",
+        "Mechanical Engineering"
+      ],
+      "Amity University, Noida": [
+        "Aerospace Engineering",
+        "Biotechnology",
+        "Chemical Engineering",
+        "Civil Engineering",
+        "Computer Science and Engineering",
+        "Electrical and Electronics Engineering",
+        "Electronics and Communication Engineering",
+        "Information Technology",
+        "Mechanical Engineering"
+      ],
+      "Manipal Academy of Higher Education (MAHE), Manipal": [
+        "Aeronautical Engineering",
+        "Automobile Engineering",
+        "Biomedical Engineering",
+        "Biotechnology",
+        "Chemical Engineering",
+        "Civil Engineering",
+        "Computer and Communication Engineering",
+        "Computer Science and Engineering",
+        "Computer Science and Engineering (Artificial Intelligence and Machine Learning)",
+        "Computer Science and Engineering (Cyber Security)",
+        "Data Science and Engineering",
+        "Electrical and Electronics Engineering",
+        "Electronics and Communication Engineering",
+        "Electronics and Instrumentation Engineering",
+        "Industrial and Production Engineering",
+        "Information Technology",
+        "Mechanical Engineering",
+        "Mechatronics Engineering"
+      ],
+      "GITAM University, Visakhapatnam": [
+        "Biotechnology",
+        "Civil Engineering",
+        "Computer Science and Engineering",
+        "Computer Science and Engineering (Artificial Intelligence and Machine Learning)",
+        "Computer Science and Engineering (Cyber Security)",
+        "Computer Science and Engineering (Data Science)",
+        "Computer Science and Business Systems",
+        "Electrical and Electronics Engineering",
+        "Electronics and Communication Engineering",
+        "Mechanical Engineering"
+      ]
+    }
   }
 }

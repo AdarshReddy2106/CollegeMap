@@ -11,7 +11,6 @@ export default function CollegePredictortool() {
   const [entries, setEntries] = useState([]);
   const [loadError, setLoadError] = useState('');
   const [loadingData, setLoadingData] = useState(true);
-
   const [exam, setExam] = useState('JEE_ADVANCED');
   const [rank, setRank] = useState('');
   const [category, setCategory] = useState('OPEN');
@@ -39,6 +38,23 @@ export default function CollegePredictortool() {
         if (!cancelled) setLoadingData(false);
       });
     return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    const animateCounter = (id, target, duration, suffix) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const start = performance.now();
+      const step = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(eased * target) + (progress >= 1 ? suffix : '');
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    animateCounter('cp-counter-colleges', 600, 1800, '+');
+    animateCounter('cp-counter-years', 7, 900, 'yrs');
   }, []);
 
   const institutionTypes = useMemo(() => {
@@ -83,107 +99,197 @@ export default function CollegePredictortool() {
 
   return (
     <div className="cp-tool-page">
-      <div className="cp-card">
-        <h1 className="cp-title">College predictor</h1>
-        <form className="cp-form" onSubmit={run}>
-          <div className="cp-row">
-            <label htmlFor="cp-exam">Exam</label>
-            <select id="cp-exam" value={exam}
-              onChange={(ev) => setExam(ev.target.value)} disabled={loadingData}>
-              <option value="JEE_ADVANCED">JEE Advanced</option>
-              <option value="JEE_MAIN">JEE Main</option>
-            </select>
-          </div>
-          <div className="cp-row">
-            <label htmlFor="cp-rank">Rank</label>
-            <input id="cp-rank" type="number" min={1} inputMode="numeric"
-              placeholder="CRL / category rank" value={rank}
-              onChange={(ev) => setRank(ev.target.value)} disabled={loadingData} />
-          </div>
-          <div className="cp-row">
-            <label htmlFor="cp-cat">Category</label>
-            <select id="cp-cat" value={category}
-              onChange={(ev) => setCategory(ev.target.value)} disabled={loadingData}>
-              <option value="OPEN">OPEN</option>
-              <option value="EWS">EWS</option>
-              <option value="OBC-NCL">OBC-NCL</option>
-              <option value="SC">SC</option>
-              <option value="ST">ST</option>
-            </select>
-          </div>
-          <div className="cp-row">
-            <label htmlFor="cp-gen">Gender</label>
-            <select id="cp-gen" value={genderFemale ? 'f' : 'n'}
-              onChange={(ev) => setGenderFemale(ev.target.value === 'f')} disabled={loadingData}>
-              <option value="n">Neutral</option>
-              <option value="f">Female</option>
-            </select>
-          </div>
-          {exam === 'JEE_MAIN' ? (
-            <>
-              <div className="cp-row">
-                <label htmlFor="cp-pool">Pool</label>
-                <select id="cp-pool" value={seatPool}
-                  onChange={(ev) => setSeatPool(ev.target.value)} disabled={loadingData}>
-                  <option value="ALL_INDIA">All India</option>
-                  <option value="HOME_STATE">Home state</option>
-                </select>
+
+      {/* ── CONTENT ROW: Steps 30% + Form 70% ── */}
+      <div className="cp-hero-layout">
+
+        {/* ── LEFT — Badge + Heading + Steps (30%) ── */}
+        <div className="cp-left-section">
+          <span className="cp-badge">Predict Your College</span>
+          <h1 className="cp-main-heading">
+            Your rank.<br /><span>Our prediction.</span>
+          </h1>
+
+          <div className="cp-steps">
+            <div className="cp-step">
+              <div className="cp-step-icon">1</div>
+              <div className="cp-step-content">
+                <strong>Enter your exam &amp; rank</strong>
+                <span>JEE Advanced or JEE Main — your CRL or category rank</span>
               </div>
-              <div className="cp-row cp-row--top">
-                <span id="cp-main-lbl" className="cp-label-span">Institutes</span>
-                <div className="cp-seg" role="group" aria-labelledby="cp-main-lbl">
-                  <label className="cp-seg-opt">
-                    <input type="radio" name="cp-main-inst"
-                      checked={mainInstitutions === 'BOTH'}
-                      onChange={() => setMainInstitutions('BOTH')} disabled={loadingData} />
-                    Both NIT &amp; IIIT
-                  </label>
-                  <label className="cp-seg-opt">
-                    <input type="radio" name="cp-main-inst"
-                      checked={mainInstitutions === 'NIT'}
-                      onChange={() => setMainInstitutions('NIT')} disabled={loadingData} />
-                    NIT only
-                  </label>
-                  <label className="cp-seg-opt">
-                    <input type="radio" name="cp-main-inst"
-                      checked={mainInstitutions === 'IIIT'}
-                      onChange={() => setMainInstitutions('IIIT')} disabled={loadingData} />
-                    IIIT only
-                  </label>
+            </div>
+
+            <div className="cp-step-line" />
+
+            <div className="cp-step">
+              <div className="cp-step-icon">2</div>
+              <div className="cp-step-content">
+                <strong>Set category, gender &amp; preferences</strong>
+                <span>Filter by seat pool, institution type and preferred branches</span>
+              </div>
+            </div>
+
+            <div className="cp-step-line" />
+
+            <div className="cp-step">
+              <div className="cp-step-icon">3</div>
+              <div className="cp-step-content">
+                <strong>Get your personalised college list</strong>
+                <span>Up to 75 colleges ranked by your chances — instantly</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── RIGHT — Form (70%) ── */}
+        <div className="cp-right-section">
+          <form className="cp-form-card" onSubmit={run}>
+
+            <div className="cp-field-block">
+              <label htmlFor="cp-exam">Exam</label>
+              <select
+                id="cp-exam"
+                value={exam}
+                onChange={(ev) => setExam(ev.target.value)}
+                disabled={loadingData}
+              >
+                <option value="JEE_ADVANCED">JEE Advanced</option>
+                <option value="JEE_MAIN">JEE Main</option>
+              </select>
+            </div>
+
+            <div className="cp-field-block">
+              <label htmlFor="cp-rank">Rank</label>
+              <input
+                id="cp-rank"
+                type="number"
+                min={1}
+                inputMode="numeric"
+                placeholder="Enter your CRL / category rank"
+                value={rank}
+                onChange={(ev) => setRank(ev.target.value)}
+                disabled={loadingData}
+              />
+            </div>
+
+            <div className="cp-field-block">
+              <label htmlFor="cp-cat">Category</label>
+              <select
+                id="cp-cat"
+                value={category}
+                onChange={(ev) => setCategory(ev.target.value)}
+                disabled={loadingData}
+              >
+                <option value="OPEN">OPEN</option>
+                <option value="EWS">EWS</option>
+                <option value="OBC-NCL">OBC-NCL</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+              </select>
+            </div>
+
+            <div className="cp-field-block">
+              <label htmlFor="cp-gen">Gender</label>
+              <select
+                id="cp-gen"
+                value={genderFemale ? 'f' : 'n'}
+                onChange={(ev) => setGenderFemale(ev.target.value === 'f')}
+                disabled={loadingData}
+              >
+                <option value="n">Neutral</option>
+                <option value="f">Female</option>
+              </select>
+            </div>
+
+            {exam === 'JEE_MAIN' && (
+              <>
+                <div className="cp-field-block">
+                  <label htmlFor="cp-pool">Seat Pool</label>
+                  <select
+                    id="cp-pool"
+                    value={seatPool}
+                    onChange={(ev) => setSeatPool(ev.target.value)}
+                    disabled={loadingData}
+                  >
+                    <option value="ALL_INDIA">All India</option>
+                    <option value="HOME_STATE">Home state</option>
+                  </select>
                 </div>
-              </div>
-            </>
-          ) : null}
-          <div className="cp-row cp-row--top">
-            <span className="cp-label-span" id="cp-branch-label">Branches</span>
-            <div className="cp-branch-field">
-              <p className="cp-hint" id="cp-branch-hint">
-                Optional — tick any branches you care about. Leave all unchecked to include every branch.
-                Up to {MAX_PREDICTOR_RESULTS} results.
-              </p>
+
+                <div className="cp-field-block">
+                  <label>Institutes</label>
+                  <div className="cp-radio-group">
+                    <label className="cp-radio-opt">
+                      <input type="radio" name="cp-main-inst"
+                        checked={mainInstitutions === 'BOTH'}
+                        onChange={() => setMainInstitutions('BOTH')}
+                        disabled={loadingData} />
+                      Both NIT &amp; IIIT
+                    </label>
+                    <label className="cp-radio-opt">
+                      <input type="radio" name="cp-main-inst"
+                        checked={mainInstitutions === 'NIT'}
+                        onChange={() => setMainInstitutions('NIT')}
+                        disabled={loadingData} />
+                      NIT only
+                    </label>
+                    <label className="cp-radio-opt">
+                      <input type="radio" name="cp-main-inst"
+                        checked={mainInstitutions === 'IIIT'}
+                        onChange={() => setMainInstitutions('IIIT')}
+                        disabled={loadingData} />
+                      IIIT only
+                    </label>
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div className="cp-field-block">
+              <label id="cp-branch-label">
+                Branches
+                <span className="cp-field-hint">Optional — leave unchecked for all branches</span>
+              </label>
               <details className="cp-dropdown">
-                <summary className="cp-dropdown-head">Select Preferred Branches</summary>
-                <div className="cp-branch-list" role="group"
-                  aria-labelledby="cp-branch-label" aria-describedby="cp-branch-hint">
+                <summary className="cp-dropdown-head">
+                  {preferredBranchIds.length === 0
+                    ? 'Select Preferred Branches'
+                    : `${preferredBranchIds.length} branch${preferredBranchIds.length > 1 ? 'es' : ''} selected`}
+                </summary>
+                <div className="cp-branch-list" role="group" aria-labelledby="cp-branch-label">
                   {BRANCH_PRESETS.map((p) => (
                     <label key={p.id} className="cp-branch-row">
-                      <input type="checkbox" className="cp-branch-checkbox"
+                      <input
+                        type="checkbox"
+                        className="cp-branch-checkbox"
                         checked={preferredBranchIds.includes(p.id)}
-                        onChange={() => toggleBranch(p.id)} disabled={loadingData} />
+                        onChange={() => toggleBranch(p.id)}
+                        disabled={loadingData}
+                      />
                       <span className="cp-branch-text">{p.label}</span>
                     </label>
                   ))}
                 </div>
               </details>
             </div>
-          </div>
-          <button type="submit" className="cp-btn" disabled={loadingData || !!loadError}>
-            Predict
-          </button>
-        </form>
-        {loadError ? <p className="cp-err">Data unavailable</p> : null}
-        {submitError ? <p className="cp-err">{submitError}</p> : null}
+
+            {(loadError || submitError) && (
+              <p className="cp-err">{loadError ? 'Data unavailable' : submitError}</p>
+            )}
+
+            <button
+              type="submit"
+              className="cp-submit-btn"
+              disabled={loadingData || !!loadError}
+            >
+              Predict Colleges →
+            </button>
+
+          </form>
+        </div>
+
       </div>
+
     </div>
   );
 }
