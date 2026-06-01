@@ -27,7 +27,7 @@ const Home2 = () => {
             </p>
 
             <div className="home2-btn-container">
-              <Link className="home2-btn home2-btn-accent home2-btn-talk" to="/talk-to-iitians">
+              <Link className="home2-btn home2-btn-accent home2-btn-talk" to="/TalkToIITians">
                 Talk now
               </Link>
             </div>

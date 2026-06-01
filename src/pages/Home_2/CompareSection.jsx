@@ -34,7 +34,7 @@ const CompareSection = () => {
           </div>
         </div>
 
-        <Link className="home2-btn home2-btn-accent" to="/branch-comparison">
+        <Link className="home2-btn home2-btn-accent" to="/BranchComparision">
           Try now for free
         </Link>
       </div>

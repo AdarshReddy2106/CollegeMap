@@ -37,7 +37,7 @@ const CustomTestBuilder = () => {
     if (!userProfile) {
       const emailStored = sessionStorage.getItem('userEmail');
       if (!emailStored) {
-        navigate('/login', { state: { redirectTo: '/cbt-portal/custom-test' } });
+        navigate('/login', { state: { redirectTo: '/exams/custom' } });
         return;
       }
       // Load profile from context
@@ -175,7 +175,7 @@ const CustomTestBuilder = () => {
     }
     if (generatedTestId) {
       setShowGuidelines(false);
-      navigate(`/cbt-portal/test/${generatedTestId}`);
+      navigate(`/exams/test/${generatedTestId}`);
     }
   };
 
@@ -225,7 +225,7 @@ const CustomTestBuilder = () => {
         transition={{ duration: 0.5 }}
       >
         <div className="header-nav">
-          <button className="back-button" onClick={() => navigate('/cbt-portal')}>
+          <button className="back-button" onClick={() => navigate('/exams')}>
             ← Back to CBT Portal
           </button>
         </div>

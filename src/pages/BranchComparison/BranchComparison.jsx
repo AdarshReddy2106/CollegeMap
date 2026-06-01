@@ -805,18 +805,6 @@ const BranchComparison = () => {
   
           {/* ── Footer ── */}
           <div className="bc-tool-footer">
-            <div className="bc-footer-hint-row">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="#aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="8" x2="12" y2="12"/>
-                <line x1="12" y1="16" x2="12.01" y2="16"/>
-              </svg>
-              <p className="bc-hint-text">
-                IIT / NIT / IIIT lists come from JoSAA-style PDFs (dropdowns only).
-                You can compare any combination across types.
-              </p>
-            </div>
             <button type="submit" className="bc-compare-btn"
               disabled={loading || loadingLists || !catalog}>
               Compare branches &nbsp;→

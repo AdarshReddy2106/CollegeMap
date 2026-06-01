@@ -74,11 +74,11 @@ const ProfileSetup = () => {
       
       // Navigate to test or dashboard
       if (testId) {
-        navigate(`/cbt-portal/test/${testId}`);
+        navigate(`/exams/test/${testId}`);
       } else if (redirectTo) {
         navigate(redirectTo);
       } else {
-        navigate('/cbt-portal');
+        navigate('/exams');
       }
     } catch (error) {
       console.error('❌ Error saving profile:', error);

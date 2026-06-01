@@ -134,7 +134,7 @@ function App() {
           {/* <Route path="/EnhancedQuestions" element={<ProtectedRoute requirePayment={false}><EnhancedQuestions /></ProtectedRoute>} /> */}
           <Route path="/EnhancedQuestions" element={<ProtectedRoute requirePayment={false}><EnhancedQuestions /></ProtectedRoute>} />
           <Route path="/AboutUs" element={<AboutUs />} />
-          <Route path="/AboutIITs" element={<AboutIITs />} />
+          <Route path="/College" element={<AboutIITs />} />
           {/* <Route path="/Contact-Us" element={<ContactUs />} /> */}
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/HowItWorks" element={<HowItWorks />} />
@@ -152,21 +152,21 @@ function App() {
           <Route path="/pyq" element={<PYQPage />} />
           {/* <Route path="/pyq-advanced" element={<PYQAdvancedPage />} /> */}
           <Route path="/news" element={<NewsPage />} />
-          {/* <Route path="/branch-comparison" element={<BranchComparison />} /> */}
-          <Route path="/college-predictor" element={<CollegePredictor />} />
-          <Route path="/college-predictor/results" element={<CollegePredictorResults />} />
-          <Route path="/energy-batch" element={<EnergyBatch />} />
+          {/* <Route path="/BranchComparision" element={<BranchComparison />} /> */}
+          <Route path="/CollegePredictor" element={<CollegePredictor />} />
+          <Route path="/CollegePredictor/results" element={<CollegePredictorResults />} />
+          <Route path="/EnergyBatch" element={<EnergyBatch />} />
           <Route path="/StudyWithIITians" element={<StudyWithIITian/>} />
-          <Route path="/talk-to-iitians" element={<TalkToIITian />} />
+          <Route path="/TalkToIITians" element={<TalkToIITian />} />
           {/* <Route path="/cbt-portal" element={<CBTPortal />} /> */}
           <Route path="/exams" element={<CBTPortal />} />
           {/* <Route path="/cbt-portal/custom-test" element={<CustomTestBuilder />} /> */}
           <Route path="/exams/custom" element={<CustomTestBuilder />} />
           <Route path="/exams/test/:testId" element={<TestInterface />} />
           <Route path="/exams/dashboard" element={<CBTDashboard />} />
-          <Route path="/college-predictor/tool" element={<CollegePredictortool />} />
-          <Route path="/branch-comparison" element={<BranchComparisonIntro />} />
-          <Route path="/branch-comparison/tool" element={<BranchComparison />} />
+          <Route path="/CollegePredictor/tool" element={<CollegePredictortool />} />
+          <Route path="/BranchComparision" element={<BranchComparisonIntro />} />
+          <Route path="/BranchComparision/tool" element={<BranchComparison />} />
           {/* Add other routes as needed */}
         </Routes>
       </Layout>

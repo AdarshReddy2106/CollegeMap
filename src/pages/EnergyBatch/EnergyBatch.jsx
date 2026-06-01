@@ -194,8 +194,7 @@ export default function EnergyBatch() {
 
         <p className="eb-footnote">
           Questions?{' '}
-          <Link to="/Contact-Us">Contact us</Link>
-          {' '}or use the WhatsApp button above.
+          <a href={INQUIRE_WHATSAPP_URL} target="_blank" rel="noopener noreferrer">Contact us</a>
         </p>
       </div>
       <div className="eb-bottom-nav">
