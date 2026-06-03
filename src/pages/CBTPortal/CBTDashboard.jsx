@@ -27,7 +27,7 @@ const CBTDashboard = () => {
       if (!userProfile) {
         const emailStored = sessionStorage.getItem('userEmail');
         if (!emailStored) {
-          navigate('/login', { state: { redirectTo: '/cbt-portal/dashboard' } });
+          navigate('/login', { state: { redirectTo: '/exams/dashboard' } });
           return;
         }
         // Fetch profile from Supabase
@@ -217,7 +217,7 @@ const CBTDashboard = () => {
         <div className="header-actions">
           <button
             className="back-button"
-            onClick={() => navigate('/cbt-portal')}
+            onClick={() => navigate('/exams')}
           >
             ← Back to Portal
           </button>
@@ -237,7 +237,7 @@ const CBTDashboard = () => {
             <p>Start taking tests to see your results and analysis here</p>
             <button
               className="start-test-button"
-              onClick={() => navigate('/cbt-portal')}
+              onClick={() => navigate('/exams')}
             >
               Take Your First Test
             </button>

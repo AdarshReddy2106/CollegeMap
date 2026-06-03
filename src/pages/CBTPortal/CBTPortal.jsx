@@ -147,7 +147,7 @@ const CBTPortal = () => {
 
   const handleStartTest = (testId) => {
     if (!userProfile) {
-      navigate('/login', { state: { testId, redirectTo: '/cbt-portal' } });
+      navigate('/login', { state: { testId, redirectTo: '/exams' } });
       return;
     }
     getTestById(testId)
@@ -158,12 +158,12 @@ const CBTPortal = () => {
           setTermsAccepted(false);
         } else {
           console.error('Test not found:', testId);
-          navigate('/cbt-portal');
+          navigate('/exams');
         }
       })
       .catch(error => {
         console.error('Error loading test:', error);
-        navigate('/cbt-portal');
+        navigate('/exams');
       });
   };
 
@@ -174,7 +174,7 @@ const CBTPortal = () => {
     }
     if (selectedTest) {
       setShowGuidelines(false);
-      navigate(`/cbt-portal/test/${selectedTest.id}`);
+      navigate(`/exams/test/${selectedTest.id}`);
     }
   };
 
@@ -203,7 +203,7 @@ const CBTPortal = () => {
           </motion.button>
           <motion.button
             className="dashboard-button"
-            onClick={() => navigate('/cbt-portal/dashboard')}
+            onClick={() => navigate('/exams/dashboard')}
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
           >
@@ -225,7 +225,7 @@ const CBTPortal = () => {
         </p>
         <motion.button
           className="custom-build-btn"
-          onClick={() => navigate('/cbt-portal/custom-test')}
+          onClick={() => navigate('/exams/custom')}
           whileHover={{ scale: 1.04, x: 4 }}
           whileTap={{ scale: 0.97 }}
         >

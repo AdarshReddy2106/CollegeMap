@@ -8,13 +8,13 @@ const bannerSlides = [
     id: 1,
     image: '/banner_n1.jpg',
     alt: 'CollegeMap - Your JEE Preparation Platform',
-    link: '/Questionaire',
+    link: '/TalkToIITians',
   },
   {
     id: 2,
     image: '/banner_n2.jpg',
     alt: 'CollegeMap - JEE Mock Tests & Resources',
-    link: '/resources',
+    link: "https://chat.whatsapp.com/Jv5KBBAeP62L9EzNqHHmwr?mode=ems_copy_t",
   },
 ];
 

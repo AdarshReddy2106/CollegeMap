@@ -46,7 +46,7 @@ export default function BranchComparisonIntro() {
           <span className="bc-nav-arrow">→</span>
           <span>Make a smarter choice</span>
         </div>
-        <button className="bc-start-btn" onClick={() => navigate('/branch-comparison/tool')}>
+        <button className="bc-start-btn" onClick={() => navigate('/BranchComparision/tool')}>
           Start Now
         </button>
       </div>

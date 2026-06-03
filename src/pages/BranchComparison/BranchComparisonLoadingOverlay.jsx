@@ -65,7 +65,6 @@ const BranchComparisonLoadingOverlay = ({ active, compareSummary }) => {
     <div className="branch-intel-loading-overlay" role="status" aria-live="polite" aria-busy="true">
       <div className="branch-intel-loading-card">
         <div className="branch-intel-loading-header">
-          <span className="branch-intel-loading-badge">AI comparison</span>
           <h3 className="branch-intel-loading-title">Crunching your comparison</h3>
           {compareSummary ? (
             <p className="branch-intel-loading-sub">{compareSummary}</p>

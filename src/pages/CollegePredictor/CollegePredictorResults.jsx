@@ -65,7 +65,7 @@ export default function CollegePredictorResults() {
       <div className="cpr-page">
         <div className="cpr-empty">
           <p>No prediction yet.</p>
-          <Link to="/college-predictor" className="cpr-btn-primary">
+          <Link to="/CollegePredictor" className="cpr-btn-primary">
             Go to predictor
           </Link>
         </div>
@@ -96,7 +96,7 @@ export default function CollegePredictorResults() {
   return (
     <div className="cpr-page">
       <div className="cpr-shell">
-        <button type="button" className="cpr-back" onClick={() => navigate('/college-predictor')}>
+        <button type="button" className="cpr-back" onClick={() => navigate('/CollegePredictor')}>
           ← Edit inputs
         </button>
 

@@ -16,7 +16,7 @@ const PathwaysSection = () => {
             <p>
               IITs, NITs, IIITs, and more - get into India's top institutes by following the counselling process.
             </p>
-            <Link className="home2-link" to="/AboutIITs">
+            <Link className="home2-link" to="/College">
               Find more about India's top institutes here
             </Link>
           </div>

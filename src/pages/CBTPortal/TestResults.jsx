@@ -259,13 +259,13 @@ const TestResults = ({ results, testData, imageUrls = {}, userProfile = {} }) =>
           </button>
           <button
             className="action-button dashboard"
-            onClick={() => navigate('/cbt-portal/dashboard')}
+            onClick={() => navigate('/exams/dashboard')}
           >
             View Dashboard
           </button>
           <button
             className="action-button primary"
-            onClick={() => navigate('/cbt-portal')}
+            onClick={() => navigate('/exams')}
           >
             Take Another Test
           </button>

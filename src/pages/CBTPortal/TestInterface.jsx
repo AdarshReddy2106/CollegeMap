@@ -401,7 +401,7 @@ const TestInterface = () => {
     if (!userProfile) {
       const emailStored = sessionStorage.getItem('userEmail');
       if (!emailStored) {
-        navigate('/login', { state: { redirectTo: `/cbt-portal/test/${testId}` } });
+        navigate('/login', { state: { redirectTo: `/exams/test/${testId}` } });
         return;
       }
       // Load profile from Supabase
@@ -477,7 +477,7 @@ const TestInterface = () => {
       })
       .catch(error => {
         console.error('Error loading test:', error);
-        navigate('/cbt-portal');
+        navigate('/exams');
       });
   }, [testId, navigate]);
 
@@ -1196,7 +1196,7 @@ const TestInterface = () => {
       <div className="loading">
         <h3>No questions available</h3>
         <p>This test does not have any questions configured yet.</p>
-        <button onClick={() => navigate('/cbt-portal')}>Back to Portal</button>
+        <button onClick={() => navigate('/exams')}>Back to Portal</button>
       </div>
     );
   }
@@ -1235,7 +1235,7 @@ const TestInterface = () => {
       <div className="loading">
         <h3>Error loading question</h3>
         <p>Unable to load the current question. Please try again.</p>
-        <button onClick={() => navigate('/cbt-portal')}>Back to Portal</button>
+        <button onClick={() => navigate('/exams')}>Back to Portal</button>
       </div>
     );
   }

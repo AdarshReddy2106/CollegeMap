@@ -84,7 +84,7 @@ export default function CollegePredictortool() {
         exam, rank: r, category, genderFemale, seatPool,
         institutionTypes, maxResults: MAX_PREDICTOR_RESULTS, preferredBranchIds, pwd,
       });
-      navigate('/college-predictor/results', {
+      navigate('/CollegePredictor/results', {
         state: {
           predictorPayload: {
             rank: r, exam, category, genderFemale, seatPool,

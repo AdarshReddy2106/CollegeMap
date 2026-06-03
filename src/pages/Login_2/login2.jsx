@@ -418,8 +418,8 @@ const Login2 = () => {
 					<h1>{authMode === "signin" ? "Welcome back" : "Create your account"}</h1>
 					<p>
 						{authMode === "signin"
-							? "Sign in with your Supabase credentials to continue your preparation with CollegeMap."
-							: "Register with your email and password to start using CollegeMap features."}
+							? "Sign in to your CollegeMap account to continue your preparation."
+							: "Register with your email and password to start using CollegeMap."}
 					</p>
 					<ul className="login2-points">
 						<li>Track your progress and saved activities</li>

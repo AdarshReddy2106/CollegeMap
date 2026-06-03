@@ -51,7 +51,7 @@ export default function CollegePredictor() {
           <span className="cp-nav-arrow">→</span>
           <span>See your colleges</span>
         </div>
-        <button className="cp-start-btn" onClick={() => navigate('/college-predictor/tool')}>
+        <button className="cp-start-btn" onClick={() => navigate('/CollegePredictor/tool')}>
           Start Now
         </button>
       </div>

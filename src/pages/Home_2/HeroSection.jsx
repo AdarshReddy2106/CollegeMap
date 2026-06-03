@@ -24,13 +24,13 @@ const HeroSection = () => {
           ))}
         </ul>
         <div className="home2-cta-row">
-          <Link className="home2-btn home2-btn-primary" to="/branch-comparison">
+          <Link className="home2-btn home2-btn-primary" to="/BranchComparision">
             Compare colleges
           </Link>
-          <Link className="home2-btn home2-btn-ghost" to="/college-predictor">
+          <Link className="home2-btn home2-btn-ghost" to="/CollegePredictor">
             College predictor
           </Link>
-          <Link className="home2-btn home2-btn-ghost" to="/talk-to-iitians">
+          <Link className="home2-btn home2-btn-ghost" to="/TalkToIITians">
             Talk to IITian
           </Link>
         </div>
