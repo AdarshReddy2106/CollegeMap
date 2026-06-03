@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[2]
 BACKEND = ROOT / "Backend"
 DATA = BACKEND / "data"
 IIT_JSON = DATA / "iitBranchCatalog.json"
+IIIT_JSON = DATA / "iiitBranchCatalog.json"
 NIT_PDF = ROOT / "Nit_data.pdf"
 IIIT_PDF = ROOT / "IIIT_DATA.pdf"
 OUT_BACKEND = DATA / "institutionBranchCatalog.json"
@@ -307,8 +308,12 @@ def main() -> None:
     nit_parsed = parse_nit(nit_full) if nit_full else {}
     nit_out = {k: sorted(v) for k, v in sorted(nit_parsed.items())}
 
-    iiit_parsed = parse_iiit(iiit_full) if iiit_full else {}
-    iiit_out = merge_iiit_duplicates(iiit_parsed)
+    if IIIT_JSON.is_file():
+        iiit_raw = json.loads(IIIT_JSON.read_text(encoding="utf8"))
+        iiit_out = {k: list(v) for k, v in sorted((iiit_raw.get("branchesByCollege") or {}).items())}
+    else:
+        iiit_parsed = parse_iiit(iiit_full) if iiit_full else {}
+        iiit_out = merge_iiit_duplicates(iiit_parsed)
 
 
     private_data = {}
@@ -322,7 +327,9 @@ def main() -> None:
         "_meta": {
             "IIT": str(IIT_JSON.relative_to(ROOT)),
             "NIT": str(NIT_PDF.relative_to(ROOT)) if NIT_PDF.is_file() else None,
-            "IIIT": str(IIIT_PDF.relative_to(ROOT)) if IIIT_PDF.is_file() else None,
+            "IIIT": str(IIIT_JSON.relative_to(ROOT)) if IIIT_JSON.is_file() else (
+                str(IIIT_PDF.relative_to(ROOT)) if IIIT_PDF.is_file() else None
+            ),
             "private": str(PRIVATE_JSON.relative_to(ROOT)) if PRIVATE_JSON.is_file() else None,
         },
         "IIT": {"branchesByCollege": iit_out},
@@ -334,6 +341,14 @@ def main() -> None:
     for key, val in private_data.items():
         if key != "_meta":
             doc[key] = val
+
+    private_merged: dict[str, list[str]] = {}
+    for key in ("BITS", "VIT", "SRM", "Amrita", "Other top colleges"):
+        section = doc.get(key, {}).get("branchesByCollege") or {}
+        for college, branches in section.items():
+            if branches:
+                private_merged[college] = list(branches)
+    doc["Private"] = {"branchesByCollege": dict(sorted(private_merged.items()))}
 
     # doc = {
     #     "_meta": {

@@ -426,7 +426,7 @@
 .bc-tool-footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 16px;
   flex-wrap: wrap;
   padding-top: 14px;
@@ -1164,4 +1164,71 @@
   right: 40px;
   color: rgba(180, 200, 198, 0.55);
   font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+
+  /* ── Bottom nav: stack on mobile ── */
+  .bc-bottom-nav {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 16px 12px;
+    gap: 8px;
+  }
+
+  .bc-bottom-nav-steps {
+    justify-content: center;
+    font-size: 10.5px;
+    gap: 3px;
+    flex-wrap: nowrap;
+  }
+
+  .bc-bottom-nav-steps span {
+    white-space: nowrap;
+  }
+
+  .bc-nav-arrow {
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .bc-start-btn {
+    text-align: center;
+    width: 100%;
+    padding: 11px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+
+  /* ── Extra bottom padding so content clears taller nav ── */
+  .bc-page {
+    padding-bottom: 120px;
+  }
+}
+
+.branch-intel-login-btn {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.85rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: #fff;
+  background: linear-gradient(135deg, #10c3bc 0%, #0f9892 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 16px rgba(16, 195, 188, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(16, 195, 188, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }

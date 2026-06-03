@@ -3,7 +3,7 @@
 .eb-page {
   min-height: 78vh;
   padding: 2rem 1rem 80px;
-  background: linear-gradient(135deg, #e0f5f5 0%, #f0fafa 100%);
+  background: linear-gradient(120deg, $accent-light 0%, $background-alt 100%);
   padding-bottom: 80px;
 }
 
@@ -319,6 +319,118 @@
   transition: opacity 0.15s;
 
   &:hover { opacity: 0.88; }
+}
+
+
+
+/* Mobile: stack steps above button */
+@media (max-width: 480px) {
+  .eb-bottom-nav {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 16px 12px;
+    gap: 8px;
+  }
+
+  .eb-bottom-nav-steps {
+    justify-content: center;
+    font-size: 10.5px;
+    gap: 3px;
+  }
+
+  .eb-start-btn {
+    text-align: center;
+    width: 100%;
+    padding: 11px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+}
+
+.eb-bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #0a1628;
+  border-top: 1px solid rgba(16, 195, 188, 0.2);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.35);
+  padding: 16px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  z-index: 100;
+  animation: eb-nav-slide-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.3s;
+}
+
+@keyframes eb-nav-slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.eb-bottom-nav-steps {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+  font-weight: 500;
+  flex-wrap: nowrap;
+
+  span { white-space: nowrap; }
+}
+
+.eb-nav-arrow {
+  color: #10c3bc;
+  font-size: 18px;
+  font-weight: 700;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.eb-start-btn {
+  background: #10c3bc;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-decoration: none;
+  box-shadow: 0 0 16px rgba(16, 195, 188, 0.4);
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+
+  &:hover { box-shadow: 0 0 24px rgba(16, 195, 188, 0.65); transform: translateY(-1px); }
+  &:active { transform: translateY(0); }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .eb-bottom-nav {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 16px 12px;
+    gap: 8px;
+  }
+
+  .eb-bottom-nav-steps {
+    justify-content: center;
+    font-size: 10.5px;
+    gap: 3px;
+  }
+
+  .eb-nav-arrow { font-size: 13px; }
+
+  .eb-start-btn {
+    text-align: center;
+    width: 100%;
+    padding: 11px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
 }
 
 

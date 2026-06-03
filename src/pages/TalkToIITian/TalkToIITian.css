@@ -149,7 +149,7 @@
 }
 
 .tti-title {
-  font-size: clamp(3.5rem, 5vw, 4.5rem);
+  font-size: clamp(2.8rem, 4vw, 3.5rem);
   color: #151b26;
   margin: 0 0 2rem;
   font-weight: 900;
@@ -1149,5 +1149,58 @@
   .tti-fixed-text {
     font-size: 0.85rem;
     justify-content: center;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .tti-title {
+    font-size: 2.2rem;
+  }
+
+  .tti-middle-heading {
+    font-size: 1.15rem;
+  }
+
+  /* ── Fixed bottom bar: stack on mobile ── */
+  .tti-fixed-bottom-bar {
+    padding: 10px 16px 12px;
+  }
+
+  .tti-fixed-bar-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .tti-fixed-text {
+    font-size: 10.5px;
+    justify-content: center;
+    gap: 3px;
+    flex-wrap: nowrap;
+  }
+
+  .tti-fixed-text span {
+    white-space: nowrap;
+  }
+
+  .tti-arrow {
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .tti-start-now-btn {
+    text-align: center;
+    width: 100%;
+    padding: 11px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+}
+@media (max-width: 768px) {
+  .tti-list {
+    align-items: flex-start;
+    width: fit-content;
+    margin: 0 auto;
   }
 }
