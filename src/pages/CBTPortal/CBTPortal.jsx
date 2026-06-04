@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../../context/AuthContext';
 import { useUserProfile } from '../../context/UserProfileContext';
 import './CBTPortal.scss';
@@ -180,6 +181,11 @@ const CBTPortal = () => {
 
   return (
     <div className="cbt-portal-page">
+      <Helmet>
+        <title>JEE Mock Tests | Exam Practice with PYQs — CollegeMap</title>
+        <meta name="description" content="Attempt JEE Main mock tests in a real JEE Mains environment. Practice previous year papers with a timer, question palette, and instant results. 10,000+ JEE questions curated by IITians." />
+        <link rel="canonical" href="https://collegemap.in/exams" />
+      </Helmet>
       {/* ─── Header Section ─── */}
       <motion.div
         className="cbt-portal-header"

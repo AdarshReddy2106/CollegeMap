@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import './ContactUs.scss';
 import ContactIllustration from '../../assets/contact-illustration.svg';
 
@@ -50,6 +51,11 @@ const ContactUs = () => {
 
     return (
         <div className="contact-us">
+            <Helmet>
+                <title>Contact CollegeMap | Get in Touch — Support & Feedback</title>
+                <meta name="description" content="Have questions about CollegeMap? Contact us via email at support@collegemap.in or call +91-9326602765. We'd love to hear your feedback and collaboration ideas." />
+                <link rel="canonical" href="https://collegemap.in/contact" />
+            </Helmet>
             {showPopup && (
                 <div className="contact-us__popup">
                     <div className="contact-us__popup-content">

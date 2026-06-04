@@ -134,7 +134,7 @@ const Questionaire = () => {
             }
 
             const data = await response.json();
-            navigate("/ResultsPage", { state: { responseData: data } });
+            navigate("/results", { state: { responseData: data } });
         } catch (error) {
             alert("Network error. Please check your connection.");
         } finally {

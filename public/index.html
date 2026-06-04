@@ -11,26 +11,37 @@
   <meta charset="utf-8" />
   <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="description" content="CollegeMap is built by IITians, for future IITians, to help you make smarter decisions based on real data — not just guesswork" />
-  
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="description"
+    content="One-stop for your JEE journey: from preparation to college counseling. JEE Preparation, College Counseling, Mentorship Programs & Talk to IITians — built by IITians, for future IITians." />
+  <meta name="keywords"
+    content="JEE preparation, JEE Mains 2026, JEE Advanced 2026, college predictor, IIT counseling, JoSAA counseling, talk to IITians, IIT mentorship, branch comparison, JEE study material, CollegeMap, JEE online coaching" />
+  <meta name="author" content="CollegeMap" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <link rel="canonical" href="https://collegemap.in/" />
+
   <!-- Open Graph / Facebook Meta Tags for proper display in search results -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://collegemap.in/" />
-  <meta property="og:title" content="College Map | By IITians for Future IITians" />
-  <meta property="og:description" content="CollegeMap is built by IITians, for future IITians, to help you make smarter decisions based on real data — not just guesswork" />
-  <meta property="og:image" content="https://collegemap.in/logo192.png" />
-  <meta property="og:image:width" content="192" />
-  <meta property="og:image:height" content="192" />
-  <meta property="og:image:alt" content="College Map Logo" />
-  
+  <meta property="og:site_name" content="CollegeMap" />
+  <meta property="og:locale" content="en_IN" />
+  <meta property="og:title" content="CollegeMap | By IITians for Future IITians" />
+  <meta property="og:description"
+    content="One-stop for your JEE journey: from preparation to college counseling. JEE Preparation, College Counseling, Mentorship Programs & Talk to IITians." />
+  <meta property="og:image" content="https://collegemap.in/main.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="CollegeMap | By IITians for Future IITians" />
+
   <!-- Twitter Meta Tags -->
-  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://collegemap.in/" />
-  <meta name="twitter:title" content="College Map | By IITians for Future IITians" />
-  <meta name="twitter:description" content="CollegeMap is built by IITians, for future IITians, to help you make smarter decisions based on real data — not just guesswork" />
-  <meta name="twitter:image" content="https://collegemap.in/logo192.png" />
-  
+  <meta name="twitter:title" content="CollegeMap | By IITians for Future IITians" />
+  <meta name="twitter:description"
+    content="One-stop for your JEE journey: from preparation to college counseling. JEE Preparation, College Counseling, Mentorship Programs & Talk to IITians." />
+  <meta name="twitter:image" content="https://collegemap.in/main.png" />
+  <meta name="twitter:image:alt" content="CollegeMap | By IITians for Future IITians" />
+
   <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -50,19 +61,71 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-  <title>College Map | By IITians for Future IITians</title>
+  <title>CollegeMap | By IITians for Future IITians</title>
+
+  <!-- Structured Data (JSON-LD) for Google Rich Results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "CollegeMap",
+    "url": "https://collegemap.in",
+    "logo": "https://collegemap.in/main.png",
+    "description": "One-stop for your JEE journey: from preparation to college counseling.",
+    "sameAs": [],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "CollegeMap Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "JEE Preparation",
+            "description": "Comprehensive JEE preparation resources including study materials, practice tests, and expert strategies curated by IITians to help you crack JEE."
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "College Counseling",
+            "description": "Data-driven college counseling to help you pick the right branch and institute based on real cutoff trends, seat matrices, and placement statistics."
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Mentorship Programs",
+            "description": "One-on-one and group mentorship programs led by current IITians, covering academics, exam strategy, and campus life guidance."
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Talk to IITians",
+            "description": "Connect directly with IITians for personalized advice on JEE preparation, college selection, branch choices, and life at IITs."
+          }
+        }
+      ]
+    }
+  }
+  </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CS9033TE3K"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
 
     gtag('config', 'G-CS9033TE3K', { send_page_view: false });
   </script>
-  
+
   <!-- Google Ads -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3633130132958490" crossorigin="anonymous"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3633130132958490"
+    crossorigin="anonymous"></script>
 </head>
 
 <body>

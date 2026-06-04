@@ -27,8 +27,8 @@ const Footer = () => {
                         <li className="footer__list-item"><a href="/HowItWorks" className="footer__link">How We Work?</a></li>
                         <li className="footer__list-item"><a href="/AboutUs" className="footer__link">About Us</a></li>
                         {/* <li className="footer__list-item"><a href="https://wa.link/lo05a1" className="footer__link">Talk to an IITian</a></li> */}
-                        <li className="footer__list-item"><a href="/ComingSoon" className="footer__link">Talk to an IITian</a></li>
-                        <li className="footer__list-item"><a href="/Contact-us" className="footer__link">Contact Us</a></li>
+                        <li className="footer__list-item"><a href="/TalkToIITians" className="footer__link">Talk to an IITian</a></li>
+                        <li className="footer__list-item"><a href="/contact" className="footer__link">Contact Us</a></li>
                     </ul>
                 </div>
 
@@ -37,7 +37,7 @@ const Footer = () => {
                     <ul className="footer__list">
                         <li className="footer__list-item"><a href="/Privacy-Policy" className="footer__link">Privacy Policy</a></li>
                         <li className="footer__list-item"><a href="/Terms-and-Conditions" className="footer__link">Terms & Conditions</a></li>
-                        <li className="footer__list-item"><a href="/Cancellation-and-Refund" className="footer__link">Cancellation & Refund</a></li>
+                        <li className="footer__list-item"><a href="/refund" className="footer__link">Cancellation &amp; Refund</a></li>
                     </ul>
                 </div>
 

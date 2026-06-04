@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import './EnergyBatch.scss';
 
 /** Replace with your WhatsApp deep link or wa.me number for 1-to-1 inquiries */
@@ -64,6 +65,11 @@ function IconBan() {
 export default function EnergyBatch() {
   return (
     <div className="eb-page">
+      <Helmet>
+        <title>JEE Mentorship Programs | 1-on-1 IITian Guidance & Daily Schedules — CollegeMap</title>
+        <meta name="description" content="Enroll in CollegeMap's structured JEE mentorship programs led by IITians. Get personalized daily study schedules, weekly progress reviews, 24/7 doubt support, and 1-on-1 guidance." />
+        <link rel="canonical" href="https://collegemap.in/EnergyBatch" />
+      </Helmet>
       <div className="eb-inner">
         {/* —— 1-to-1 hero —— */}
         <header className="eb-hero">
@@ -75,9 +81,9 @@ export default function EnergyBatch() {
 
           <div className="eb-hero-split">
             <ul className="eb-quotes" aria-label="What students say">
-            <li>&ldquo;I&apos;m not able to <strong>focus</strong>.&rdquo;</li>
-            <li>&ldquo;I&apos;m not finishing my <strong>syllabus</strong>.&rdquo;</li>
-            <li>&ldquo;I&apos;m not scoring <strong>good marks</strong>.&rdquo;</li>
+              <li>&ldquo;I&apos;m not able to <strong>focus</strong>.&rdquo;</li>
+              <li>&ldquo;I&apos;m not finishing my <strong>syllabus</strong>.&rdquo;</li>
+              <li>&ldquo;I&apos;m not scoring <strong>good marks</strong>.&rdquo;</li>
             </ul>
             <figure className="eb-hero-visual">
               <img
@@ -207,7 +213,7 @@ export default function EnergyBatch() {
         </div>
         <a href={INQUIRE_WHATSAPP_URL} className="eb-start-btn" target="_blank" rel="noopener noreferrer">Inquire now</a>
       </div>
-      
+
     </div>
   );
 }

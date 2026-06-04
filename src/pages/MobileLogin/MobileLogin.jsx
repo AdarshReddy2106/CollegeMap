@@ -191,7 +191,7 @@ const MobileLogin = () => {
                 <img src={CollegeIllustration} alt="College themed login" />
             </div>
             <div className="login-box">
-                <h2>Welcome to College Map</h2>
+                <h2>Welcome to CollegeMap</h2>
                 <p className="subtext">Log in to access your Advanced college list.</p>
                 {error && <p className="error-message">{error}</p>}
 

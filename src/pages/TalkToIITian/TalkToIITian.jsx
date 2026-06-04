@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Helmet } from 'react-helmet-async';
 import "./TalkToIITian.css";
 
 const BASE_URL = process.env.REACT_APP_API_URL || "https://collegemapbackend.vercel.app";
@@ -47,9 +48,7 @@ const ProgressBar = ({ currentStep }) => {
   );
 };
 
-// ════════════════════════════════════════════════════════════════════════════
 // Main Component
-// ════════════════════════════════════════════════════════════════════════════
 const TalkToIITian = () => {
   const [step, setStep] = useState("landing");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -323,6 +322,11 @@ const TalkToIITian = () => {
 
   return (
     <main className="talk-to-iitian-page">
+      <Helmet>
+        <title>Talk to IITians | 1-on-1 Mentorship with IIT Students — CollegeMap</title>
+        <meta name="description" content="Book a 1-on-1 session with a current IIT student. Get personalized advice on JEE strategy, college selection, branch choices, campus life, and placements." />
+        <link rel="canonical" href="https://collegemap.in/TalkToIITians" />
+      </Helmet>
       <section className="tti-layout">
         <p className="tti-page-label">Talk to IITians</p>
 
