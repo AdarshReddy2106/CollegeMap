@@ -8,23 +8,68 @@ import BranchComparisonResults from './BranchComparisonResults';
 import BranchComparisonLoadingOverlay from './BranchComparisonLoadingOverlay';
 import { useAuth } from '../../context/AuthContext';
 import { checkBranchComparisonAccess } from '../../services/supabaseService';
+// const DEV_BYPASS_PAYMENT = process.env.NODE_ENV === 'development';
 
 
 const RAZORPAY_KEY = process.env.REACT_APP_RAZORPAY_KEY_ID;
 const BASE_URL = process.env.REACT_APP_API_URL || "https://collegemapbackend.vercel.app";
 const PAYMENT_AMOUNT = 30000; // ₹300 in paise
 
-const INSTITUTION_TYPES = ['IIT', 'NIT', 'IIIT', 'BITS', 'VIT', 'SRM', 'Amrita','Other top colleges'];
+const INSTITUTION_TYPES = ['IIT', 'NIT', 'IIIT', 'Private'];
+const PRIVATE_SOURCE_TYPES = ['BITS', 'VIT', 'SRM', 'Amrita', 'Other top colleges'];
 
+function mergeBranchesMaps(...maps) {
+  const merged = {};
+  for (const m of maps) {
+    if (!m) continue;
+    for (const [college, branches] of Object.entries(m)) {
+      if (Array.isArray(branches) && branches.length) merged[college] = branches;
+    }
+  }
+  return merged;
+}
+
+/** Bundled private colleges — always available even if API omits Private. */
+const PRIVATE_STATIC = mergeBranchesMaps(
+  ...PRIVATE_SOURCE_TYPES.map((t) => catalogStatic[t]?.branchesByCollege),
+  catalogStatic.Private?.branchesByCollege
+);
+
+function privateTypeCatalog(map) {
+  const branchesByCollege = map && Object.keys(map).length ? map : PRIVATE_STATIC;
+  return {
+    colleges: Object.keys(branchesByCollege).sort(),
+    branchesByCollege,
+  };
+}
+
+/** Collect private-college branch maps from a catalog/API payload. */
+function privateBranchesFromSource(source) {
+  const maps = [PRIVATE_STATIC];
+  if (!source) return mergeBranchesMaps(...maps);
+  const byType = source.byType;
+  const raw = byType || source;
+  const privateMap = byType?.Private?.branchesByCollege;
+  if (privateMap && Object.keys(privateMap).length) maps.push(privateMap);
+  for (const t of PRIVATE_SOURCE_TYPES) {
+    const m = byType?.[t]?.branchesByCollege || raw[t]?.branchesByCollege;
+    if (m && Object.keys(m).length) maps.push(m);
+  }
+  return mergeBranchesMaps(...maps);
+}
+
+function buildTypeCatalog(source, type) {
+  if (type === 'Private') return privateTypeCatalog(privateBranchesFromSource(source));
+  const byType = source?.byType;
+  const raw = byType || source;
+  const m = byType?.[type]?.branchesByCollege || raw[type]?.branchesByCollege || {};
+  return { colleges: Object.keys(m).sort(), branchesByCollege: m };
+}
 
 function staticCatalog() {
   const byType = {};
   for (const t of INSTITUTION_TYPES) {
-    const m = catalogStatic[t]?.branchesByCollege || {};
-    byType[t] = {
-      colleges: Object.keys(m).sort(),
-      branchesByCollege: m,
-    };
+    byType[t] = t === 'Private' ? privateTypeCatalog(PRIVATE_STATIC) : buildTypeCatalog(catalogStatic, t);
   }
   return { types: [...INSTITUTION_TYPES], byType };
 }
@@ -36,6 +81,20 @@ function staticCatalog() {
 function mergeCatalogs(api, fallback) {
   const out = { types: [...INSTITUTION_TYPES], byType: {} };
   for (const t of INSTITUTION_TYPES) {
+    if (t === 'Private') {
+      const fbMap = privateBranchesFromSource(fallback);
+      const apiMap = privateBranchesFromSource(api);
+      const merged = { ...PRIVATE_STATIC };
+      for (const college of new Set([...Object.keys(fbMap), ...Object.keys(apiMap)])) {
+        const a = apiMap[college];
+        const f = fbMap[college];
+        const pick =
+          Array.isArray(a) && a.length ? a : Array.isArray(f) && f.length ? f : merged[college];
+        if (Array.isArray(pick) && pick.length) merged[college] = pick;
+      }
+      out.byType[t] = privateTypeCatalog(merged);
+      continue;
+    }
     const fbMap = fallback?.byType?.[t]?.branchesByCollege || {};
     const apiMap = api?.byType?.[t]?.branchesByCollege || {};
     const merged = {};
@@ -141,6 +200,11 @@ const BranchComparison = () => {
 
   useEffect(() => {
     const verifyAccess = async () => {
+      // if (DEV_BYPASS_PAYMENT) {        // ← add this
+      //   setHasAccess(true);            // ← add this
+      //   setCheckingAccess(false);      // ← add this
+      //   return;                        // ← add this
+      // }
       if (!isLoggedIn || !user?.email) {
         setHasAccess(false);
         setCheckingAccess(false);
@@ -399,7 +463,7 @@ const BranchComparison = () => {
               <div style={{ background: "#fff3cd", color: "#856404", padding: "1rem", borderRadius: "8px", marginBottom: "1.5rem", border: "1px solid #ffeeba" }}>
                 <strong>Note:</strong> You must be logged in to purchase and use the premium tool.
               </div>
-              <button className="branch-intel-btn" onClick={() => navigate('/login')}>
+              <button className="branch-intel-login-btn" onClick={() => navigate('/login')}>
                 Log In to Purchase
               </button>
             </>
@@ -805,6 +869,7 @@ const BranchComparison = () => {
   
           {/* ── Footer ── */}
           <div className="bc-tool-footer">
+
             <button type="submit" className="bc-compare-btn"
               disabled={loading || loadingLists || !catalog}>
               Compare branches &nbsp;→

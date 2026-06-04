@@ -20,8 +20,30 @@ const MAIN_QUOTA_OS = {
 /** Hard cap on number of programmes returned. */
 export const MAX_PREDICTOR_RESULTS = 75;
 
+export const CATEGORY_OPTIONS = [
+  { value: 'OPEN', label: 'OPEN' },
+  { value: 'EWS', label: 'EWS' },
+  { value: 'OBC-NCL', label: 'OBC-NCL' },
+  { value: 'SC', label: 'SC' },
+  { value: 'ST', label: 'ST' },
+  { value: 'OPEN (PwD)', label: 'OPEN (PwD)' },
+  { value: 'EWS (PwD)', label: 'EWS (PwD)' },
+  { value: 'OBC-NCL (PwD)', label: 'OBC-NCL (PwD)' },
+  { value: 'SC (PwD)', label: 'SC (PwD)' },
+  { value: 'ST (PwD)', label: 'ST (PwD)' },
+];
+
+/** Derive base category + PwD flag from dropdown value (supports legacy pwd boolean). */
+export function resolveCategoryFilters(category, pwd = false) {
+  const raw = String(category || 'OPEN');
+  const isPwd = pwd || raw.includes('(PwD)');
+  const baseCategory = isPwd ? raw.replace(' (PwD)', '') : raw;
+  return { category: baseCategory, pwd: isPwd, quota: isPwd ? `${baseCategory} (PwD)` : baseCategory };
+}
+
 export function matchesEntry(entry, filters) {
-  const { exam, category, genderFemale, seatPool, institutionTypes } = filters;
+  const { exam, genderFemale, seatPool, institutionTypes } = filters;
+  const { category, pwd, quota } = resolveCategoryFilters(filters.category, filters.pwd);
   if (!entry || entry.exam !== exam) return false;
 
   if (institutionTypes?.length) {
@@ -38,17 +60,20 @@ export function matchesEntry(entry, filters) {
   }
 
   if (exam === 'JEE_ADVANCED') {
-    return entry.quota === category;
+    return entry.quota === quota;
   }
 
   if (seatPool === 'HOME_STATE') {
     const expected = MAIN_QUOTA[category]?.HS;
-    return Boolean(expected && entry.quota === expected);
+    const expectedQuota = pwd && expected ? `${expected} (PwD)` : expected;
+    return Boolean(expectedQuota && entry.quota === expectedQuota);
   }
   const ai = MAIN_QUOTA[category]?.AI;
   const os = MAIN_QUOTA_OS[category];
-  if (ai && entry.quota === ai) return true;
-  if (os && entry.quota === os) return true;
+  const expectedAI = pwd && ai ? `${ai} (PwD)` : ai;
+  const expectedOS = pwd && os ? `${os} (PwD)` : os;
+  if (expectedAI && entry.quota === expectedAI) return true;
+  if (expectedOS && entry.quota === expectedOS) return true;
   return false;
 }
 

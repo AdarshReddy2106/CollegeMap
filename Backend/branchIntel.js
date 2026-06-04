@@ -20,10 +20,22 @@ const MODELS = [
 const INSTITUTION_CATALOG_PATH = path.join(__dirname, 'data', 'institutionBranchCatalog.json');
 const IIT_FALLBACK_PATH = path.join(__dirname, 'data', 'iitBranchCatalog.json');
 
-const TYPES = ['IIT', 'NIT', 'IIIT', 'BITS', 'VIT', 'SRM','Amrita', 'Other top colleges'];
+const TYPES = ['IIT', 'NIT', 'IIIT', 'Private'];
+const PRIVATE_SOURCE_TYPES = ['BITS', 'VIT', 'SRM', 'Amrita', 'Other top colleges'];
 
 /** @type {Record<string, Record<string, string[]>>} */
-let byType = { IIT: {}, NIT: {}, IIIT: {}, BITS: {}, VIT: {}, SRM: {} ,Amrita: {}, 'Other top colleges': {}};
+let byType = { IIT: {}, NIT: {}, IIIT: {}, Private: {} };
+
+function mergePrivateSources(sources) {
+  const merged = {};
+  for (const t of PRIVATE_SOURCE_TYPES) {
+    const m = sources[t] || {};
+    for (const [college, branches] of Object.entries(m)) {
+      if (Array.isArray(branches) && branches.length) merged[college] = branches;
+    }
+  }
+  return merged;
+}
 
 function loadBranchCatalogs() {
   try {
@@ -31,11 +43,14 @@ function loadBranchCatalogs() {
     byType.IIT = raw.IIT?.branchesByCollege || {};
     byType.NIT = raw.NIT?.branchesByCollege || {};
     byType.IIIT = raw.IIIT?.branchesByCollege || {};
-    byType.BITS = raw.BITS?.branchesByCollege || {};
-    byType.VIT = raw.VIT?.branchesByCollege || {};
-    byType.SRM = raw.SRM?.branchesByCollege || {};
-    byType.Amrita = raw.Amrita?.branchesByCollege || {};
-    byType['Other top colleges'] = raw['Other top colleges']?.branchesByCollege || {};
+    const privateSources = {};
+    for (const t of PRIVATE_SOURCE_TYPES) {
+      privateSources[t] = raw[t]?.branchesByCollege || {};
+    }
+    byType.Private = mergePrivateSources(privateSources);
+    if (raw.Private?.branchesByCollege && Object.keys(raw.Private.branchesByCollege).length) {
+      Object.assign(byType.Private, raw.Private.branchesByCollege);
+    }
 
     if (Object.keys(byType.IIT).length > 0) {
       return;
@@ -48,19 +63,23 @@ function loadBranchCatalogs() {
     byType.IIT = raw.branchesByCollege || {};
     byType.NIT = {};
     byType.IIIT = {};
-    byType.BITS = {};
-    byType.VIT = {};
-    byType.SRM = {};
-    byType.Amrita = {};
-    byType['Other top colleges'] = {};
-
+    byType.Private = {};
   } catch (e) {
     console.error('[branch-intel] Missing IIT catalog fallback:', e.message);
-    byType = { IIT: {}, NIT: {}, IIIT: {}, BITS: {}, VIT: {}, SRM: {} ,Amrita: {}, 'Other top colleges': {}};
+    byType = { IIT: {}, NIT: {}, IIIT: {}, Private: {} };
   }
 }
 
 loadBranchCatalogs();
+
+function resolveInstitutionType(type) {
+  const upper = String(type || 'IIT').toUpperCase();
+  const direct = TYPES.find((x) => x.toUpperCase() === upper);
+  if (direct) return direct;
+  const legacyPrivate = PRIVATE_SOURCE_TYPES.find((x) => x.toUpperCase() === upper);
+  if (legacyPrivate) return 'Private';
+  return null;
+}
 
 function collegesForType(t) {
   const m = byType[t] || {};
@@ -180,8 +199,7 @@ function registerBranchIntelRoutes(app) {
   });
 
   app.get(`${PREFIX}/colleges`, (req, res) => {
-    const tUpper = String(req.query.type || 'IIT').toUpperCase();
-    const t = TYPES.find(x => x.toUpperCase() === tUpper);
+    const t = resolveInstitutionType(req.query.type || 'IIT');
     if (t) {
       return res.json({ type: t, colleges: collegesForType(t) });
     }
@@ -189,8 +207,7 @@ function registerBranchIntelRoutes(app) {
   });
 
   app.get(`${PREFIX}/branches`, (req, res) => {
-    const tUpper = String(req.query.type || 'IIT').toUpperCase();
-    const t = TYPES.find(x => x.toUpperCase() === tUpper);
+    const t = resolveInstitutionType(req.query.type || 'IIT');
     const college = req.query.college || req.query.iit;
     if (college && t) {
       return res.json({ type: t, college: String(college), branches: branchesForCollege(t, String(college)) });
@@ -228,8 +245,8 @@ function registerBranchIntelRoutes(app) {
 
     const t1Upper = String(institutionType1 || bodyType1 || 'IIT').toUpperCase();
     const t2Upper = String(institutionType2 || bodyType2 || 'IIT').toUpperCase();
-    const t1 = TYPES.find(x => x.toUpperCase() === t1Upper);
-    const t2 = TYPES.find(x => x.toUpperCase() === t2Upper);
+    const t1 = resolveInstitutionType(t1Upper);
+    const t2 = resolveInstitutionType(t2Upper);
     const c1 = String(college1 || iit1 || '').trim();
     const c2 = String(college2 || iit2 || '').trim();
 

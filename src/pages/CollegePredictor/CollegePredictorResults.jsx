@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './CollegePredictorResults.scss';
 import { BRANCH_PRESETS } from './branchPresets';
-import { MAX_PREDICTOR_RESULTS } from './predictorFilter';
+import { MAX_PREDICTOR_RESULTS, resolveCategoryFilters } from './predictorFilter';
 import { sanitizePredictorLine } from './displaySanitize';
 
 const STORAGE_KEY = 'college_predictor_last';
@@ -75,6 +75,7 @@ export default function CollegePredictorResults() {
 
   const { rank, exam, category, genderFemale, seatPool, mainInstitutions, preferredBranchIds = [] } =
     payload;
+  const { pwd } = resolveCategoryFilters(category, payload.pwd);
   const examLabel = exam === 'JEE_ADVANCED' ? 'JEE Advanced' : 'JEE Main';
   const poolLabel =
     exam === 'JEE_MAIN' ? (seatPool === 'HOME_STATE' ? 'Home state' : 'All India') : null;
@@ -108,6 +109,7 @@ export default function CollegePredictorResults() {
             <span className="cpr-pill">{examLabel}</span>
             <span className="cpr-pill">{category}</span>
             <span className="cpr-pill">{genderFemale ? 'Female' : 'Neutral'}</span>
+            {pwd && !String(category).includes('(PwD)') ? <span className="cpr-pill">PwD</span> : null}
             {poolLabel ? <span className="cpr-pill">{poolLabel}</span> : null}
             {mainInstLabel ? <span className="cpr-pill">{mainInstLabel}</span> : null}
             {branchPillLabels.slice(0, 4).map((t) => (

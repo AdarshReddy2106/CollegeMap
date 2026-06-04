@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CollegePredictor.scss';
-import { predictCutoffs, MAX_PREDICTOR_RESULTS } from './predictorFilter';
+import { predictCutoffs, MAX_PREDICTOR_RESULTS, CATEGORY_OPTIONS, resolveCategoryFilters } from './predictorFilter';
 import { BRANCH_PRESETS } from './branchPresets';
 
 const DATA_URL = `${process.env.PUBLIC_URL || ''}/data/josaaCutoffs.json`;
@@ -79,16 +79,17 @@ export default function CollegePredictortool() {
         setSubmitError('Enter rank');
         return;
       }
+      const { pwd } = resolveCategoryFilters(category);
       const rows = predictCutoffs(entries, {
         exam, rank: r, category, genderFemale, seatPool,
-        institutionTypes, maxResults: MAX_PREDICTOR_RESULTS, preferredBranchIds,
+        institutionTypes, maxResults: MAX_PREDICTOR_RESULTS, preferredBranchIds, pwd,
       });
       navigate('/CollegePredictor/results', {
         state: {
           predictorPayload: {
             rank: r, exam, category, genderFemale, seatPool,
             mainInstitutions: exam === 'JEE_MAIN' ? mainInstitutions : null,
-            preferredBranchIds, results: rows,
+            preferredBranchIds, results: rows, pwd,
           },
         },
       });
@@ -180,11 +181,9 @@ export default function CollegePredictortool() {
                 onChange={(ev) => setCategory(ev.target.value)}
                 disabled={loadingData}
               >
-                <option value="OPEN">OPEN</option>
-                <option value="EWS">EWS</option>
-                <option value="OBC-NCL">OBC-NCL</option>
-                <option value="SC">SC</option>
-                <option value="ST">ST</option>
+                {CATEGORY_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
               </select>
             </div>
 

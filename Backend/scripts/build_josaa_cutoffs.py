@@ -30,6 +30,7 @@ IIIT_2025 = ROOT / "JOSAA_IIIT_2025.pdf"
 NIT_FALLBACK = ROOT / "Nit_data.pdf"
 IIIT_FALLBACK = ROOT / "IIIT_DATA.pdf"
 IIT_PDF = ROOT / "Jee-advanced-2025-IIT-rank.pdf"
+IIT_DATA_DIR = ROOT / "src" / "IIT DATA"
 OUT_B = ROOT / "Backend" / "data" / "josaaCutoffs.json"
 OUT_P = ROOT / "public" / "data" / "josaaCutoffs.json"
 
@@ -152,6 +153,75 @@ def parse_iit_pdf(full: str) -> list[dict]:
     return entries
 
 
+def parse_iit_rank_value(value) -> int | None:
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return int(value)
+    s = str(value).strip().replace("P", "").replace("p", "")
+    return int(s) if s.isdigit() else None
+
+
+def normalize_iit_data_institute(name: str) -> str:
+    s = (name or "").strip()
+    if s.startswith("IIT "):
+        return f"Indian Institute of Technology {s[4:]}"
+    return s
+
+
+def parse_iit_data_pwd_json() -> list[dict]:
+    """PwD IIT cutoffs from src/IIT DATA/*.json (not in the IIT rank PDF)."""
+    if not IIT_DATA_DIR.is_dir():
+        return []
+    entries: list[dict] = []
+    for fp in sorted(IIT_DATA_DIR.glob("*.json")):
+        try:
+            doc = json.loads(fp.read_text(encoding="utf8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        institute = normalize_iit_data_institute(doc.get("institute", ""))
+        if not institute:
+            continue
+        year_blocks = doc.get("cutoffs") or {}
+        rows = year_blocks.get("2025") or year_blocks.get("2024") or []
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            quota = str(row.get("category") or "").strip()
+            if "(PwD)" not in quota:
+                continue
+            gender_raw = str(row.get("gender") or "")
+            gender = "Female-only" if "Female" in gender_raw else "Gender-Neutral"
+            branch = str(row.get("program") or "").strip()
+            if not branch:
+                continue
+            opening = parse_iit_rank_value(
+                row.get("last_round_opening_rank") if row.get("last_round_opening_rank") is not None
+                else row.get("round_1_opening_rank")
+            )
+            closing = parse_iit_rank_value(
+                row.get("last_round_closing_rank") if row.get("last_round_closing_rank") is not None
+                else row.get("round_1_closing_rank")
+            )
+            if closing is None:
+                continue
+            entries.append(
+                {
+                    "exam": "JEE_ADVANCED",
+                    "institutionType": "IIT",
+                    "institute": institute,
+                    "branch": branch,
+                    "gender": gender,
+                    "quota": quota,
+                    "openingRank": opening,
+                    "closingRank": closing,
+                }
+            )
+    return entries
+
+
 def split_glued_ranks(digits: str) -> tuple[int | None, int | None]:
     digits = re.sub(r"\s+", "", digits)
     if not digits.isdigit():
@@ -167,7 +237,7 @@ def split_glued_ranks(digits: str) -> tuple[int | None, int | None]:
 
 
 MAIN_ROW = re.compile(
-    r"\)(?P<quota>(?:AI|HS|OS|LA|GO)[A-Z0-9-]+)"
+    r"\)(?P<quota>(?:AI|HS|OS|LA|GO)[A-Z0-9-]+(?:\s*\(PwD\))?)"
     r"(?P<gender>Female-only \(including Supernumerary\) \(PwD\)|Female-only \(including Supernumerary\)|"
     r"Gender-Neutral \(PwD\)|Gender-Neutral)"
     r"(?P<digits>\d[\d\s]{0,22})"
@@ -343,6 +413,11 @@ def main() -> None:
     if IIT_PDF.is_file():
         all_entries.extend(parse_iit_pdf(pdf_one_line(IIT_PDF)))
         meta["iit"] = "Jee-advanced-2025-IIT-rank.pdf"
+
+    iit_pwd = parse_iit_data_pwd_json()
+    if iit_pwd:
+        all_entries.extend(iit_pwd)
+        meta["iitPwdFromJson"] = len(iit_pwd)
 
     nit_path, iiit_path, nit_iiit_year = resolve_nit_iiit()
     meta["nitIiitYear"] = nit_iiit_year
