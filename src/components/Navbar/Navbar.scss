@@ -1,5 +1,25 @@
 @import "../colortheme.scss";
 
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInItem {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -62,6 +82,21 @@
         gap: 1.5rem;
         list-style: none;
         align-items: baseline;
+
+        .nav-links-inner {
+            display: contents;
+            animation: slideInFromRight 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+
+            > li, > button {
+                animation: slideInItem 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+            }
+
+            @for $i from 1 through 10 {
+                > :nth-child(#{$i}) {
+                    animation-delay: #{$i * 0.05}s;
+                }
+            }
+        }
 
         li a {
             text-decoration: none;

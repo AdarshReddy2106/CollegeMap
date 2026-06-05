@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import './EnergyBatch.scss';
 
 /** Replace with your WhatsApp deep link or wa.me number for 1-to-1 inquiries */
-const INQUIRE_WHATSAPP_URL = 'https://wa.link/lo05a1';
+const INQUIRE_WHATSAPP_URL = 'https://api.whatsapp.com/send?phone=919326602765&text=Hi%2C%20I%20would%20like%20to%20inquire%20about%20IITian%20Guidance%20for%20JEE%20Preparation..';
 
 const MENTORSHIP_IMG = `${process.env.PUBLIC_URL || ''}/studywithiitians.png`;
 //const MENTORSHIP_IMG = `${process.env.PUBLIC_URL || ''}/Images_energy/mentor_student_illustration.svg`;
