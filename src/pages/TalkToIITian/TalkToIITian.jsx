@@ -346,12 +346,26 @@ const TalkToIITian = () => {
                   <li>Connect with CollegeMap</li>
                   <li>Find college students to clear all doubts</li>
                 </ul>
+                <button
+                  className="tti-hero-start-btn"
+                  onClick={() => setStep("video")}
+                >
+                  Start Now
+                </button>
               </div>
               <div className="tti-hero-visual">
-                <img
+                {/* <img
                   src="/talktoiitians.png"
                   alt="Talk to IITians - 1:1 Mentorship"
                   className="tti-visual-img"
+                /> */}
+                <video
+                  src="/tti_videoclip.mp4"
+                  className="tti-visual-img"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
                 />
               </div>
             </div>
@@ -406,7 +420,7 @@ const TalkToIITian = () => {
                 playsInline
                 poster="/talktoiitians.png"
               >
-                <source src="/videos/talk-to-iitian-demo.mp4" type="video/mp4" />
+                <source src="/tti_videoclip.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             </div>

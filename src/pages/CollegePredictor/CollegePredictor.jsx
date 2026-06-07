@@ -25,6 +25,9 @@ export default function CollegePredictor() {
             <div className="cp-tag">"What are my <b>safest options</b>?"</div>
             <div className="cp-tag">"Which colleges fit my <b>category</b> and <b>rank</b>?"</div>
             <div className="cp-tag">"Can I get a <b>better branch</b> with this rank?"</div>
+            <button className="cp-hero-start-btn" onClick={() => navigate('/CollegePredictor/tool')}>
+              Start Now
+            </button>
           </div>
         </div>
         <div className="cp-hero-right">
