@@ -86,6 +86,7 @@ const Navbar = () => {
 
             <div className="navbar-right">
                 <div className={`nav-links ${isMenuOpen ? "open" : ""}`} ref={menuRef}>
+                    <div className="nav-links-inner" key={userType}>
                     {userType === 'jee' ? (
                         <>
                             <li><Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
@@ -186,6 +187,7 @@ const Navbar = () => {
                             </li>
                         </>
                     )}
+                    </div>
 
                     {isLoggedIn ? (
                         <button className="cta logout login-size" onClick={() => { handleLogout(); setIsMenuOpen(false); }}>Sign Out</button>

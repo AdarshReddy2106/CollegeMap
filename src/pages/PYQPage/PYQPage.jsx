@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import './PYQPage.scss';
 import { pyqData } from './PYQData';
 
@@ -99,6 +100,11 @@ const PYQPage = () => {
 
   return (
     <div className="pyq-page">
+      <Helmet>
+        <title>JEE Main Previous Year Papers | Download PYQs with Solutions — CollegeMap</title>
+        <meta name="description" content="Download JEE Main previous year question papers with detailed solutions and answer keys. Browse by year, session, and shift. Free PDFs for JEE 2023, 2024 & 2025 papers." />
+        <link rel="canonical" href="https://collegemap.in/pyq" />
+      </Helmet>
       {/* ── Header ─────────────────────────────── */}
       <motion.div
         className="pyq-header"

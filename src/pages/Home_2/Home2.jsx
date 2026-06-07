@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from 'react-helmet-async';
 import "./Home2.css";
 import HeroSection from "./HeroSection";
 import CompareSection from "./CompareSection";
@@ -13,6 +14,11 @@ import gm4 from '../../assets/GMeetphotos/gm5.jpg';
 const Home2 = () => {
   return (
     <main className="home2-page">
+      <Helmet>
+        <title>CollegeMap | College Counseling by IITians — Branch Comparison & Predictor</title>
+        <meta name="description" content="Get expert college counseling from IITians. Compare branches, predict your college with real JoSAA data, and connect with IIT students for personalized guidance." />
+        <link rel="canonical" href="https://collegemap.in/" />
+      </Helmet>
       <div className="home2-shell">
         <HeroSection />
         <CompareSection />

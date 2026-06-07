@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import './BranchComparison.scss';
 
 export default function BranchComparisonIntro() {
@@ -7,6 +8,11 @@ export default function BranchComparisonIntro() {
 
   return (
     <div className="bc-page">
+      <Helmet>
+        <title>Branch Comparison Tool | Compare Different College Branches — CollegeMap</title>
+        <meta name="description" content="Compare different college branches side-by-side on placements, packages, future scope, and opportunities. Make a data-driven decision between college vs branch with real IITian insights." />
+        <link rel="canonical" href="https://collegemap.in/BranchComparision" />
+      </Helmet>
       <section className="bc-hero">
         <div className="bc-hero-left">
           <p className="bc-small-heading">BRANCH COMPARISON</p>

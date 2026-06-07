@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "CollegeMap",
+  "name": "CollegeMap — JEE Preparation & College Counseling by IITians",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +20,8 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#1a1a2e",
+  "background_color": "#ffffff",
+  "description": "One-stop for your JEE journey: from preparation to college counseling. Built by IITians, for future IITians.",
+  "categories": ["education", "productivity"]
 }

@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from 'react-helmet-async';
 import "./StudyWithIITians.css";
 import thumbnailOne from "../../assets/Thumbnails/yt1.jpeg";
 import thumbnailTwo from "../../assets/Thumbnails/yt2.jpeg";
@@ -94,6 +95,11 @@ const YouTubeIcon = () => (
 const StudyWithIITian = () => {
 	return (
 		<main className="study-with-iitians-page">
+			<Helmet>
+				<title>Study With IITians | JEE Community, Live Sessions & Study Groups — CollegeMap</title>
+				<meta name="description" content="Join CollegeMap's free JEE study community. Study alongside IITians through live YouTube sessions, WhatsApp groups, and peer learning networks designed to accelerate your JEE prep." />
+				<link rel="canonical" href="https://collegemap.in/StudyWithIITians" />
+			</Helmet>
 			<section className="swi-layout">
 				<p className="swi-page-label">Study With IITians</p>
 				<div className="swi-panel">

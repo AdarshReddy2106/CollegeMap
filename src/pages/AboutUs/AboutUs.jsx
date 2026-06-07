@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import './AboutUs.scss';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
@@ -38,6 +39,11 @@ const SlideInSection = ({ children, direction = 'left' }) => {
 const AboutUs = () => {
     return (
         <div className="about-us">
+            <Helmet>
+                <title>About CollegeMap | Our Mission, Vision & Team — Built by IITians</title>
+                <meta name="description" content="Built by IITians to help future students make smarter college decisions." />
+                <link rel="canonical" href="https://collegemap.in/AboutUs" />
+            </Helmet>
             <Banner />
             {/* <section className="iit-section banner-section">
                 <h2>By IITians for Future IITians</h2>

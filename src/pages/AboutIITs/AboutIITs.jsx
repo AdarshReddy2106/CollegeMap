@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { 
-  BookOpen, 
-  Award, 
-  TrendingUp, 
-  Users, 
-  ChevronRight, 
+import {
+  BookOpen,
+  Award,
+  TrendingUp,
+  Users,
+  ChevronRight,
   School,
   ArrowLeft
 } from 'lucide-react';
@@ -105,33 +105,33 @@ const PlacementsSection = ({ data }) => {
         ))}
       </div>
 
-      
+
 
       <div className="iit-stats-grid">
-         {currentYearData.programs.map((prog, idx) => (
-           <Card key={idx} className="iit-stat-card">
-             <div className="iit-branch-label">{prog.branch}</div>
-             <div className="stat-content">
-               <div className="iit-stat-row">
-                 <span className="iit-stat-label">Placement Rate</span>
-                 <span className="stat-value iit-text-green">{prog.placement_rate}%</span>
-               </div>
-               <div className="iit-progress-bar-bg">
-                  <div className="iit-progress-bar-fill" style={{ width: `${prog.placement_rate}%` }}></div>
-               </div>
-               <div className="iit-stat-footer">
-                 <div className="stat-box">
-                   <div className="iit-sub-label">Avg Package</div>
-                   <div className="iit-sub-value">{prog.avg_package_lpa} LPA</div>
-                 </div>
-                 <div className="stat-box iit-text-right">
-                   <div className="iit-sub-label">Highest</div>
-                   <div className="iit-sub-value">{prog.highest_package_lpa} LPA</div>
-                 </div>
-               </div>
-             </div>
-           </Card>
-         ))}
+        {currentYearData.programs.map((prog, idx) => (
+          <Card key={idx} className="iit-stat-card">
+            <div className="iit-branch-label">{prog.branch}</div>
+            <div className="stat-content">
+              <div className="iit-stat-row">
+                <span className="iit-stat-label">Placement Rate</span>
+                <span className="stat-value iit-text-green">{prog.placement_rate}%</span>
+              </div>
+              <div className="iit-progress-bar-bg">
+                <div className="iit-progress-bar-fill" style={{ width: `${prog.placement_rate}%` }}></div>
+              </div>
+              <div className="iit-stat-footer">
+                <div className="stat-box">
+                  <div className="iit-sub-label">Avg Package</div>
+                  <div className="iit-sub-value">{prog.avg_package_lpa} LPA</div>
+                </div>
+                <div className="stat-box iit-text-right">
+                  <div className="iit-sub-label">Highest</div>
+                  <div className="iit-sub-value">{prog.highest_package_lpa} LPA</div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        ))}
       </div>
 
       {/* Placement Overview Graph */}
@@ -154,19 +154,19 @@ const PlacementsSection = ({ data }) => {
               .filter(w => w.toLowerCase() !== 'and')
               .map(w => w[0].toUpperCase())
               .join('');
-            
+
             return (
               <div key={idx} className="iit-chart-bar-group">
                 <div className="iit-chart-bars">
                   <div className="iit-bar-wrapper">
-                    <div 
-                      className="iit-bar iit-bar-registered" 
+                    <div
+                      className="iit-bar iit-bar-registered"
                       style={{ height: `${(prog.participated / maxStudents) * 100}%` }}
                     >
                       <span className="iit-bar-value">{prog.participated}</span>
                     </div>
-                    <div 
-                      className="iit-bar iit-bar-placed" 
+                    <div
+                      className="iit-bar iit-bar-placed"
                       style={{ height: `${(prog.placed / maxStudents) * 100}%` }}
                     >
                       <span className="iit-bar-value">{prog.placed}</span>
@@ -251,7 +251,7 @@ const CutoffSection = ({ data }) => {
   const [year, setYear] = useState("2025");
   const [selectedBranch, setSelectedBranch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-  
+
   // Get unique branches and categories
   const { branches, categories } = useMemo(() => {
     const list = data[year] || [];
@@ -276,21 +276,21 @@ const CutoffSection = ({ data }) => {
     <Card className="iit-cutoff-card">
       <div className="iit-cutoff-header">
         <div className="iit-year-selector">
-           {Object.keys(data).sort().reverse().map(y => (
-             <button
+          {Object.keys(data).sort().reverse().map(y => (
+            <button
               key={y}
               onClick={() => setYear(y)}
               className={`iit-filter-btn ${year === y ? 'active' : ''}`}
-             >
-               {y} Cutoffs
-             </button>
-           ))}
+            >
+              {y} Cutoffs
+            </button>
+          ))}
         </div>
-        
+
         <div className="iit-filters-row">
           <div className="iit-filter-group">
             <label className="iit-filter-label">Branch</label>
-            <select 
+            <select
               className="iit-filter-select"
               value={selectedBranch}
               onChange={(e) => setSelectedBranch(e.target.value)}
@@ -301,10 +301,10 @@ const CutoffSection = ({ data }) => {
               ))}
             </select>
           </div>
-          
+
           <div className="iit-filter-group">
             <label className="iit-filter-label">Category</label>
-            <select 
+            <select
               className="iit-filter-select"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
@@ -315,9 +315,9 @@ const CutoffSection = ({ data }) => {
               ))}
             </select>
           </div>
-          
+
           {(selectedBranch || selectedCategory) && (
-            <button 
+            <button
               className="iit-clear-filters-btn"
               onClick={() => {
                 setSelectedBranch("");
@@ -329,7 +329,7 @@ const CutoffSection = ({ data }) => {
           )}
         </div>
       </div>
-      
+
       <div className="iit-table-scroll-container">
         <table className="iit-cutoff-table">
           <thead>
@@ -386,17 +386,17 @@ const SelectionScreen = ({ onSelect }) => {
 
       <div className="iit-selection-content">
         <div className="iit-selection-header">
-           <div className="logo-box">
-             
-           </div>
-           <h1>College Map</h1>
-           <p>By IITians for Future IITians</p>
+          <div className="logo-box">
+
+          </div>
+          <h1>CollegeMap</h1>
+          <p>By IITians for Future IITians</p>
         </div>
 
         <div className="iit-selection-card">
           <label>Select Target Institute</label>
           <div className="iit-select-wrapper">
-            <select 
+            <select
               onChange={(e) => onSelect(e.target.value)}
               defaultValue=""
             >
@@ -450,16 +450,16 @@ const CollegeDashboard = ({ data, onBack }) => {
         <div className="iit-hero-content">
           <div className="iit-hero-flex">
             <div className="iit-college-icon-large">
-               <img src={getImageUrl(data.logo_image, 'logo')} alt={data.institute + ' Logo'} />
+              <img src={getImageUrl(data.logo_image, 'logo')} alt={data.institute + ' Logo'} />
             </div>
             <div className="iit-hero-text">
               <h1>{data.institute}</h1>
               <div className="iit-hero-badges">
                 <span className="iit-hero-badge primary">
-                   Rank {data["NIRF Engineering Rankings"].split(' ')[0]}
+                  Rank {data["NIRF Engineering Rankings"].split(' ')[0]}
                 </span>
                 <span className="iit-hero-badge secondary">
-                   Kerala, India
+                  Kerala, India
                 </span>
               </div>
             </div>
@@ -473,7 +473,7 @@ const CollegeDashboard = ({ data, onBack }) => {
               <ArrowLeft size={20} />
               <span>Back</span>
             </button>
-            
+
             <div className="iit-college-nav-links">
               {navItems.map(item => (
                 <button
@@ -491,7 +491,7 @@ const CollegeDashboard = ({ data, onBack }) => {
 
       {/* Main Content */}
       <main className="iit-main-content">
-        
+
         <section id="overview" className="iit-section-block">
           <SectionTitle title="Overview" icon={School} />
           <OverviewSection data={data} />

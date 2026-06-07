@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import './CollegePredictor.scss';
 
 export default function CollegePredictor() {
@@ -7,6 +8,11 @@ export default function CollegePredictor() {
 
   return (
     <div className="cp-page">
+      <Helmet>
+        <title>JEE College Predictor 2026 | Predict Your IIT, NIT & IIIT — CollegeMap</title>
+        <meta name="description" content="Predict your IIT, NIT, or IIIT admission based on your JEE Main & Advanced rank. Powered by official JoSAA cutoff data with category-wise, branch-level, and round-wise analysis." />
+        <link rel="canonical" href="https://collegemap.in/CollegePredictor" />
+      </Helmet>
       <section className="cp-hero">
         <div className="cp-hero-left">
           <p className="cp-small-heading">COLLEGE PREDICTOR</p>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import './ResourcesPage.scss';
 import { resourcesData } from './ResourcesData';
 import { collegemapApiUrl } from '../../collegemapApiOrigin';
@@ -36,7 +37,7 @@ const ResourcesPage = () => {
         'practice': 'Practice',
         'referencebooks': 'Reference Books'
       };
-      
+
       const mappedType = typeMap[resourceType.toLowerCase()];
       if (mappedType) {
         setActiveType(mappedType);
@@ -45,14 +46,14 @@ const ResourcesPage = () => {
       // Fallback to legacy query parameter logic
       const searchParams = new URLSearchParams(location.search);
       const filterParam = searchParams.get('filter');
-      
+
       if (filterParam) {
         const filterMap = {
           'jee-busters': 'JEE Busters',
           'short-notes': 'Cheatsheets',
           'practice': 'Practice'
         };
-        
+
         const mappedType = filterMap[filterParam];
         if (mappedType) {
           setActiveType(mappedType);
@@ -76,19 +77,19 @@ const ResourcesPage = () => {
   // Filter resources based on selected filters
   useEffect(() => {
     let result = resources;
-    
+
     // Filter by subject
     if (activeSubject !== 'All') {
-      result = result.filter(resource => 
+      result = result.filter(resource =>
         resource.subject === activeSubject || resource.subject === 'All'
       );
     }
-    
+
     // Filter by type
     if (activeType !== 'All') {
       result = result.filter(resource => resource.type === activeType);
     }
-    
+
     // For Reference Books type, only show if a Reference Book source is selected
     if (activeType === 'Reference Books') {
       if (!selectedReferenceBookSource) {
@@ -97,7 +98,7 @@ const ResourcesPage = () => {
         result = result.filter(resource => resource.ReferenceBookSource === selectedReferenceBookSource);
       }
     }
-    
+
     // Filter by search query
     if (searchQuery) {
       result = result.filter(
@@ -105,10 +106,10 @@ const ResourcesPage = () => {
           resource.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
-    
+
     // Always sort A-Z
     result = [...result].sort((a, b) => a.title.localeCompare(b.title));
-    
+
     setFilteredResources(result);
   }, [resources, activeSubject, activeType, searchQuery, selectedReferenceBookSource]);
 
@@ -128,7 +129,7 @@ const ResourcesPage = () => {
     if (type !== 'Reference Books') {
       setSelectedReferenceBookSource(null);
     }
-    
+
     // Update URL when type changes
     const urlMap = {
       'JEE Busters': 'JEEBusters',
@@ -136,7 +137,7 @@ const ResourcesPage = () => {
       'Practice': 'Practice',
       'Reference Books': 'ReferenceBooks'
     };
-    
+
     const mappedUrl = urlMap[type] || 'JEEBusters';
     navigate(`/Resources/${mappedUrl}`, { replace: true });
   };
@@ -164,7 +165,7 @@ const ResourcesPage = () => {
   const handleViewResource = async (resource) => {
     setSelectedResource(resource);
     setShowModal(true);
-    
+
     // Fire tracking in background, then update stats so UI isn't blocked
     trackResourceEvent(resource, 'view').then(() => {
       fetchResourceAnalytics(resource.id).then(analytics => {
@@ -191,6 +192,11 @@ const ResourcesPage = () => {
 
   return (
     <div className="resources-page">
+      <Helmet>
+        <title>JEE Study Resources | Notes, PYQs & Practice Papers by IITians — CollegeMap</title>
+        <meta name="description" content="Access free JEE study resources curated by IITians" />
+        <link rel="canonical" href="https://collegemap.in/Resources" />
+      </Helmet>
       <motion.div
         className="resources-header"
         initial={{ opacity: 0, y: -20 }}
@@ -227,7 +233,7 @@ const ResourcesPage = () => {
       </motion.div>
 
       <elevenlabs-convai agent-id="agent_6001k906ndgzee69c8hjc31kv5fg"></elevenlabs-convai>
-      
+
       <div className="filter-section">
         <div className="filter-container">
           <div className="filter-group subject-filters">
@@ -244,7 +250,7 @@ const ResourcesPage = () => {
               ))}
             </div>
           </div>
-              
+
           <div className="filter-group type-filters">
             <h3>Resource Type</h3>
             <div className="filter-buttons">
@@ -254,17 +260,17 @@ const ResourcesPage = () => {
                   className={activeType === type ? 'active' : ''}
                   onClick={() => handleTypeChange(type)}
                 >
-                  {type === 'Practice Papers' ? 'Practice Papers' : 
-                   type === 'Cheatsheets' ? 'Short Notes' : 
-                   type === 'JEE Busters' ? 'JEE Busters' : type}
+                  {type === 'Practice Papers' ? 'Practice Papers' :
+                    type === 'Cheatsheets' ? 'Short Notes' :
+                      type === 'JEE Busters' ? 'JEE Busters' : type}
                 </button>
               ))}
             </div>
           </div>
         </div>
       </div>
-      
-      <motion.div 
+
+      <motion.div
         className="resources-container"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -285,8 +291,8 @@ const ResourcesPage = () => {
                     <h3>{source}</h3>
                     <p className="resource-subject">{activeSubject === 'All' ? 'All Subjects' : activeSubject}</p>
                     <div className="resource-actions">
-                      <button 
-                        onClick={() => handleReferenceBooksClick(source)} 
+                      <button
+                        onClick={() => handleReferenceBooksClick(source)}
                         className="view-button"
                       >
                         View
@@ -314,7 +320,7 @@ const ResourcesPage = () => {
             ) : (
               <div className="resources-grid">
                 {filteredResources.map((resource) => (
-                  <motion.div 
+                  <motion.div
                     className="resource-card"
                     key={resource.id}
                     whileHover={{ scale: 1.03, boxShadow: '0 10px 20px rgba(0,0,0,0.25)' }}
@@ -322,16 +328,16 @@ const ResourcesPage = () => {
                   >
                     <div className="resource-content">
                       <span className={`type-indicator ${resource.type}`}>
-                        {resource.type === 'Practice Papers' ? 'Practice Papers' : 
-                         resource.type === 'Cheatsheets' ? 'Short Notes' : 
-                         resource.type === 'JEE Busters' ? 'JEE Busters' : resource.type}
+                        {resource.type === 'Practice Papers' ? 'Practice Papers' :
+                          resource.type === 'Cheatsheets' ? 'Short Notes' :
+                            resource.type === 'JEE Busters' ? 'JEE Busters' : resource.type}
                       </span>
                       <div className="resource-details">
                         <h3>{resource.title}</h3>
                         <p className="resource-subject">{resource.subject}</p>
                         <div className="resource-actions">
-                          <button 
-                            onClick={() => handleViewResource(resource)} 
+                          <button
+                            onClick={() => handleViewResource(resource)}
                             className="view-button"
                           >
                             View
@@ -408,8 +414,8 @@ const ResourcesPage = () => {
                   </a>
                 )}
                 <a
-                  href={selectedResource.downloadUrl} 
-                  target="_blank" 
+                  href={selectedResource.downloadUrl}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="open-drive-button"
                 >
