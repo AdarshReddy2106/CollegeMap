@@ -25,7 +25,7 @@ const JEEBatches = () => (
               <li>✓ Ask <strong>IITians</strong> Directly</li>
               <li>✓ Share <strong>Strategies</strong> &amp; Tips</li>
             </ul>
-            <a href="https://chat.whatsapp.com/Jv5KBBAeP62L9EzNqHHmwr?mode=ems_copy_t" target="_blank" rel="noopener noreferrer" className="batch-btn primary">
+            <a href="https://chat.whatsapp.com/E81KGIjOLuI1NfAO8AVLVI"target="_blank" rel="noopener noreferrer" className="batch-btn primary">
               <WhatsAppIcon /> Join now
             </a>
           </div>
@@ -43,7 +43,7 @@ const JEEBatches = () => (
               <li>✓ Guidance from <strong>IITians</strong></li>
               <li>✓ <strong>Doubt Clearing</strong> Support</li>
             </ul>
-            <a href="https://chat.whatsapp.com/E81KGIjOLuI1NfAO8AVLVI" target="_blank" rel="noopener noreferrer" className="batch-btn primary">
+            <a href="https://chat.whatsapp.com/FFvn8Ogz4Sd4GgTphd7qfO" target="_blank" rel="noopener noreferrer" className="batch-btn primary">
               <WhatsAppIcon /> Join now
             </a>
           </div>
