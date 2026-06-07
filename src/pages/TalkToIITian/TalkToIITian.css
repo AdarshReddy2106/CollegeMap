@@ -1204,3 +1204,20 @@
     margin: 0 auto;
   }
 }
+
+.tti-hero-start-btn {
+  margin-top: 24px;
+  padding: 10px 100px;
+  background-color: #10c3bc;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.tti-hero-start-btn:hover {
+  background-color: #0da89f;
+}

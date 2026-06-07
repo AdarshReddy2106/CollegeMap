@@ -23,6 +23,9 @@ export default function BranchComparisonIntro() {
             <div className="bc-tag">"Should I prioritize <b>college</b> or <b>branch</b>?"</div>
             <div className="bc-tag">"Which choice fits my <b>goals</b> better?"</div>
             <div className="bc-tag">"Which option gives better <b>opportunities</b>?"</div>
+            <button className="bc-hero-start-btn" onClick={() => navigate('/BranchComparision/tool')}>
+              Start Now
+            </button>
           </div>
         </div>
         <div className="bc-hero-right">

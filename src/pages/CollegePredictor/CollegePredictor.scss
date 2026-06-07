@@ -3571,6 +3571,25 @@ With
 }
 
 
+.cp-hero-start-btn {
+  margin-top: 24px;
+  padding: 10px 100px;
+  background-color: #10c3bc;
+  align-self: flex-start;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #0dada7;
+  }
+}
+
+
 
 
 

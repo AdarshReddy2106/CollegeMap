@@ -84,6 +84,14 @@ export default function EnergyBatch() {
               <li>&ldquo;I&apos;m not able to <strong>focus</strong>.&rdquo;</li>
               <li>&ldquo;I&apos;m not finishing my <strong>syllabus</strong>.&rdquo;</li>
               <li>&ldquo;I&apos;m not scoring <strong>good marks</strong>.&rdquo;</li>
+              <a
+              href={INQUIRE_WHATSAPP_URL}
+              className="eb-hero-start-btn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Start now
+            </a>
             </ul>
             <figure className="eb-hero-visual">
               <img
@@ -109,16 +117,6 @@ export default function EnergyBatch() {
             {/* <p className="eb-tagline">One mentor — one student.</p>
             <p className="eb-tagline eb-tagline-muted">You put in the work; we give it the right direction.</p> */}
           </div>
-
-          {/* <a
-            href={INQUIRE_WHATSAPP_URL}
-            className="eb-cta"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <WhatsAppIcon />
-            Inquire for availability
-          </a> */}
         </header>
 
         {/* —— Other programmes —— */}
@@ -211,7 +209,7 @@ export default function EnergyBatch() {
           <span className="eb-nav-arrow">→</span>
           <span>Personal meeting</span>
         </div>
-        <a href={INQUIRE_WHATSAPP_URL} className="eb-start-btn" target="_blank" rel="noopener noreferrer">Inquire now</a>
+        <a href={INQUIRE_WHATSAPP_URL} className="eb-start-btn" target="_blank" rel="noopener noreferrer">Start now</a>
       </div>
 
     </div>

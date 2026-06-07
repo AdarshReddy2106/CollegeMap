@@ -165,6 +165,8 @@
   background: #fef9f5;
   color: var(--home2-primary-dark);
   border: 1px solid rgba(0, 93, 99, 0.2);
+  background-color: #10c3bc;
+  color: #fff;
 }
 
 .home2-btn-accent:hover {
