@@ -11,12 +11,12 @@ const VideoEmbedComponent = () => {
             <div className="video-section">
                 <h2 className="video-title">🎬 Watch a Demo to Get the Full Picture</h2>
                 <div className="video-frame">
-                    <iframe
+                    <video
                         src={demo}
                         title="Demo Video"
-                        allowFullScreen
-                        frameBorder="0"
-                    ></iframe>
+                        controls
+                        playsInline
+                    />
                 </div>
             </div>
 

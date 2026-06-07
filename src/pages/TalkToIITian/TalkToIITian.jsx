@@ -362,10 +362,12 @@ const TalkToIITian = () => {
                 <video
                   src="/tti_videoclip.mp4"
                   className="tti-visual-img"
+                  controls
                   autoPlay
                   muted
                   loop
                   playsInline
+                  preload="auto"
                 />
               </div>
             </div>
@@ -416,12 +418,13 @@ const TalkToIITian = () => {
             <div className="tti-video-container">
               {/* Replace the src below with your actual MP4 video path */}
               <video
+                src="/tti_videoclip.mp4"
                 controls
+                autoPlay
+                muted
                 playsInline
-                poster="/talktoiitians.png"
+                preload="auto"
               >
-                <source src="/tti_videoclip.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
               </video>
             </div>
           </div>
@@ -660,7 +663,7 @@ const TalkToIITian = () => {
               className="tti-start-now-btn"
               onClick={() => {
                 if (step === "landing") setStep("video");
-                else if (step === "video") { setStep("payment"); handlePayment(); }
+                else if (step === "video") setStep("payment");
                 else if (step === "payment") handlePayment();
                 else if (step === "form") {
                   // Trigger the form's submit programmatically
