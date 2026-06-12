@@ -3,22 +3,14 @@ import gmeet2 from '../../assets/GMeetphotos/3.png';
 import gmeet3 from '../../assets/GMeetphotos/gm3f.png';
 import gmeet4 from '../../assets/GMeetphotos/gm5.jpg';
 import gmeet5 from '../../assets/GMeetphotos/gm4.jpg';
+import geetVerma from '../../assets/GeetVerma.jpeg'
 
 const testimonials = [
   {
-    name: 'Rahul S.',
-    batch: 'JEE 2026',
-    text: '"The doubt-solving sessions with IITians are incredibly helpful. I feel much more confident about my preparation now."',
-  },
-  {
-    name: 'Priya M.',
-    batch: 'JEE 2026',
-    text: '"CollegeMap\'s WhatsApp community is the best thing that happened to my JEE prep. Real guidance from real IITians!"',
-  },
-  {
-    name: 'Arjun K.',
-    batch: 'JEE 2027',
-    text: '"Starting early with the community gave me a huge head start. The mock tests and resources are top quality."',
+    name: 'Geet Sharma',
+    batch: '2026(12th pass out)',
+    text: '"CollegeMap really helped me during my prep. The 24/7 Google meets were really helpful in building consistency and as a person with ADHD I can confirm we do need a push which I can was able to get from here."',
+    image: geetVerma,
   },
 ];
 
@@ -113,7 +105,16 @@ const JoinFamily = () => {
               <div key={idx} className="testimonial-card">
                 <p className="testimonial-text">{t.text}</p>
                 <div className="testimonial-author">
-                  <div className="testimonial-avatar">{t.name.charAt(0)}</div>
+                  {t.image ? (
+                    <img
+                      src={t.image}
+                      alt={t.name}
+                      className="testimonial-avatar"
+                      style={{ border: '2px solid var(--primary)', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <div className="testimonial-avatar">{t.name.charAt(0)}</div>
+                  )}
                   <div>
                     <strong>{t.name}</strong>
                     <span className="testimonial-batch">{t.batch}</span>

@@ -187,7 +187,7 @@ const StudyWithIITian = () => {
 					<div className="swi-divider" />
 
 					<section className="swi-talk-section">
-						<h2>Want to talk with IITian?</h2>
+						<h2>Connect with an IITian</h2>
 						<a
 							className="swi-action-btn"
 							href={EXTERNAL_LINKS.talkToIITian}
