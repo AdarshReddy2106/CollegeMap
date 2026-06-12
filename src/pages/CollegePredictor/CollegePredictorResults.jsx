@@ -23,6 +23,16 @@ function typeStyle(t) {
   return 'cpr-type--iiit';
 }
 
+function getBadgeClass(likelihood) {
+  switch (likelihood) {
+    case 'Most Likely': return 'cpr-card-badge--most-likely';
+    case 'Very Likely': return 'cpr-card-badge--very-likely';
+    case 'Likely': return 'cpr-card-badge--likely';
+    case 'Less Likely': return 'cpr-card-badge--less-likely';
+    default: return 'cpr-card-badge--likely';
+  }
+}
+
 export default function CollegePredictorResults() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -78,10 +88,10 @@ export default function CollegePredictorResults() {
   const { pwd } = resolveCategoryFilters(category, payload.pwd);
   const examLabel = exam === 'JEE_ADVANCED' ? 'JEE Advanced' : 'JEE Main';
   const poolLabel =
-    exam === 'JEE_MAIN' ? (seatPool === 'HOME_STATE' ? 'Home state' : 'All India') : null;
+    exam === 'JEE_MAINS' ? (seatPool === 'HOME_STATE' ? 'Home state' : 'All India') : null;
 
   const mainInstLabel =
-    exam === 'JEE_MAIN' && mainInstitutions
+    exam === 'JEE_MAINS' && mainInstitutions
       ? mainInstitutions === 'BOTH'
         ? 'NIT & IIIT'
         : mainInstitutions === 'NIT'
@@ -96,7 +106,7 @@ export default function CollegePredictorResults() {
   return (
     <div className="cpr-page">
       <div className="cpr-shell">
-        <button type="button" className="cpr-back" onClick={() => navigate('/CollegePredictor')}>
+        <button type="button" className="cpr-back" onClick={() => navigate('/CollegePredictor/tool')}>
           ← Edit inputs
         </button>
 
@@ -146,7 +156,7 @@ export default function CollegePredictorResults() {
               <span className="cpr-stat-l">IIT</span>
             </button>
           ) : null}
-          {exam === 'JEE_MAIN' ? (
+          {exam === 'JEE_MAINS' ? (
             <>
               <button
                 type="button"
@@ -191,7 +201,7 @@ export default function CollegePredictorResults() {
                     </div>
                   </div>
                 </div>
-                <div className="cpr-card-badge cpr-card-badge--ok">Likely</div>
+                <div className={`cpr-card-badge ${getBadgeClass(row.likelihood)}`}>{row.likelihood || 'Likely'}</div>
               </li>
             ))}
           </ul>

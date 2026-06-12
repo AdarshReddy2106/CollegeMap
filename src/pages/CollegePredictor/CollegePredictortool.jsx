@@ -4,7 +4,7 @@ import './CollegePredictor.scss';
 import { predictCutoffs, MAX_PREDICTOR_RESULTS, CATEGORY_OPTIONS, resolveCategoryFilters } from './predictorFilter';
 import { BRANCH_PRESETS } from './branchPresets';
 
-const DATA_URL = `${process.env.PUBLIC_URL || ''}/data/josaaCutoffs.json`;
+const DATA_URL = `${process.env.PUBLIC_URL || ''}/data/jee_cutoffs_final.json`;
 
 export default function CollegePredictortool() {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ export default function CollegePredictortool() {
         return res.json();
       })
       .then((data) => {
-        if (!cancelled) setEntries(Array.isArray(data.entries) ? data.entries : []);
+        if (!cancelled) setEntries(Array.isArray(data.data) ? data.data : []);
       })
       .catch(() => {
         if (!cancelled) setLoadError('unavailable');
@@ -88,7 +88,7 @@ export default function CollegePredictortool() {
         state: {
           predictorPayload: {
             rank: r, exam, category, genderFemale, seatPool,
-            mainInstitutions: exam === 'JEE_MAIN' ? mainInstitutions : null,
+            mainInstitutions: exam === 'JEE_MAINS' ? mainInstitutions : null,
             preferredBranchIds, results: rows, pwd,
           },
         },
@@ -155,7 +155,7 @@ export default function CollegePredictortool() {
                 disabled={loadingData}
               >
                 <option value="JEE_ADVANCED">JEE Advanced</option>
-                <option value="JEE_MAIN">JEE Main</option>
+                <option value="JEE_MAINS">JEE Main</option>
               </select>
             </div>
 
@@ -200,7 +200,7 @@ export default function CollegePredictortool() {
               </select>
             </div>
 
-            {exam === 'JEE_MAIN' && (
+            {exam === 'JEE_MAINS' && (
               <>
                 <div className="cp-field-block">
                   <label htmlFor="cp-pool">Seat Pool</label>

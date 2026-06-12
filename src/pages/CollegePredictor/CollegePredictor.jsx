@@ -51,7 +51,7 @@ export default function CollegePredictor() {
         </p>
       </section>
 
-      {/* Bottom nav bar — same pattern as Talk to IITian */}
+      {/* Bottom nav bar — same pattern as Talk to IITian */}n
       <div className="cp-bottom-nav">
         <div className="cp-bottom-nav-steps">
           <span>Enter your rank</span>

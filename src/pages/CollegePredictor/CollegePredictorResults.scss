@@ -259,9 +259,24 @@
   align-self: center;
 }
 
-.cpr-card-badge--ok {
+.cpr-card-badge--most-likely {
   background: rgba(16, 195, 188, 0.18);
   color: $dark-green-blue;
+}
+
+.cpr-card-badge--very-likely {
+  background: rgba(139, 195, 74, 0.2);
+  color: #4b830d;
+}
+
+.cpr-card-badge--likely {
+  background: rgba(255, 152, 0, 0.18);
+  color: #c76a00;
+}
+
+.cpr-card-badge--less-likely {
+  background: rgba(255, 77, 77, 0.18);
+  color: #c00000;
 }
 
 .cpr-none {
