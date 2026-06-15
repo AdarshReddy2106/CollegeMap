@@ -192,14 +192,11 @@ export default function CollegePredictorResults() {
                   <p className="cpr-card-branch">{sanitizePredictorLine(row.branch, 280)}</p>
                   <div className="cpr-card-ranks">
                     <div>
-                      <span className="cpr-card-rk">Opening</span>
-                      <span className="cpr-card-rv">{row.openingRank ?? '—'}</span>
-                    </div>
-                    <div>
-                      <span className="cpr-card-rk">Closing</span>
+                      <span className="cpr-card-rk">Closing Rank</span>
                       <span className="cpr-card-rv">{row.closingRank}</span>
                     </div>
                   </div>
+
                 </div>
                 <div className={`cpr-card-badge ${getBadgeClass(row.likelihood)}`}>{row.likelihood || 'Likely'}</div>
               </li>
