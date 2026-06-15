@@ -7,7 +7,7 @@ import catalogStatic from '../../data/institutionBranchCatalog.json';
 import BranchComparisonResults from './BranchComparisonResults';
 import BranchComparisonLoadingOverlay from './BranchComparisonLoadingOverlay';
 import { useAuth } from '../../context/AuthContext';
-import { checkBranchComparisonAccess } from '../../services/supabaseService';
+import { checkBranchComparisonAccess, trackBranchComparisonInput } from '../../services/supabaseService';
 // const DEV_BYPASS_PAYMENT = process.env.NODE_ENV === 'development';
 
 
@@ -273,6 +273,10 @@ const BranchComparison = () => {
       const data = await compareBranches(payload);
       setResult(data);
 
+      trackBranchComparisonInput(user?.email, {
+        college1, branch1, college2, branch2, userQuery: q
+      });
+
       if (!hasAccess && freeTries > 0) {
         const newTries = freeTries - 1;
         setFreeTries(newTries);
@@ -448,37 +452,29 @@ const BranchComparison = () => {
     return (
       <div className="branch-comparison-bg">
         <div className="branch-comparison-container" style={{ textAlign: "center", padding: "2rem 1.5rem" }}>
-          <h2>Branch Comparison Premium</h2>
-          <p style={{ margin: "0.5rem 0 1.5rem", fontSize: "1.05rem", color: "#555" }}>
-            Watch this quick demo to see how our tool helps you make a smarter choice.
-          </p>
-          <div style={{ maxWidth: "100%", margin: "0 auto 1.5rem", borderRadius: "12px", overflow: "hidden", background: "#000", maxHeight: "350px", display: "flex", justifyContent: "center" }}>
+          <h2>Branch Comparison Premium(Demo)</h2>
+          <div style={{ maxWidth: "600px", margin: "0 auto 1.5rem", borderRadius: "12px", overflow: "hidden", display: "flex", justifyContent: "center", boxShadow: "0 4px 15px rgba(0,0,0,0.15)" }}>
             <video
               controls
               playsInline
-              poster="/talktoiitians.png"
-              style={{ width: "100%", maxHeight: "350px", objectFit: "contain", display: "block" }}
+              style={{ width: "100%", height: "auto", display: "block" }}
             >
-              <source src="/videos/talk-to-iitian-demo.mp4" type="video/mp4" />
+              <source src="/branch_comp.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </div>
 
-          <p style={{ margin: "0 0 1.5rem", fontSize: "1.1rem", color: "#555" }}>
-            Get 6 months of unrestricted access to our powerful Branch Comparison tool for just ₹300.
-          </p>
-
-          <div style={{ marginBottom: "1.5rem", display: "flex", justifyContent: "center", gap: "10px" }}>
+          <div style={{ marginBottom: "1rem", display: "flex", justifyContent: "center", gap: "10px" }}>
             <input
               type="text"
               placeholder="Have a promo code?"
               value={promoCode}
               onChange={(e) => setPromoCode(e.target.value)}
-              style={{ padding: "10px", borderRadius: "8px", border: "1px solid #ccc", outline: "none", textTransform: "uppercase", width: "220px" }}
+              style={{ padding: "8px", borderRadius: "8px", border: "1px solid #ccc", outline: "none", textTransform: "uppercase", width: "200px" }}
             />
             <button
               className="branch-intel-btn"
-              style={{ padding: "10px 20px", margin: 0, width: "auto" }}
+              style={{ padding: "8px 16px", margin: 0, width: "auto" }}
               onClick={() => {
                 if (promoCode.trim().toUpperCase() === 'COLLEGEMAP2026') {
                   localStorage.setItem('bc_free_tries', '5');
@@ -493,9 +489,13 @@ const BranchComparison = () => {
             </button>
           </div>
 
+          <p style={{ margin: "0 0 1rem", fontSize: "1rem", color: "#555" }}>
+            Get 6 months of unrestricted access to our powerful Branch Comparison tool for just ₹300.
+          </p>
+
           {!isLoggedIn ? (
             <>
-              <div style={{ background: "#fff3cd", color: "#856404", padding: "1rem", borderRadius: "8px", marginBottom: "1.5rem", border: "1px solid #ffeeba" }}>
+              <div style={{ background: "#fff3cd", color: "#856404", padding: "0.75rem", borderRadius: "8px", marginBottom: "1rem", border: "1px solid #ffeeba", fontSize: "0.95rem" }}>
                 <strong>Note:</strong> You must be logged in to purchase and use the premium tool.
               </div>
               <button className="branch-intel-login-btn" onClick={() => navigate('/login')}>
