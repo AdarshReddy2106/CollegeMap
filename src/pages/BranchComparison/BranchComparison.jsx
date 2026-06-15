@@ -155,7 +155,10 @@ const BranchComparison = () => {
   const [hasAccess, setHasAccess] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);
   const [paying, setPaying] = useState(false);
-
+  const [promoCode, setPromoCode] = useState('');
+  const [freeTries, setFreeTries] = useState(() => {
+    return parseInt(localStorage.getItem('bc_free_tries') || '0', 10);
+  });
 
   const [catalog, setCatalog] = useState(null);
   const [loadError, setLoadError] = useState('');
@@ -269,6 +272,13 @@ const BranchComparison = () => {
       if (q) payload.user_query = q;
       const data = await compareBranches(payload);
       setResult(data);
+
+      if (!hasAccess && freeTries > 0) {
+        const newTries = freeTries - 1;
+        setFreeTries(newTries);
+        localStorage.setItem('bc_free_tries', newTries.toString());
+      }
+
       try {
         sessionStorage.setItem('branchintel_compare_result', JSON.stringify(data));
       } catch {
@@ -434,7 +444,7 @@ const BranchComparison = () => {
     );
   }
 
-  if (!hasAccess) {
+  if (!hasAccess && freeTries <= 0) {
     return (
       <div className="branch-comparison-bg">
         <div className="branch-comparison-container" style={{ textAlign: "center", padding: "2rem 1.5rem" }}>
@@ -457,6 +467,31 @@ const BranchComparison = () => {
           <p style={{ margin: "0 0 1.5rem", fontSize: "1.1rem", color: "#555" }}>
             Get 6 months of unrestricted access to our powerful Branch Comparison tool for just ₹300.
           </p>
+
+          <div style={{ marginBottom: "1.5rem", display: "flex", justifyContent: "center", gap: "10px" }}>
+            <input
+              type="text"
+              placeholder="Have a promo code?"
+              value={promoCode}
+              onChange={(e) => setPromoCode(e.target.value)}
+              style={{ padding: "10px", borderRadius: "8px", border: "1px solid #ccc", outline: "none", textTransform: "uppercase", width: "220px" }}
+            />
+            <button
+              className="branch-intel-btn"
+              style={{ padding: "10px 20px", margin: 0, width: "auto" }}
+              onClick={() => {
+                if (promoCode.trim().toUpperCase() === 'COLLEGEMAP2026') {
+                  localStorage.setItem('bc_free_tries', '5');
+                  setFreeTries(5);
+                  alert('Promo code applied! You get 5 free tries.');
+                } else {
+                  alert('Invalid promo code.');
+                }
+              }}
+            >
+              Apply
+            </button>
+          </div>
 
           {!isLoggedIn ? (
             <>
@@ -652,9 +687,9 @@ const BranchComparison = () => {
   return (
     <div className="branch-comparison-bg">
       <BranchComparisonLoadingOverlay active={loading} compareSummary={summaryLine} />
-  
+
       <div className="bc-tool-page">
-  
+
         {/* ── Hero header ── */}
         <header className="bc-tool-header">
           <div className="bc-tool-header-left">
@@ -675,25 +710,25 @@ const BranchComparison = () => {
             />
           </div>
         </header>
-  
+
         {loadError && (
           <p className="branch-intel-form-error branch-intel-form-error--soft" role="status">
             {loadError}
           </p>
         )}
-  
+
         <form className="bc-tool-form" onSubmit={handleSubmit} noValidate>
-  
+
           {/* ── Face-off grid ── */}
           <div className="bc-faceoff">
-  
+
             {/* Branch A */}
             <div className="bc-branch-card">
               <div className="bc-branch-card-head">
                 <span className="bc-letter-badge bc-letter-badge--a">A</span>
                 <span className="bc-card-title">Branch A</span>
               </div>
-  
+
               <div className="bc-field-row">
                 {/* <span className="bc-field-icon">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -713,7 +748,7 @@ const BranchComparison = () => {
                   </select>
                 </div>
               </div>
-  
+
               <div className="bc-field-row">
                 {/* <span className="bc-field-icon">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -740,7 +775,7 @@ const BranchComparison = () => {
                   />
                 </div>
               </div>
-  
+
               <div className="bc-field-row">
                 {/* <span className="bc-field-icon">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -760,21 +795,21 @@ const BranchComparison = () => {
                 </div>
               </div>
             </div>
-  
+
             {/* VS */}
             <div className="bc-vs-divider">
               <div className="bc-vs-line" />
               <div className="bc-vs-circle">VS</div>
               <div className="bc-vs-line" />
             </div>
-  
+
             {/* Branch B */}
             <div className="bc-branch-card">
               <div className="bc-branch-card-head">
                 <span className="bc-letter-badge bc-letter-badge--b">B</span>
                 <span className="bc-card-title">Branch B</span>
               </div>
-  
+
               <div className="bc-field-row">
                 {/* <span className="bc-field-icon">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -794,7 +829,7 @@ const BranchComparison = () => {
                   </select>
                 </div>
               </div>
-  
+
               <div className="bc-field-row">
                 {/* <span className="bc-field-icon">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -821,7 +856,7 @@ const BranchComparison = () => {
                   />
                 </div>
               </div>
-  
+
               <div className="bc-field-row">
                 {/* <span className="bc-field-icon">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -842,13 +877,13 @@ const BranchComparison = () => {
               </div>
             </div>
           </div>
-  
+
           {/* ── Question row ── */}
           <div className="bc-question-row">
             <span className="bc-question-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
               </svg>
             </span>
             <div className="bc-question-inner">
@@ -862,11 +897,11 @@ const BranchComparison = () => {
               />
             </div>
           </div>
-  
+
           {submitError && (
             <p className="branch-intel-form-error" role="alert">{submitError}</p>
           )}
-  
+
           {/* ── Footer ── */}
           <div className="bc-tool-footer">
 
@@ -875,11 +910,16 @@ const BranchComparison = () => {
               Compare branches &nbsp;→
             </button>
           </div>
-  
+          {!hasAccess && freeTries > 0 && (
+            <p style={{ marginTop: '15px', color: '#888', fontSize: '13px', textAlign: 'center' }}>
+              Free tries remaining: {freeTries}/5
+            </p>
+          )}
+
         </form>
       </div>
     </div>
   );
-          };
+};
 
 export default BranchComparison;

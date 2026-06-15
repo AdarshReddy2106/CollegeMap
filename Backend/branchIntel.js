@@ -133,7 +133,7 @@ async function callAnyGemini(prompt) {
   }
   const payload = {
     contents: [{ parts: [{ text: prompt }] }],
-    generationConfig: { temperature: 0.7, maxOutputTokens: 8192 },
+    generationConfig: { temperature: 0.7, maxOutputTokens: 8192, responseMimeType: "application/json" },
   };
 
   for (const model of MODELS) {
