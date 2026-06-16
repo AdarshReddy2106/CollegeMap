@@ -487,11 +487,12 @@ export const trackBranchComparisonInput = async (userEmail, inputs) => {
       .from('branch_comparison_inputs')
       .insert({
         user_email: userEmail ? userEmail.toLowerCase() : null,
-        college_1: inputs.college1,
-        branch_1: inputs.branch1,
-        college_2: inputs.college2,
-        branch_2: inputs.branch2,
-        user_query: inputs.userQuery || null
+        college_1: inputs.college1 || null,
+        branch_1: inputs.branch1 || null,
+        college_2: inputs.college2 || null,
+        branch_2: inputs.branch2 || null,
+        user_query: inputs.userQuery || null,
+        promo_code: inputs.promoCode || null
       });
     if (error) throw error;
     return true;

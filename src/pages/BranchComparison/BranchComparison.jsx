@@ -273,8 +273,9 @@ const BranchComparison = () => {
       const data = await compareBranches(payload);
       setResult(data);
 
+      const appliedPromo = localStorage.getItem('bc_applied_promo');
       trackBranchComparisonInput(user?.email, {
-        college1, branch1, college2, branch2, userQuery: q
+        college1, branch1, college2, branch2, userQuery: q, promoCode: appliedPromo
       });
 
       if (!hasAccess && freeTries > 0) {
@@ -476,10 +477,18 @@ const BranchComparison = () => {
               className="branch-intel-btn"
               style={{ padding: "8px 16px", margin: 0, width: "auto" }}
               onClick={() => {
-                if (promoCode.trim().toUpperCase() === 'COLLEGEMAP2026') {
-                  localStorage.setItem('bc_free_tries', '5');
-                  setFreeTries(5);
-                  alert('Promo code applied! You get 5 free tries.');
+                const code = promoCode.trim().toUpperCase();
+                const validCodes = {
+                  'COLLEGEMAP2026': 5,
+                  'FREETRIAL': 5,
+                  'JOSAA2026': 5,
+                };
+                if (validCodes[code]) {
+                  const tries = validCodes[code];
+                  localStorage.setItem('bc_free_tries', tries.toString());
+                  localStorage.setItem('bc_applied_promo', code);
+                  setFreeTries(tries);
+                  alert(`Promo code applied! You get ${tries} free tries.`);
                 } else {
                   alert('Invalid promo code.');
                 }
