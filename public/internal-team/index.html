@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CollegeMap Team Tracker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh}
+a{color:#1D9E75;text-decoration:none}
+.topbar{background:#fff;border-bottom:1px solid #e8e8e5;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:10}
+.logo{font-size:16px;font-weight:600}.logo span{color:#1D9E75}
+.nav{display:flex;gap:4px}
+.nav-btn{padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;border:none;background:transparent;color:#666;font-weight:500;transition:all 0.15s}
+.nav-btn.active,.nav-btn:hover{background:#f0f0ee;color:#1a1a1a}
+.nav-btn.active{font-weight:600;color:#1D9E75}
+.main{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
+.page{display:none}.page.active{display:block}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px}
+.page-title{font-size:22px;font-weight:600}
+.section-title{font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;margin-top:2rem}
+.card{background:#fff;border:1px solid #e8e8e5;border-radius:12px;padding:1.25rem;margin-bottom:12px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.stat-card{background:#fff;border:1px solid #e8e8e5;border-radius:12px;padding:1.2rem;text-align:center}
+.stat-num{font-size:28px;font-weight:600;color:#1D9E75}
+.stat-label{font-size:12px;color:#666;margin-top:4px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:2rem}
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;flex-shrink:0}
+.av-teal{background:#E1F5EE;color:#085041}
+.av-purple{background:#EEEDFE;color:#3C3489}
+.av-coral{background:#FAECE7;color:#712B13}
+.av-blue{background:#E6F1FB;color:#0C447C}
+.av-amber{background:#FAEEDA;color:#633806}
+.av-green{background:#EAF3DE;color:#27500A}
+.badge{font-size:11px;padding:2px 8px;border-radius:6px;font-weight:500;white-space:nowrap;display:inline-block}
+.badge-teal{background:#E1F5EE;color:#085041}
+.badge-purple{background:#EEEDFE;color:#3C3489}
+.badge-gray{background:#f0f0ee;color:#444}
+.badge-green{background:#EAF3DE;color:#27500A}
+.badge-red{background:#FCEBEB;color:#A32D2D}
+.badge-amber{background:#FAEEDA;color:#633806}
+.badge-blue{background:#E6F1FB;color:#0C447C}
+.avail-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0}
+.avail-full{background:#1D9E75}
+.avail-partial{background:#FAC775}
+.avail-unavailable{background:#E24B4A}
+button{cursor:pointer;font-family:inherit}
+.btn{background:#fff;border:1px solid #d0d0cc;border-radius:8px;padding:7px 14px;font-size:13px;color:#1a1a1a;transition:all 0.15s}
+.btn:hover{background:#f5f5f3;border-color:#aaa}
+.btn-primary{background:#1D9E75;color:#fff;border-color:#1D9E75}
+.btn-primary:hover{background:#0F6E56}
+.btn-sm{padding:4px 10px;font-size:12px}
+.btn-danger{background:#fff;border-color:#E24B4A;color:#A32D2D}
+.btn-danger:hover{background:#FCEBEB}
+.btn-gold{background:#fff;border-color:#FAC775;color:#633806}
+.btn-gold:hover{background:#FAEEDA}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:16px;padding:1.5rem;width:100%;max-width:500px;max-height:90vh;overflow-y:auto}
+.modal-lg{max-width:700px}
+.modal-title{font-size:18px;font-weight:600;margin-bottom:1.25rem}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;padding-top:1rem;border-top:1px solid #e8e8e5}
+.form-group{margin-bottom:14px}
+label{display:block;font-size:13px;font-weight:500;color:#444;margin-bottom:5px}
+input[type=text],input[type=password],input[type=date],select,textarea{width:100%;padding:9px 12px;border:1px solid #d0d0cc;border-radius:8px;font-size:14px;font-family:inherit;background:#fff;color:#1a1a1a;outline:none;transition:border 0.15s}
+input:focus,select:focus,textarea:focus{border-color:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,0.1)}
+textarea{resize:vertical;min-height:80px}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#1a1a1a;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;z-index:200;opacity:0;transition:opacity 0.2s;pointer-events:none}
+.toast.show{opacity:1}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid #e8e8e5;border-top-color:#1D9E75;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f5f5f3}
+.login-box{background:#fff;border:1px solid #e8e8e5;border-radius:20px;padding:2.5rem;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,0.06)}
+.login-logo{font-size:22px;font-weight:700;margin-bottom:6px}.login-logo span{color:#1D9E75}
+.login-sub{font-size:14px;color:#888;margin-bottom:2rem}
+.role-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:1.5rem;background:#f5f5f3;border-radius:10px;padding:4px}
+.role-btn{padding:8px;border-radius:8px;border:none;background:transparent;font-size:14px;font-weight:500;color:#888;cursor:pointer;transition:all 0.15s}
+.role-btn.active{background:#fff;color:#1a1a1a;box-shadow:0 1px 4px rgba(0,0,0,0.1)}
+.login-error{font-size:13px;color:#A32D2D;background:#FCEBEB;border-radius:8px;padding:8px 12px;margin-top:8px;display:none}
+
+/* MEMBER CARD */
+.member-card{background:#fff;border:1px solid #e8e8e5;border-radius:12px;padding:1.1rem;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s}
+.member-card:hover{box-shadow:0 2px 12px rgba(0,0,0,0.08);border-color:#ccc}
+.member-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.member-name{font-size:14px;font-weight:600}
+.member-meta{font-size:12px;color:#888;margin-top:1px}
+.member-status{font-size:13px;color:#444;background:#f9f9f7;border-radius:8px;padding:7px 10px;margin-top:8px;line-height:1.4}
+.member-status.empty{color:#bbb;font-style:italic}
+
+/* FEED */
+.feed-item{background:#fff;border:1px solid #e8e8e5;border-radius:12px;padding:1.1rem;margin-bottom:10px}
+.feed-item-header{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.feed-meta{font-size:12px;color:#aaa;margin-top:2px}
+.feed-body{font-size:14px;color:#333;line-height:1.5}
+.shoutout-card{background:linear-gradient(135deg,#fffbe6,#fff9db);border:1px solid #FAC775;border-radius:12px;padding:1.1rem;margin-bottom:10px}
+
+/* GOALS */
+.goal-card{background:#fff;border:1px solid #e8e8e5;border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px}
+.goal-status-pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:none;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.status-not-started{background:#f0f0ee;color:#666}
+.status-in-progress{background:#E6F1FB;color:#0C447C}
+.status-done{background:#EAF3DE;color:#27500A}
+.goal-title{font-size:14px;font-weight:600;line-height:1.4}
+.goal-desc{font-size:13px;color:#666;margin-top:4px;line-height:1.4}
+
+/* TASKS */
+.task-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0ee}
+.task-item:last-child{border-bottom:none}
+.task-check{width:18px;height:18px;border-radius:4px;border:1.5px solid #d0d0cc;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all 0.15s}
+.task-check.done{background:#1D9E75;border-color:#1D9E75;color:#fff;font-size:11px}
+.task-text{flex:1;font-size:13px;color:#333;line-height:1.4}
+.task-text.done-text{text-decoration:line-through;color:#aaa}
+.task-meta{font-size:11px;color:#aaa;margin-top:2px}
+.priority-high{color:#A32D2D;font-weight:600}
+.priority-medium{color:#633806;font-weight:600}
+.priority-low{color:#27500A;font-weight:600}
+
+/* PROFILE */
+.profile-section{margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid #f0f0ee}
+.profile-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+
+/* AVAILABILITY */
+.avail-selector{display:flex;gap:8px;flex-wrap:wrap}
+.avail-opt{padding:6px 14px;border-radius:8px;border:1.5px solid #d0d0cc;font-size:13px;cursor:pointer;font-weight:500;background:#fff;transition:all 0.15s}
+.avail-opt.sel-full{border-color:#1D9E75;background:#E1F5EE;color:#085041}
+.avail-opt.sel-partial{border-color:#FAC775;background:#FAEEDA;color:#633806}
+.avail-opt.sel-unavailable{border-color:#E24B4A;background:#FCEBEB;color:#A32D2D}
+
+@media(max-width:600px){.main{padding:1rem}.grid2{grid-template-columns:1fr}.topbar{padding:0 1rem}.nav-btn{padding:6px 8px;font-size:12px}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">College<span>Map</span></div>
+    <div class="login-sub">Team tracker — sign in to continue</div>
+    <div class="role-toggle">
+      <button class="role-btn active" id="role-admin-btn" onclick="setRole('admin')">Admin</button>
+      <button class="role-btn" id="role-member-btn" onclick="setRole('member')">Member</button>
+    </div>
+    <div class="form-group"><label>Username</label><input type="text" id="login-username" placeholder="Enter username" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="form-group"><label>Password</label><input type="password" id="login-password" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="login-error" id="login-error">Incorrect username or password.</div>
+    <button class="btn btn-primary" style="width:100%;margin-top:8px;padding:10px" onclick="doLogin()" id="login-btn">Sign in</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+  <div class="topbar">
+    <div class="logo">College<span>Map</span> <span style="color:#ccc;margin:0 6px">·</span><span style="color:#888;font-weight:400;font-size:14px">Team</span></div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="nav">
+        <button class="nav-btn active" onclick="showPage('home',this)">Home</button>
+        <button class="nav-btn" onclick="showPage('team',this)">Team</button>
+        <button class="nav-btn" id="nav-manage" onclick="showPage('manage',this)">Manage</button>
+        <button class="nav-btn" onclick="showPage('mytasks',this)">My Tasks</button>
+      </div>
+      <div style="font-size:12px;color:#888" id="user-label"></div>
+      <button class="btn btn-sm" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- HOME -->
+    <div id="page-home" class="page active">
+      <div class="page-header">
+        <div class="page-title">Home</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="home-admin-actions">
+          <button class="btn btn-primary" onclick="openModal('announce-modal')">📢 Announce</button>
+          <button class="btn btn-gold" onclick="openModal('shoutout-modal')">⭐ Shoutout</button>
+          <button class="btn" style="border-color:#1D9E75;color:#1D9E75" onclick="openModal('add-goal-modal')">🎯 Add goal</button>
+          <button class="btn" onclick="loadAll(true)">↻ Refresh</button>
+        </div>
+      </div>
+      <div class="stats-row" id="stats-row"></div>
+
+      <!-- goals board -->
+      <div class="section-title">🎯 Team goals</div>
+      <div id="goals-list"></div>
+
+      <!-- availability -->
+      <div class="section-title">Team availability</div>
+      <div id="avail-strip"></div>
+
+      <!-- feed -->
+      <div class="section-title" style="margin-top:1.5rem">Announcements & shoutouts</div>
+      <div id="feed-list"></div>
+    </div>
+
+    <!-- TEAM -->
+    <div id="page-team" class="page">
+      <div class="page-header">
+        <div class="page-title">Team</div>
+        <select id="team-filter" onchange="renderTeamPage()" style="width:auto;padding:7px 12px;font-size:13px">
+          <option value="">All teams</option>
+        </select>
+      </div>
+      <div class="grid2" id="team-grid"></div>
+    </div>
+
+    <!-- MANAGE -->
+    <div id="page-manage" class="page">
+      <div class="page-header">
+        <div class="page-title">Manage</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="openModal('add-member-modal')">+ Member</button>
+          <button class="btn" onclick="openModal('add-team-modal')">+ Team</button>
+          <button class="btn btn-primary" onclick="openModal('add-task-modal')">+ Task</button>
+        </div>
+      </div>
+      <div class="section-title">Members</div>
+      <div id="manage-members-list"></div>
+      <div class="section-title">Teams</div>
+      <div id="manage-teams-list" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem"></div>
+      <div class="section-title">All tasks</div>
+      <div id="manage-tasks-list"></div>
+    </div>
+
+    <!-- MY TASKS -->
+    <div id="page-mytasks" class="page">
+      <div class="page-header"><div class="page-title">My Tasks</div></div>
+      <div id="my-status-section" class="card" style="margin-bottom:1.5rem">
+        <div style="font-size:14px;font-weight:600;margin-bottom:10px">My current status</div>
+        <textarea id="my-status-input" placeholder="What are you working on right now?" style="min-height:60px"></textarea>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap">
+          <div style="font-size:13px;font-weight:500;color:#444">Availability:</div>
+          <div class="avail-selector" id="my-avail-selector">
+            <button class="avail-opt" data-val="full" onclick="selectAvail('full',this)">✅ Full</button>
+            <button class="avail-opt" data-val="partial" onclick="selectAvail('partial',this)">⚡ Partial</button>
+            <button class="avail-opt" data-val="unavailable" onclick="selectAvail('unavailable',this)">❌ Unavailable</button>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="saveMyStatus()">Save status</button>
+        </div>
+      </div>
+<div class="card" id="member-add-task-section" style="margin-bottom:1.5rem">
+  <div style="font-size:14px;font-weight:600;margin-bottom:10px">Add a task</div>
+  <div class="form-group">
+    <input type="text" id="mt-text" placeholder="What needs to be done?"/>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <select id="mt-priority" style="width:auto">
+      <option value="low">🟢 Low</option>
+      <option value="medium" selected>🟡 Medium</option>
+      <option value="high">🔴 High</option>
+    </select>
+    <input type="date" id="mt-due" style="width:auto"/>
+    <button class="btn btn-primary btn-sm" onclick="saveMyTask()">Add task</button>
+  </div>
+</div>
+      <div class="section-title" style="margin-top:0">Assigned to me</div>
+      <div id="my-tasks-list"></div>
+      <div class="section-title">Completed</div>
+      <div id="my-tasks-done-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- PROFILE MODAL -->
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal modal-lg">
+    <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:1.25rem">
+      <div class="avatar av-teal" id="profile-avatar" style="width:52px;height:52px;font-size:18px"></div>
+      <div style="flex:1">
+        <div style="font-size:20px;font-weight:700" id="profile-name"></div>
+        <div style="font-size:13px;color:#666;margin-top:3px" id="profile-meta"></div>
+        <div style="margin-top:6px" id="profile-avail"></div>
+      </div>
+      <button class="btn btn-sm" onclick="closeModal('profile-modal')">Close</button>
+    </div>
+    <div class="profile-section">
+      <div style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Currently working on</div>
+      <div id="profile-status" style="font-size:14px;color:#333;line-height:1.5"></div>
+    </div>
+    <div class="profile-section">
+      <div style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Active tasks</div>
+      <div id="profile-tasks"></div>
+    </div>
+    <div class="profile-section">
+      <div style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Completed tasks</div>
+      <div id="profile-tasks-done"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD MEMBER -->
+<div class="modal-overlay" id="add-member-modal">
+  <div class="modal">
+    <div class="modal-title">Add member</div>
+    <div class="form-group"><label>Full name *</label><input type="text" id="nm-name" placeholder="e.g. Priya Sharma"/></div>
+    <div class="form-group"><label>Team *</label><select id="nm-team"><option value="">Select team</option></select></div>
+    <div class="form-group"><label>Role in team</label><input type="text" id="nm-role" placeholder="e.g. Lead, Intern, Member"/></div>
+    <div class="form-group"><label>Type</label><select id="nm-type"><option value="paid">Paid</option><option value="intern">Intern</option></select></div>
+    <div class="form-group"><label>Phone / contact</label><input type="text" id="nm-phone" placeholder="e.g. 9876543210"/></div>
+    <div style="border-top:1px solid #e8e8e5;padding-top:1rem;margin-top:1rem">
+      <div style="font-size:13px;font-weight:600;color:#444;margin-bottom:10px">Login credentials</div>
+      <div class="form-group"><label>Username *</label><input type="text" id="nm-username" placeholder="e.g. priya"/></div>
+      <div class="form-group"><label>Password *</label><input type="text" id="nm-password" placeholder="e.g. cm2026"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('add-member-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMember()">Add member</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MEMBER -->
+<div class="modal-overlay" id="edit-member-modal">
+  <div class="modal">
+    <div class="modal-title">Edit member</div>
+    <input type="hidden" id="em-id"/>
+    <div class="form-group"><label>Full name *</label><input type="text" id="em-name"/></div>
+    <div class="form-group"><label>Team *</label><select id="em-team"></select></div>
+    <div class="form-group"><label>Role in team</label><input type="text" id="em-role"/></div>
+    <div class="form-group"><label>Type</label><select id="em-type"><option value="paid">Paid</option><option value="intern">Intern</option></select></div>
+    <div class="form-group"><label>Phone / contact</label><input type="text" id="em-phone"/></div>
+    <div style="border-top:1px solid #e8e8e5;padding-top:1rem;margin-top:1rem">
+      <div style="font-size:13px;font-weight:600;color:#444;margin-bottom:10px">Login credentials</div>
+      <div class="form-group"><label>Username</label><input type="text" id="em-username"/></div>
+      <div class="form-group"><label>Password <span style="font-weight:400;color:#aaa">(blank = keep current)</span></label><input type="text" id="em-password" placeholder="New password..."/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('edit-member-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="updateMember()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD TEAM -->
+<div class="modal-overlay" id="add-team-modal">
+  <div class="modal">
+    <div class="modal-title">Create new team</div>
+    <div class="form-group"><label>Team name *</label><input type="text" id="nt-name" placeholder="e.g. Design, Operations"/></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('add-team-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTeam()">Create team</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD TASK -->
+<div class="modal-overlay" id="add-task-modal">
+  <div class="modal">
+    <div class="modal-title">Assign task</div>
+    <div class="form-group"><label>Task *</label><textarea id="at-text" placeholder="Describe the task..." style="min-height:60px"></textarea></div>
+    <div class="form-group"><label>Assign to *</label><select id="at-member"><option value="">Select member</option></select></div>
+    <div class="form-group"><label>Priority</label><select id="at-priority"><option value="high">🔴 High</option><option value="medium" selected>🟡 Medium</option><option value="low">🟢 Low</option></select></div>
+    <div class="form-group"><label>Due date (optional)</label><input type="date" id="at-due"/></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('add-task-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTask()">Assign task</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANNOUNCE -->
+<div class="modal-overlay" id="announce-modal">
+  <div class="modal">
+    <div class="modal-title">📢 Post announcement</div>
+    <div class="form-group"><label>Title *</label><input type="text" id="an-title" placeholder="e.g. New feature launched!"/></div>
+    <div class="form-group"><label>Message *</label><textarea id="an-body" placeholder="Write your announcement..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('announce-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAnnouncement()">Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHOUTOUT -->
+<div class="modal-overlay" id="shoutout-modal">
+  <div class="modal">
+    <div class="modal-title">⭐ Give a shoutout</div>
+    <div class="form-group"><label>Member *</label><select id="so-member"><option value="">Select member</option></select></div>
+    <div class="form-group"><label>Message *</label><textarea id="so-body" placeholder="What did they do amazingly?"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('shoutout-modal')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveShoutout()">Give shoutout ⭐</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD GOAL -->
+<div class="modal-overlay" id="add-goal-modal">
+  <div class="modal">
+    <div class="modal-title">🎯 Add team goal</div>
+    <div class="form-group"><label>Goal title *</label><input type="text" id="gl-title" placeholder="e.g. Hit 1000 YouTube subscribers"/></div>
+    <div class="form-group"><label>Description (optional)</label><textarea id="gl-desc" placeholder="More context about this goal..." style="min-height:60px"></textarea></div>
+    <div class="form-group"><label>Status</label>
+      <select id="gl-status">
+        <option value="not-started">Not Started</option>
+        <option value="in-progress" selected>In Progress</option>
+        <option value="done">Done</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('add-goal-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveGoal()">Add goal</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbz24142r0HtLxxfDBX5OCXn288da6swTYCv1jAN71trGUOqrOvyjy6UvEdJ3jVsJy4V/exec';
+const ADMIN_USERNAME='admin';
+const ADMIN_PASSWORD='collegemap2026';
+const AVATAR_COLORS=['av-teal','av-purple','av-coral','av-blue','av-amber','av-green'];
+const DEFAULT_TEAMS=['Web Dev','Instagram','YouTube','New Joinees'];
+
+let state={members:[],teams:[],tasks:[],feed:[],goals:[]};
+let currentUser={role:null,memberId:null,username:null};
+let loginRole='admin';
+let myAvail='full';
+
+// ─── LOGIN ───────────────────────────────────────────────
+function setRole(r){
+  loginRole=r;
+  document.getElementById('role-admin-btn').classList.toggle('active',r==='admin');
+  document.getElementById('role-member-btn').classList.toggle('active',r==='member');
+}
+
+async function doLogin(){
+  const u=document.getElementById('login-username').value.trim().toLowerCase();
+  const p=document.getElementById('login-password').value.trim();
+  const btn=document.getElementById('login-btn');
+  const err=document.getElementById('login-error');
+  err.style.display='none';btn.textContent='Signing in...';btn.disabled=true;
+  if(loginRole==='admin'){
+    if(u===ADMIN_USERNAME&&p===ADMIN_PASSWORD){
+      currentUser={role:'admin',memberId:null,username:'Admin'};
+      await loadAll();showApp();
+    } else err.style.display='block';
+    btn.textContent='Sign in';btn.disabled=false;return;
+  }
+  await loadAll();
+  const member=state.members.find(m=>m.username&&m.username.toLowerCase()===u&&m.password===p);
+  if(member){currentUser={role:'member',memberId:member.id,username:member.name};showApp();}
+  else err.style.display='block';
+  btn.textContent='Sign in';btn.disabled=false;
+}
+
+function showApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('user-label').textContent=currentUser.username+(currentUser.role==='admin'?' (admin)':'');
+  applyRoleUI();
+  showPage('home',document.querySelector('.nav-btn'));
+}
+
+function doLogout(){
+  currentUser={role:null,memberId:null,username:null};
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  ['login-username','login-password'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('login-error').style.display='none';
+}
+
+function applyRoleUI(){
+  const isAdmin=currentUser.role==='admin';
+  document.getElementById('nav-manage').style.display=isAdmin?'':'none';
+  document.getElementById('home-admin-actions').style.display=isAdmin?'flex':'none';
+}
+
+// ─── SHEET I/O ───────────────────────────────────────────
+function toast(msg,dur=2500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
+
+async function sheetGet(name){
+  try{const r=await fetch(`${SCRIPT_URL}?sheet=${encodeURIComponent(name)}`);const d=await r.json();return d.rows||[];}catch(e){return[]}
+}
+async function sheetWrite(name,rows){
+  try{await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({sheet:name,action:'write_all',rows}),headers:{'Content-Type':'text/plain'}});}
+  catch(e){toast('Save failed')}
+}
+
+// ─── SERIALIZERS ─────────────────────────────────────────
+function membersToRows(arr){
+  return[['id','name','team','role','type','phone','username','password','status','availability','color'],
+    ...arr.map(m=>[m.id,m.name,m.team||'',m.role||'',m.type||'paid',m.phone||'',m.username||'',m.password||'',m.status||'',m.availability||'full',m.color||'av-teal'])];
+}
+function rowsToMembers(rows){
+  if(rows.length<2)return[];
+  return rows.slice(1).filter(r=>r[0]).map(r=>({id:''+r[0],name:''+r[1],team:''+r[2],role:''+r[3],type:''+r[4],phone:''+r[5],username:''+r[6],password:''+r[7],status:''+r[8],availability:''+r[9],color:r[10]||'av-teal'}));
+}
+function teamsToRows(arr){return[['name'],...arr.map(t=>[t])]}
+function rowsToTeams(rows){if(rows.length<2)return[...DEFAULT_TEAMS];return rows.slice(1).filter(r=>r[0]).map(r=>''+r[0]);}
+function tasksToRows(arr){
+  return[['id','text','memberId','priority','due','done','createdAt'],
+    ...arr.map(t=>[t.id,t.text,t.memberId,t.priority||'medium',t.due||'',t.done||'',t.createdAt||''])];
+}
+function rowsToTasks(rows){
+  if(rows.length<2)return[];
+  return rows.slice(1).filter(r=>r[0]).map(r=>({id:''+r[0],text:''+r[1],memberId:''+r[2],priority:''+r[3],due:''+r[4],done:''+r[5],createdAt:''+r[6]}));
+}
+function feedToRows(arr){
+  return[['id','type','title','body','authorId','targetId','createdAt'],
+    ...arr.map(f=>[f.id,f.type,f.title||'',f.body||'',f.authorId||'',f.targetId||'',f.createdAt||''])];
+}
+function rowsToFeed(rows){
+  if(rows.length<2)return[];
+  return rows.slice(1).filter(r=>r[0]).map(r=>({id:''+r[0],type:''+r[1],title:''+r[2],body:''+r[3],authorId:''+r[4],targetId:''+r[5],createdAt:''+r[6]}));
+}
+function goalsToRows(arr){
+  return[['id','title','desc','status','createdAt'],
+    ...arr.map(g=>[g.id,g.title,g.desc||'',g.status||'not-started',g.createdAt||''])];
+}
+function rowsToGoals(rows){
+  if(rows.length<2)return[];
+  return rows.slice(1).filter(r=>r[0]).map(r=>({id:''+r[0],title:''+r[1],desc:''+r[2],status:''+r[3],createdAt:''+r[4]}));
+}
+async function saveMyTask(){
+  const text=document.getElementById('mt-text').value.trim();
+  if(!text)return alert('Task text required');
+  const id='tsk_'+Date.now();
+  state.tasks.push({id,text,memberId:currentUser.memberId,priority:document.getElementById('mt-priority').value,due:document.getElementById('mt-due').value,done:'',createdAt:new Date().toISOString()});
+  document.getElementById('mt-text').value='';
+  document.getElementById('mt-due').value='';
+  toast('Saving...');await sheetWrite('Tasks',tasksToRows(state.tasks));toast('Task added ✓');renderAll();
+}
+async function loadAll(showToast=false){
+  const[mR,tR,tkR,fR,gR]=await Promise.all([sheetGet('Members'),sheetGet('Teams'),sheetGet('Tasks'),sheetGet('Feed'),sheetGet('Goals')]);
+  state.members=rowsToMembers(mR);
+  state.teams=rowsToTeams(tR);
+  state.tasks=rowsToTasks(tkR);
+  state.feed=rowsToFeed(fR);
+  state.goals=rowsToGoals(gR);
+  if(showToast)toast('Refreshed ✓');
+  renderAll();
+}
+
+// ─── UTILS ───────────────────────────────────────────────
+function initials(name){return name.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}
+function avatarColor(idx){return AVATAR_COLORS[idx%AVATAR_COLORS.length]}
+function fmtDate(d){if(!d)return'';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-IN',{day:'numeric',month:'short'})}
+function timeAgo(iso){
+  if(!iso)return'';
+  const d=new Date(iso);const now=new Date();
+  const diff=Math.floor((now-d)/1000);
+  if(diff<60)return'just now';if(diff<3600)return Math.floor(diff/60)+'m ago';
+  if(diff<86400)return Math.floor(diff/3600)+'h ago';
+  return Math.floor(diff/86400)+'d ago';
+}
+function availBadge(a){
+  if(a==='full')return'<span class="badge badge-green">✅ Full</span>';
+  if(a==='partial')return'<span class="badge badge-amber">⚡ Partial</span>';
+  return'<span class="badge badge-red">❌ Unavailable</span>';
+}
+function priorityLabel(p){
+  if(p==='high')return'<span class="priority-high">🔴 High</span>';
+  if(p==='medium')return'<span class="priority-medium">🟡 Medium</span>';
+  return'<span class="priority-low">🟢 Low</span>';
+}
+function goalStatusClass(s){
+  if(s==='in-progress')return'status-in-progress';
+  if(s==='done')return'status-done';
+  return'status-not-started';
+}
+function goalStatusLabel(s){
+  if(s==='in-progress')return'In Progress';
+  if(s==='done')return'✓ Done';
+  return'Not Started';
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  renderAll();
+}
+
+function openModal(id){
+  if(id==='add-member-modal'||id==='edit-member-modal')populateTeamSelects();
+  if(id==='add-task-modal')populateMemberSelect('at-member');
+  if(id==='shoutout-modal')populateMemberSelect('so-member');
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
+
+function populateTeamSelects(){
+  ['nm-team','em-team'].forEach(id=>{
+    const sel=document.getElementById(id);if(!sel)return;
+    const cur=sel.value;
+    sel.innerHTML='<option value="">Select team</option>'+state.teams.map(t=>`<option value="${t}">${t}</option>`).join('');
+    sel.value=cur;
+  });
+}
+function populateMemberSelect(selId){
+  const sel=document.getElementById(selId);if(!sel)return;
+  sel.innerHTML='<option value="">Select member</option>'+state.members.map(m=>`<option value="${m.id}">${m.name} (${m.team||'No team'})</option>`).join('');
+}
+function populateTeamFilter(){
+  const sel=document.getElementById('team-filter');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">All teams</option>'+state.teams.map(t=>`<option value="${t}">${t}</option>`).join('');
+  sel.value=cur;
+}
+
+// ─── MEMBERS CRUD ────────────────────────────────────────
+async function saveMember(){
+  const name=document.getElementById('nm-name').value.trim();
+  const username=document.getElementById('nm-username').value.trim().toLowerCase();
+  const password=document.getElementById('nm-password').value.trim();
+  const team=document.getElementById('nm-team').value;
+  if(!name)return alert('Name is required');
+  if(!username||!password)return alert('Username and password required');
+  if(!team)return alert('Please select a team');
+  if(state.members.find(m=>m.username===username))return alert('Username already taken');
+  const id='mbr_'+Date.now();
+  state.members.push({id,name,team,role:document.getElementById('nm-role').value.trim(),type:document.getElementById('nm-type').value,phone:document.getElementById('nm-phone').value.trim(),username,password,status:'',availability:'full',color:avatarColor(state.members.length)});
+  closeModal('add-member-modal');
+  ['nm-name','nm-role','nm-phone','nm-username','nm-password'].forEach(f=>document.getElementById(f).value='');
+  toast('Saving...');await sheetWrite('Members',membersToRows(state.members));toast('Member added ✓');renderAll();
+}
+
+function editMember(id){
+  const m=state.members.find(x=>x.id===id);if(!m)return;
+  populateTeamSelects();
+  document.getElementById('em-id').value=m.id;
+  document.getElementById('em-name').value=m.name;
+  document.getElementById('em-team').value=m.team||'';
+  document.getElementById('em-role').value=m.role||'';
+  document.getElementById('em-type').value=m.type||'paid';
+  document.getElementById('em-phone').value=m.phone||'';
+  document.getElementById('em-username').value=m.username||'';
+  document.getElementById('em-password').value='';
+  openModal('edit-member-modal');
+}
+
+async function updateMember(){
+  const id=document.getElementById('em-id').value;
+  const name=document.getElementById('em-name').value.trim();
+  if(!name)return alert('Name is required');
+  const idx=state.members.findIndex(m=>m.id===id);if(idx<0)return;
+  const nu=document.getElementById('em-username').value.trim().toLowerCase();
+  const np=document.getElementById('em-password').value.trim();
+  if(state.members.find(m=>m.username===nu&&m.id!==id))return alert('Username taken');
+  state.members[idx]={...state.members[idx],name,team:document.getElementById('em-team').value,role:document.getElementById('em-role').value.trim(),type:document.getElementById('em-type').value,phone:document.getElementById('em-phone').value.trim(),username:nu||state.members[idx].username,password:np||state.members[idx].password};
+  closeModal('edit-member-modal');
+  toast('Saving...');await sheetWrite('Members',membersToRows(state.members));toast('Updated ✓');renderAll();
+}
+
+async function removeMember(id){
+  if(!confirm('Remove this member?'))return;
+  state.members=state.members.filter(m=>m.id!==id);
+  state.tasks=state.tasks.filter(t=>t.memberId!==id);
+  toast('Saving...');
+  await Promise.all([sheetWrite('Members',membersToRows(state.members)),sheetWrite('Tasks',tasksToRows(state.tasks))]);
+  toast('Removed ✓');renderAll();
+}
+
+// ─── TEAMS ───────────────────────────────────────────────
+async function saveTeam(){
+  const name=document.getElementById('nt-name').value.trim();
+  if(!name)return alert('Team name required');
+  if(state.teams.includes(name))return alert('Team already exists');
+  state.teams.push(name);
+  closeModal('add-team-modal');
+  document.getElementById('nt-name').value='';
+  toast('Saving...');await sheetWrite('Teams',teamsToRows(state.teams));toast('Team created ✓');renderAll();
+}
+
+async function removeTeam(name){
+  if(!confirm(`Remove team "${name}"? Members will become unassigned.`))return;
+  state.teams=state.teams.filter(t=>t!==name);
+  state.members=state.members.map(m=>m.team===name?{...m,team:''}:m);
+  toast('Saving...');
+  await Promise.all([sheetWrite('Teams',teamsToRows(state.teams)),sheetWrite('Members',membersToRows(state.members))]);
+  toast('Team removed ✓');renderAll();
+}
+
+// ─── TASKS ───────────────────────────────────────────────
+async function saveTask(){
+  const text=document.getElementById('at-text').value.trim();
+  const memberId=document.getElementById('at-member').value;
+  if(!text)return alert('Task description required');
+  if(!memberId)return alert('Please assign to a member');
+  const id='tsk_'+Date.now();
+  state.tasks.push({id,text,memberId,priority:document.getElementById('at-priority').value,due:document.getElementById('at-due').value,done:'',createdAt:new Date().toISOString()});
+  closeModal('add-task-modal');
+  ['at-text','at-due'].forEach(f=>document.getElementById(f).value='');
+  document.getElementById('at-priority').value='medium';
+  toast('Saving...');await sheetWrite('Tasks',tasksToRows(state.tasks));toast('Task assigned ✓');renderAll();
+}
+
+async function toggleTask(id){
+  const idx=state.tasks.findIndex(t=>t.id===id);if(idx<0)return;
+  state.tasks[idx].done=state.tasks[idx].done?'':new Date().toISOString();
+  await sheetWrite('Tasks',tasksToRows(state.tasks));renderAll();
+}
+
+async function removeTask(id){
+  if(!confirm('Remove this task?'))return;
+  state.tasks=state.tasks.filter(t=>t.id!==id);
+  await sheetWrite('Tasks',tasksToRows(state.tasks));toast('Task removed ✓');renderAll();
+}
+
+// ─── FEED ────────────────────────────────────────────────
+async function saveAnnouncement(){
+  const title=document.getElementById('an-title').value.trim();
+  const body=document.getElementById('an-body').value.trim();
+  if(!title||!body)return alert('Title and message required');
+  state.feed.unshift({id:'feed_'+Date.now(),type:'announcement',title,body,authorId:'admin',targetId:'',createdAt:new Date().toISOString()});
+  closeModal('announce-modal');
+  ['an-title','an-body'].forEach(f=>document.getElementById(f).value='');
+  toast('Saving...');await sheetWrite('Feed',feedToRows(state.feed));toast('Posted ✓');renderAll();
+}
+
+async function saveShoutout(){
+  const memberId=document.getElementById('so-member').value;
+  const body=document.getElementById('so-body').value.trim();
+  if(!memberId||!body)return alert('Please select member and write a message');
+  state.feed.unshift({id:'feed_'+Date.now(),type:'shoutout',title:'',body,authorId:'admin',targetId:memberId,createdAt:new Date().toISOString()});
+  closeModal('shoutout-modal');
+  document.getElementById('so-body').value='';
+  toast('Saving...');await sheetWrite('Feed',feedToRows(state.feed));toast('Shoutout posted ⭐');renderAll();
+}
+
+async function deleteFeedItem(id){
+  if(!confirm('Delete this post?'))return;
+  state.feed=state.feed.filter(f=>f.id!==id);
+  await sheetWrite('Feed',feedToRows(state.feed));toast('Deleted ✓');renderAll();
+}
+
+// ─── GOALS ───────────────────────────────────────────────
+async function saveGoal(){
+  const title=document.getElementById('gl-title').value.trim();
+  if(!title)return alert('Goal title required');
+  const id='goal_'+Date.now();
+  state.goals.push({id,title,desc:document.getElementById('gl-desc').value.trim(),status:document.getElementById('gl-status').value,createdAt:new Date().toISOString()});
+  closeModal('add-goal-modal');
+  ['gl-title','gl-desc'].forEach(f=>document.getElementById(f).value='');
+  document.getElementById('gl-status').value='in-progress';
+  toast('Saving...');await sheetWrite('Goals',goalsToRows(state.goals));toast('Goal added ✓');renderAll();
+}
+
+async function cycleGoalStatus(id){
+  const idx=state.goals.findIndex(g=>g.id===id);if(idx<0)return;
+  const order=['not-started','in-progress','done'];
+  const cur=state.goals[idx].status||'not-started';
+  const next=order[(order.indexOf(cur)+1)%order.length];
+  state.goals[idx].status=next;
+  await sheetWrite('Goals',goalsToRows(state.goals));renderAll();
+}
+
+async function removeGoal(id){
+  if(!confirm('Remove this goal?'))return;
+  state.goals=state.goals.filter(g=>g.id!==id);
+  await sheetWrite('Goals',goalsToRows(state.goals));toast('Goal removed ✓');renderAll();
+}
+
+// ─── STATUS ──────────────────────────────────────────────
+function selectAvail(val,btn){
+  myAvail=val;
+  document.querySelectorAll('#my-avail-selector .avail-opt').forEach(b=>{
+    b.className='avail-opt';
+    if(b.dataset.val===val)b.classList.add('sel-'+val);
+  });
+}
+
+async function saveMyStatus(){
+  const status=document.getElementById('my-status-input').value.trim();
+  const idx=state.members.findIndex(m=>m.id===currentUser.memberId);if(idx<0)return;
+  state.members[idx].status=status;
+  state.members[idx].availability=myAvail;
+  toast('Saving...');await sheetWrite('Members',membersToRows(state.members));toast('Status updated ✓');renderAll();
+}
+
+// ─── PROFILE ─────────────────────────────────────────────
+function openProfile(memberId){
+  const m=state.members.find(x=>x.id===memberId);if(!m)return;
+  const av=document.getElementById('profile-avatar');
+  av.className='avatar '+m.color;av.style.width='52px';av.style.height='52px';av.style.fontSize='18px';
+  av.textContent=initials(m.name);
+  document.getElementById('profile-name').textContent=m.name;
+  document.getElementById('profile-meta').textContent=`${m.team||'No team'} · ${m.role||'Member'} · ${m.type==='intern'?'Intern':'Paid'}${m.phone?' · '+m.phone:''}`;
+  document.getElementById('profile-avail').innerHTML=availBadge(m.availability||'full');
+  document.getElementById('profile-status').textContent=m.status||'No status set';
+  const activeTasks=state.tasks.filter(t=>t.memberId===memberId&&!t.done);
+  const doneTasks=state.tasks.filter(t=>t.memberId===memberId&&t.done);
+  document.getElementById('profile-tasks').innerHTML=activeTasks.length?activeTasks.map(t=>`<div class="task-item"><div class="task-text">${t.text}<div class="task-meta">${priorityLabel(t.priority)}${t.due?' · Due '+fmtDate(t.due):''}</div></div></div>`).join(''):'<p style="color:#aaa;font-size:13px">No active tasks</p>';
+  document.getElementById('profile-tasks-done').innerHTML=doneTasks.length?doneTasks.map(t=>`<div class="task-item"><div class="task-text done-text">${t.text}</div></div>`).join(''):'<p style="color:#aaa;font-size:13px">No completed tasks yet</p>';
+  openModal('profile-modal');
+}
+
+// ─── RENDER ──────────────────────────────────────────────
+function renderAll(){
+  const active=document.querySelector('#app .page.active');
+  if(!active)return;
+  const id=active.id.replace('page-','');
+  if(id==='home')renderHome();
+  if(id==='team'){populateTeamFilter();renderTeamPage();}
+  if(id==='manage')renderManage();
+  if(id==='mytasks')renderMyTasks();
+}
+
+function renderHome(){
+  const isAdmin=currentUser.role==='admin';
+  const full=state.members.filter(m=>m.availability==='full').length;
+  const openTasks=state.tasks.filter(t=>!t.done).length;
+  const doneGoals=state.goals.filter(g=>g.status==='done').length;
+  document.getElementById('stats-row').innerHTML=`
+    <div class="stat-card"><div class="stat-num">${state.members.length}</div><div class="stat-label">Members</div></div>
+    <div class="stat-card"><div class="stat-num">${state.teams.length}</div><div class="stat-label">Teams</div></div>
+    <div class="stat-card"><div class="stat-num">${full}</div><div class="stat-label">Fully available</div></div>
+    <div class="stat-card"><div class="stat-num">${openTasks}</div><div class="stat-label">Open tasks</div></div>
+    <div class="stat-card"><div class="stat-num">${doneGoals}/${state.goals.length}</div><div class="stat-label">Goals done</div></div>`;
+
+  // goals
+  const goalsEl=document.getElementById('goals-list');
+  if(!state.goals.length){
+    goalsEl.innerHTML='<p style="color:#aaa;font-size:13px">No goals set yet.'+( isAdmin?' Click "🎯 Add goal" to add one.':'')+' </p>';
+  } else {
+    const order=['in-progress','not-started','done'];
+    const sorted=[...state.goals].sort((a,b)=>order.indexOf(a.status)-order.indexOf(b.status));
+    goalsEl.innerHTML=sorted.map(g=>`
+      <div class="goal-card">
+        <button class="goal-status-pill ${goalStatusClass(g.status)}" onclick="${isAdmin?`cycleGoalStatus('${g.id}')`:'void(0)'}" title="${isAdmin?'Click to change status':''}" style="${isAdmin?'':'cursor:default'}">${goalStatusLabel(g.status)}</button>
+        <div style="flex:1">
+          <div class="goal-title" style="${g.status==='done'?'text-decoration:line-through;color:#aaa':''}">${g.title}</div>
+          ${g.desc?`<div class="goal-desc">${g.desc}</div>`:''}
+        </div>
+        ${isAdmin?`<button class="btn btn-sm btn-danger" onclick="removeGoal('${g.id}')">Remove</button>`:''}
+      </div>`).join('');
+  }
+
+  // availability
+  const availEl=document.getElementById('avail-strip');
+  if(!state.members.length){availEl.innerHTML='<p style="color:#aaa;font-size:13px">No members yet.</p>';}
+  else{availEl.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap">${state.members.map(m=>`
+    <div style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #e8e8e5;border-radius:8px;padding:5px 10px;cursor:pointer" onclick="openProfile('${m.id}')">
+      <div class="avail-dot avail-${m.availability||'full'}"></div>
+      <span style="font-size:13px;font-weight:500">${m.name}</span>
+      <span style="font-size:11px;color:#aaa">${m.team||''}</span>
+    </div>`).join('')}</div>`;}
+
+  // feed
+  const feedEl=document.getElementById('feed-list');
+  if(!state.feed.length){feedEl.innerHTML='<p style="color:#aaa;font-size:13px">No posts yet.</p>';return;}
+  feedEl.innerHTML=state.feed.slice(0,20).map(f=>{
+    if(f.type==='shoutout'){
+      const target=state.members.find(m=>m.id===f.targetId);
+      return`<div class="shoutout-card">
+        <div class="feed-item-header"><span style="font-size:18px">⭐</span>
+          <div><div style="font-size:14px;font-weight:600">Shoutout to ${target?target.name:'a team member'}!</div><div class="feed-meta">${timeAgo(f.createdAt)}</div></div>
+          ${isAdmin?`<button class="btn btn-sm btn-danger" style="margin-left:auto" onclick="deleteFeedItem('${f.id}')">Delete</button>`:''}
+        </div>
+        <div class="feed-body">${f.body}</div>
+      </div>`;
+    }
+    return`<div class="feed-item">
+      <div class="feed-item-header"><span style="font-size:18px">📢</span>
+        <div><div style="font-size:14px;font-weight:600">${f.title}</div><div class="feed-meta">${timeAgo(f.createdAt)}</div></div>
+        ${isAdmin?`<button class="btn btn-sm btn-danger" style="margin-left:auto" onclick="deleteFeedItem('${f.id}')">Delete</button>`:''}
+      </div>
+      <div class="feed-body">${f.body}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTeamPage(){
+  const filter=document.getElementById('team-filter').value;
+  let members=filter?state.members.filter(m=>m.team===filter):state.members;
+  const el=document.getElementById('team-grid');
+  if(!members.length){el.innerHTML='<p style="color:#aaa;font-size:13px">No members found.</p>';return;}
+  el.innerHTML=members.map(m=>{
+    const activeTasks=state.tasks.filter(t=>t.memberId===m.id&&!t.done).length;
+    return`<div class="member-card" onclick="openProfile('${m.id}')">
+      <div class="member-top">
+        <div class="avatar ${m.color}">${initials(m.name)}</div>
+        <div style="flex:1"><div class="member-name">${m.name}</div><div class="member-meta">${m.team||'No team'}${m.role?' · '+m.role:''}</div></div>
+        <div class="avail-dot avail-${m.availability||'full'}" style="width:12px;height:12px"></div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+        ${availBadge(m.availability||'full')}
+        ${m.type==='intern'?'<span class="badge badge-blue">Intern</span>':''}
+        ${activeTasks?`<span class="badge badge-purple">${activeTasks} task${activeTasks>1?'s':''}</span>`:''}
+      </div>
+      <div class="member-status${!m.status?' empty':''}">${m.status||'No status set'}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderManage(){
+  const ml=document.getElementById('manage-members-list');
+  if(!state.members.length){ml.innerHTML='<p style="color:#aaa;font-size:13px">No members yet.</p>';}
+  else{ml.innerHTML=state.members.map(m=>`
+    <div class="card" style="display:flex;align-items:center;gap:12px;padding:10px 14px">
+      <div class="avatar ${m.color}" style="width:34px;height:34px;font-size:12px">${initials(m.name)}</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:600">${m.name}</div>
+        <div style="font-size:12px;color:#888">${m.team||'No team'} · ${m.role||'Member'} · ${m.type} · Login: ${m.username||'not set'}</div>
+      </div>
+      ${availBadge(m.availability||'full')}
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-sm" onclick="editMember('${m.id}')">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="removeMember('${m.id}')">Remove</button>
+      </div>
+    </div>`).join('');}
+
+  const tl=document.getElementById('manage-teams-list');
+  tl.innerHTML=state.teams.map(t=>`
+    <div style="display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #e8e8e5;border-radius:8px;padding:6px 12px">
+      <span style="font-size:13px;font-weight:500">${t}</span>
+      <span style="font-size:12px;color:#aaa">${state.members.filter(m=>m.team===t).length} members</span>
+      <button onclick="removeTeam('${t}')" style="font-size:14px;color:#E24B4A;background:none;border:none;cursor:pointer" title="Remove">✕</button>
+    </div>`).join('');
+
+  const tkl=document.getElementById('manage-tasks-list');
+  if(!state.tasks.length){tkl.innerHTML='<p style="color:#aaa;font-size:13px">No tasks yet.</p>';return;}
+  const sorted=[...state.tasks].sort((a,b)=>(a.done?1:0)-(b.done?1:0));
+  tkl.innerHTML=sorted.map(t=>{
+    const m=state.members.find(x=>x.id===t.memberId);
+    return`<div class="card" style="padding:10px 14px">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div class="task-check${t.done?' done':''}" onclick="toggleTask('${t.id}')">${t.done?'✓':''}</div>
+        <div style="flex:1">
+          <div class="task-text${t.done?' done-text':''}">${t.text}</div>
+          <div class="task-meta" style="margin-top:4px">${priorityLabel(t.priority)} · Assigned to <strong>${m?m.name:'?'}</strong>${t.due?' · Due '+fmtDate(t.due):''}</div>
+        </div>
+        <button class="btn btn-sm btn-danger" onclick="removeTask('${t.id}')">Remove</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderMyTasks(){
+  if(currentUser.role==='admin'){
+    document.getElementById('my-status-section').style.display='none';
+    document.getElementById('my-tasks-list').innerHTML='<p style="color:#aaa;font-size:13px">Use Manage to assign tasks to members.</p>';
+    document.getElementById('my-tasks-done-list').innerHTML='';
+    document.getElementById('member-add-task-section').style.display='none';
+    return;
+  }
+  const me=state.members.find(m=>m.id===currentUser.memberId);
+  if(me){
+    document.getElementById('my-status-input').value=me.status||'';
+    myAvail=me.availability||'full';
+    document.querySelectorAll('#my-avail-selector .avail-opt').forEach(b=>{
+      b.className='avail-opt';
+      if(b.dataset.val===myAvail)b.classList.add('sel-'+myAvail);
+    });
+    document.getElementById('member-add-task-section').style.display='block';
+  }
+  const active=state.tasks.filter(t=>t.memberId===currentUser.memberId&&!t.done);
+  const done=state.tasks.filter(t=>t.memberId===currentUser.memberId&&t.done);
+  const el=document.getElementById('my-tasks-list');
+  el.innerHTML=active.length?active.map(t=>`
+    <div class="card" style="padding:10px 14px">
+      <div class="task-item" style="border:none;padding:0">
+        <div class="task-check" onclick="toggleTask('${t.id}')"></div>
+        <div style="flex:1"><div class="task-text">${t.text}</div><div class="task-meta">${priorityLabel(t.priority)}${t.due?' · Due '+fmtDate(t.due):''}</div></div>
+      </div>
+    </div>`).join(''):'<p style="color:#aaa;font-size:13px">No tasks assigned yet.</p>';
+  const del=document.getElementById('my-tasks-done-list');
+  del.innerHTML=done.length?done.map(t=>`
+    <div class="card" style="padding:10px 14px;opacity:0.6">
+      <div class="task-item" style="border:none;padding:0">
+        <div class="task-check done" onclick="toggleTask('${t.id}')">✓</div>
+        <div class="task-text done-text">${t.text}</div>
+      </div>
+    </div>`).join(''):'<p style="color:#aaa;font-size:13px">No completed tasks yet.</p>';
+}
+</script>
+</body>
+</html>
