@@ -61,7 +61,7 @@ const JEEBatches = () => (
               <li>✓ Access to <strong>Mock Tests</strong></li>
               <li>✓ <strong>Guidance</strong> &amp; Motivation</li>
             </ul>
-            <a href="https://chat.whatsapp.com/FFvn8Ogz4Sd4GgTphd7qfO" target="_blank" rel="noopener noreferrer" className="batch-btn primary">
+            <a href="https://chat.whatsapp.com/IfWG0MVDSim68pZrtHkeXd?s=cl&p=a&mlu=0" target="_blank" rel="noopener noreferrer" className="batch-btn primary">
               <WhatsAppIcon /> Join now
             </a>
           </div>

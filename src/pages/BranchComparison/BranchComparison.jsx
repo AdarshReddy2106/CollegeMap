@@ -8,7 +8,7 @@ import BranchComparisonResults from './BranchComparisonResults';
 import BranchComparisonLoadingOverlay from './BranchComparisonLoadingOverlay';
 import { useAuth } from '../../context/AuthContext';
 import { checkBranchComparisonAccess } from '../../services/supabaseService';
-// const DEV_BYPASS_PAYMENT = process.env.NODE_ENV === 'development';
+const DEV_BYPASS_PAYMENT = process.env.NODE_ENV === 'development';
 
 
 const RAZORPAY_KEY = process.env.REACT_APP_RAZORPAY_KEY_ID;
@@ -200,11 +200,11 @@ const BranchComparison = () => {
 
   useEffect(() => {
     const verifyAccess = async () => {
-      // if (DEV_BYPASS_PAYMENT) {        // ← add this
-      //   setHasAccess(true);            // ← add this
-      //   setCheckingAccess(false);      // ← add this
-      //   return;                        // ← add this
-      // }
+      if (DEV_BYPASS_PAYMENT) {        // ← add this
+        setHasAccess(true);            // ← add this
+        setCheckingAccess(false);      // ← add this
+        return;                        // ← add this
+      }
       if (!isLoggedIn || !user?.email) {
         setHasAccess(false);
         setCheckingAccess(false);
