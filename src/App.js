@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 // import SplashScreen from "./components/SplashScreen/SplashScreen";
 import Layout from "./components/Layout/Layout";
@@ -39,6 +39,8 @@ import UserTypeModal from "./components/UserTypeModal/UserTypeModal";
 import StudyWithIITian from "./pages/StudyWithIITians/StudyWithIITians";
 import CollegePredictortool from './pages/CollegePredictor/CollegePredictortool';
 import BranchComparisonIntro from './pages/BranchComparison/BranchComparisonIntro';
+// Lazy-loaded: pulls in josaaCutoffs.json (1.3 MB) only when user visits /colleges/...
+const CollegeCutoffPage = lazy(() => import('./pages/CollegeCutoffPage/CollegeCutoffPage'));
 
 // Smart home that switches between JEE home (HomePage) and College home (Home2)
 // based on the cached userType preference — same URL for both.
@@ -133,6 +135,7 @@ function App() {
           {/* Correct placement of ProtectedRoute */}
           {/* <Route path="/EnhancedQuestions" element={<ProtectedRoute requirePayment={false}><EnhancedQuestions /></ProtectedRoute>} /> */}
           <Route path="/EnhancedQuestions" element={<ProtectedRoute requirePayment={false}><EnhancedQuestions /></ProtectedRoute>} />
+
           <Route path="/AboutUs" element={<AboutUs />} />
           <Route path="/College" element={<AboutIITs />} />
           {/* <Route path="/Contact-Us" element={<ContactUs />} /> */}
@@ -167,9 +170,20 @@ function App() {
           <Route path="/CollegePredictor/tool" element={<CollegePredictortool />} />
           <Route path="/BranchComparision" element={<BranchComparisonIntro />} />
           <Route path="/BranchComparision/tool" element={<BranchComparison />} />
+          {/* Programmatic SEO: one template → 571 indexed pages. Lazy-loaded so
+              the 1.3MB josaaCutoffs.json is NEVER in the main bundle. */}
+          <Route
+            path="/colleges/:institute/:branch/cutoff"
+            element={
+              <Suspense fallback={null}>
+                <CollegeCutoffPage />
+              </Suspense>
+            }
+          />
           {/* Add other routes as needed */}
         </Routes>
       </Layout>
+
     </Router>
   );
 }

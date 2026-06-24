@@ -473,3 +473,58 @@ export const saveBranchComparisonPayment = async (userEmail, paymentId, orderId)
     return false;
   }
 };
+
+/**
+ * Track user inputs for Branch Comparison
+ * @param {string} userEmail - User's email
+ * @param {Object} inputs - The comparison inputs
+ * @returns {Promise<boolean>}
+ */
+export const trackBranchComparisonInput = async (userEmail, inputs) => {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('branch_comparison_inputs')
+      .insert({
+        user_email: userEmail ? userEmail.toLowerCase() : null,
+        college_1: inputs.college1 || null,
+        branch_1: inputs.branch1 || null,
+        college_2: inputs.college2 || null,
+        branch_2: inputs.branch2 || null,
+        user_query: inputs.userQuery || null,
+        promo_code: inputs.promoCode || null
+      });
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    console.error('Error tracking branch comparison input:', err);
+    return false;
+  }
+};
+
+/**
+ * Track user inputs for College Predictor
+ * @param {string} userEmail - User's email
+ * @param {Object} inputs - The predictor inputs
+ * @returns {Promise<boolean>}
+ */
+export const trackCollegePredictorInput = async (userEmail, inputs) => {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('college_predictor_inputs')
+      .insert({
+        user_email: userEmail ? userEmail.toLowerCase() : null,
+        exam: inputs.exam,
+        rank: inputs.rank,
+        category: inputs.category,
+        gender_female: inputs.genderFemale,
+        seat_pool: inputs.seatPool || null
+      });
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    console.error('Error tracking college predictor input:', err);
+    return false;
+  }
+};

@@ -57,9 +57,11 @@
     "start:api": "cd Backend && node server.js",
     "start:api:python": "cd \"branchintel 9\" && uvicorn main:app --host 127.0.0.1 --port 8000 --reload",
     "setup:branchintel": "pip3 install -r \"branchintel 9/requirements.txt\"",
+    "generate-sitemap": "node scripts/generateSitemap.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
+
   },
   "eslintConfig": {
     "extends": [

@@ -3,11 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import './CollegePredictor.scss';
 import { predictCutoffs, MAX_PREDICTOR_RESULTS, CATEGORY_OPTIONS, resolveCategoryFilters } from './predictorFilter';
 import { BRANCH_PRESETS } from './branchPresets';
+import { useAuth } from '../../context/AuthContext';
+import { trackCollegePredictorInput } from '../../services/supabaseService';
 
 const DATA_URL = `${process.env.PUBLIC_URL || ''}/data/jee_cutoffs_final.json`;
 
 export default function CollegePredictortool() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [entries, setEntries] = useState([]);
   const [loadError, setLoadError] = useState('');
   const [loadingData, setLoadingData] = useState(true);
@@ -80,6 +83,11 @@ export default function CollegePredictortool() {
         return;
       }
       const { pwd } = resolveCategoryFilters(category);
+
+      trackCollegePredictorInput(user?.email, {
+        exam, rank: r, category, genderFemale, seatPool
+      });
+
       const rows = predictCutoffs(entries, {
         exam, rank: r, category, genderFemale, seatPool,
         institutionTypes, maxResults: MAX_PREDICTOR_RESULTS, preferredBranchIds, pwd,
@@ -95,7 +103,7 @@ export default function CollegePredictortool() {
       });
     },
     [entries, exam, rank, category, genderFemale, seatPool,
-     institutionTypes, mainInstitutions, preferredBranchIds, navigate]
+     institutionTypes, mainInstitutions, preferredBranchIds, navigate, user]
   );
 
   return (

@@ -16,6 +16,18 @@ const bannerSlides = [
     alt: 'CollegeMap - JEE Mock Tests & Resources',
     link: "https://chat.whatsapp.com/Jv5KBBAeP62L9EzNqHHmwr?mode=ems_copy_t",
   },
+  {
+    id: 3,
+    image: '/energy_banner.png',
+    alt: 'CollegeMap - Energy Batch Mentorship',
+    link: '/EnergyBatch',
+  },
+  {
+    id: 4,
+    image: '/predictor.png',
+    alt: 'CollegeMap - College Predictor',
+    link: '/CollegePredictor',
+  },
 ];
 
 const NextArrow = ({ onClick }) => (

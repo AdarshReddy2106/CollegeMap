@@ -7,8 +7,8 @@ import catalogStatic from '../../data/institutionBranchCatalog.json';
 import BranchComparisonResults from './BranchComparisonResults';
 import BranchComparisonLoadingOverlay from './BranchComparisonLoadingOverlay';
 import { useAuth } from '../../context/AuthContext';
-import { checkBranchComparisonAccess } from '../../services/supabaseService';
-const DEV_BYPASS_PAYMENT = process.env.NODE_ENV === 'development';
+import { checkBranchComparisonAccess, trackBranchComparisonInput } from '../../services/supabaseService';
+// const DEV_BYPASS_PAYMENT = process.env.NODE_ENV === 'development';
 
 
 const RAZORPAY_KEY = process.env.REACT_APP_RAZORPAY_KEY_ID;
@@ -155,7 +155,10 @@ const BranchComparison = () => {
   const [hasAccess, setHasAccess] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);
   const [paying, setPaying] = useState(false);
-
+  const [promoCode, setPromoCode] = useState('');
+  const [freeTries, setFreeTries] = useState(() => {
+    return parseInt(localStorage.getItem('bc_free_tries') || '0', 10);
+  });
 
   const [catalog, setCatalog] = useState(null);
   const [loadError, setLoadError] = useState('');
@@ -269,6 +272,18 @@ const BranchComparison = () => {
       if (q) payload.user_query = q;
       const data = await compareBranches(payload);
       setResult(data);
+
+      const appliedPromo = localStorage.getItem('bc_applied_promo');
+      trackBranchComparisonInput(user?.email, {
+        college1, branch1, college2, branch2, userQuery: q, promoCode: appliedPromo
+      });
+
+      if (!hasAccess && freeTries > 0) {
+        const newTries = freeTries - 1;
+        setFreeTries(newTries);
+        localStorage.setItem('bc_free_tries', newTries.toString());
+      }
+
       try {
         sessionStorage.setItem('branchintel_compare_result', JSON.stringify(data));
       } catch {
@@ -434,33 +449,62 @@ const BranchComparison = () => {
     );
   }
 
-  if (!hasAccess) {
+  if (!hasAccess && freeTries <= 0) {
     return (
       <div className="branch-comparison-bg">
         <div className="branch-comparison-container" style={{ textAlign: "center", padding: "2rem 1.5rem" }}>
-          <h2>Branch Comparison Premium</h2>
-          <p style={{ margin: "0.5rem 0 1.5rem", fontSize: "1.05rem", color: "#555" }}>
-            Watch this quick demo to see how our tool helps you make a smarter choice.
-          </p>
-          <div style={{ maxWidth: "100%", margin: "0 auto 1.5rem", borderRadius: "12px", overflow: "hidden", background: "#000", maxHeight: "350px", display: "flex", justifyContent: "center" }}>
+          <h2>Branch Comparison Premium(Demo)</h2>
+          <div style={{ maxWidth: "600px", margin: "0 auto 1.5rem", borderRadius: "12px", overflow: "hidden", display: "flex", justifyContent: "center", boxShadow: "0 4px 15px rgba(0,0,0,0.15)" }}>
             <video
               controls
               playsInline
-              poster="/talktoiitians.png"
-              style={{ width: "100%", maxHeight: "350px", objectFit: "contain", display: "block" }}
+              style={{ width: "100%", height: "auto", display: "block" }}
             >
-              <source src="/videos/talk-to-iitian-demo.mp4" type="video/mp4" />
+              <source src="/branch_comp.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </div>
 
-          <p style={{ margin: "0 0 1.5rem", fontSize: "1.1rem", color: "#555" }}>
+          <div style={{ marginBottom: "1rem", display: "flex", justifyContent: "center", gap: "10px" }}>
+            <input
+              type="text"
+              placeholder="Have a promo code?"
+              value={promoCode}
+              onChange={(e) => setPromoCode(e.target.value)}
+              style={{ padding: "8px", borderRadius: "8px", border: "1px solid #ccc", outline: "none", textTransform: "uppercase", width: "200px" }}
+            />
+            <button
+              className="branch-intel-btn"
+              style={{ padding: "8px 16px", margin: 0, width: "auto" }}
+              onClick={() => {
+                const code = promoCode.trim().toUpperCase();
+                const validCodes = {
+                  'COLLEGEMAP2026': 5,
+                  'FREETRIAL': 5,
+                  'JOSAA2026': 5,
+                };
+                if (validCodes[code]) {
+                  const tries = validCodes[code];
+                  localStorage.setItem('bc_free_tries', tries.toString());
+                  localStorage.setItem('bc_applied_promo', code);
+                  setFreeTries(tries);
+                  alert(`Promo code applied! You get ${tries} free tries.`);
+                } else {
+                  alert('Invalid promo code.');
+                }
+              }}
+            >
+              Apply
+            </button>
+          </div>
+
+          <p style={{ margin: "0 0 1rem", fontSize: "1rem", color: "#555" }}>
             Get 6 months of unrestricted access to our powerful Branch Comparison tool for just ₹300.
           </p>
 
           {!isLoggedIn ? (
             <>
-              <div style={{ background: "#fff3cd", color: "#856404", padding: "1rem", borderRadius: "8px", marginBottom: "1.5rem", border: "1px solid #ffeeba" }}>
+              <div style={{ background: "#fff3cd", color: "#856404", padding: "0.75rem", borderRadius: "8px", marginBottom: "1rem", border: "1px solid #ffeeba", fontSize: "0.95rem" }}>
                 <strong>Note:</strong> You must be logged in to purchase and use the premium tool.
               </div>
               <button className="branch-intel-login-btn" onClick={() => navigate('/login')}>
@@ -652,9 +696,9 @@ const BranchComparison = () => {
   return (
     <div className="branch-comparison-bg">
       <BranchComparisonLoadingOverlay active={loading} compareSummary={summaryLine} />
-  
+
       <div className="bc-tool-page">
-  
+
         {/* ── Hero header ── */}
         <header className="bc-tool-header">
           <div className="bc-tool-header-left">
@@ -675,25 +719,25 @@ const BranchComparison = () => {
             />
           </div>
         </header>
-  
+
         {loadError && (
           <p className="branch-intel-form-error branch-intel-form-error--soft" role="status">
             {loadError}
           </p>
         )}
-  
+
         <form className="bc-tool-form" onSubmit={handleSubmit} noValidate>
-  
+
           {/* ── Face-off grid ── */}
           <div className="bc-faceoff">
-  
+
             {/* Branch A */}
             <div className="bc-branch-card">
               <div className="bc-branch-card-head">
                 <span className="bc-letter-badge bc-letter-badge--a">A</span>
                 <span className="bc-card-title">Branch A</span>
               </div>
-  
+
               <div className="bc-field-row">
                 {/* <span className="bc-field-icon">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -713,7 +757,7 @@ const BranchComparison = () => {
                   </select>
                 </div>
               </div>
-  
+
               <div className="bc-field-row">
                 {/* <span className="bc-field-icon">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -740,7 +784,7 @@ const BranchComparison = () => {
                   />
                 </div>
               </div>
-  
+
               <div className="bc-field-row">
                 {/* <span className="bc-field-icon">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -760,21 +804,21 @@ const BranchComparison = () => {
                 </div>
               </div>
             </div>
-  
+
             {/* VS */}
             <div className="bc-vs-divider">
               <div className="bc-vs-line" />
               <div className="bc-vs-circle">VS</div>
               <div className="bc-vs-line" />
             </div>
-  
+
             {/* Branch B */}
             <div className="bc-branch-card">
               <div className="bc-branch-card-head">
                 <span className="bc-letter-badge bc-letter-badge--b">B</span>
                 <span className="bc-card-title">Branch B</span>
               </div>
-  
+
               <div className="bc-field-row">
                 {/* <span className="bc-field-icon">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -794,7 +838,7 @@ const BranchComparison = () => {
                   </select>
                 </div>
               </div>
-  
+
               <div className="bc-field-row">
                 {/* <span className="bc-field-icon">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -821,7 +865,7 @@ const BranchComparison = () => {
                   />
                 </div>
               </div>
-  
+
               <div className="bc-field-row">
                 {/* <span className="bc-field-icon">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
@@ -842,13 +886,13 @@ const BranchComparison = () => {
               </div>
             </div>
           </div>
-  
+
           {/* ── Question row ── */}
           <div className="bc-question-row">
             <span className="bc-question-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
               </svg>
             </span>
             <div className="bc-question-inner">
@@ -862,11 +906,11 @@ const BranchComparison = () => {
               />
             </div>
           </div>
-  
+
           {submitError && (
             <p className="branch-intel-form-error" role="alert">{submitError}</p>
           )}
-  
+
           {/* ── Footer ── */}
           <div className="bc-tool-footer">
 
@@ -875,11 +919,16 @@ const BranchComparison = () => {
               Compare branches &nbsp;→
             </button>
           </div>
-  
+          {!hasAccess && freeTries > 0 && (
+            <p style={{ marginTop: '15px', color: '#888', fontSize: '13px', textAlign: 'center' }}>
+              Free tries remaining: {freeTries}/5
+            </p>
+          )}
+
         </form>
       </div>
     </div>
   );
-          };
+};
 
 export default BranchComparison;

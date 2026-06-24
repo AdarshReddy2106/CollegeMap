@@ -6,7 +6,7 @@ import anuj from '../../assets/Team/AnujPatel_IITB_FounderAndCEO.png';
 import bhoomi from "../../assets/Team/Bhoomi_IITB_StrategicPartnershipsLead.jpeg";
 import veera from "../../assets/Team/VeeraVenkat_IITPalakkad_CollegeCounsellingOperationsLead.jpeg";
 import paridhi from "../../assets/Team/paridhi.jpg";
-import lakshmi from "../../assets/Team/lakshmi.jpg";
+import lakshmi from "../../assets/Team/lakshmi.jpeg";
 import moksh from "../../assets/Team/moksh.jpeg";
 import adarsh from "../../assets/Team/adarsh.jpeg";
 

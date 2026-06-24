@@ -58,12 +58,12 @@ const PROBLEMS = [
 ];
 
 const WHY_CARDS = [
-  { title: 'Stop Distractions',   desc: 'Stay focused and eliminate study blockers.' },
+  { title: 'Stop Distractions', desc: 'Stay focused and eliminate study blockers.' },
   { title: 'Finish Your Syllabus', desc: 'Structured planning and timely completion.' },
-  { title: 'Improve Scores',       desc: 'Track progress and boost performance.' },
-  { title: 'Stay On Track',        desc: 'Never lose direction in preparation.' },
-  { title: 'Build Consistency',    desc: 'Create strong daily study habits.' },
-  { title: 'Daily Motivation',     desc: 'Accountability and support from IITians.' },
+  { title: 'Improve Scores', desc: 'Track progress and boost performance.' },
+  { title: 'Stay On Track', desc: 'Never lose direction in preparation.' },
+  { title: 'Build Consistency', desc: 'Create strong daily study habits.' },
+  { title: 'Daily Motivation', desc: 'Accountability and support from IITians.' },
 ];
 
 export default function EnergyBatch() {
@@ -115,7 +115,6 @@ export default function EnergyBatch() {
                   Join Energy Batch
                 </a>
               </div>
-         
             </div>
 
             {/* RIGHT */}
