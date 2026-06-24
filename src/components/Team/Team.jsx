@@ -6,7 +6,7 @@ import anuj from '../../assets/Team/AnujPatel_IITB_FounderAndCEO.png';
 import bhoomi from "../../assets/Team/Bhoomi_IITB_StrategicPartnershipsLead.jpeg";
 import veera from "../../assets/Team/VeeraVenkat_IITPalakkad_CollegeCounsellingOperationsLead.jpeg";
 import paridhi from "../../assets/Team/paridhi.jpg";
-import ashish from "../../assets/Team/ashish.jpeg";
+import lakshmi from "../../assets/Team/lakshmi.jpg";
 import moksh from "../../assets/Team/moksh.jpeg";
 import adarsh from "../../assets/Team/adarsh.jpeg";
 
@@ -15,7 +15,7 @@ const teamMembers = [
     { iit: "IIT Indore", name: 'Tanvi Warvadekar', role: 'Strategic Advisor', img: tanvi, url: "https://www.linkedin.com/in/tanvi-warvadekar/" },
     { iit: "IIT Palakkad", name: 'Veera Venkat', role: 'Web Development Head', img: veera, url: "https://www.linkedin.com/in/veera-venkat-408178280/" },
     { iit: "IIT Palakkad", name: 'Adarsh Reddy', role: 'Lead web Developer', img: adarsh, url: "https://www.linkedin.com/in/adarsh-reddy-bb1b8b318/" },
-    { iit: "IIT Bombay", name: 'Ashish Kumar Yadav', role: 'Web Developer and Data Analyst', img: ashish, url: "https://www.linkedin.com/in/ashish-kumar-yadav-518231285/" },
+    { iit: "IIT Palakkad", name: 'Lakshmi Prasanna', role: 'Web Developer', img: lakshmi, url: "https://www.linkedin.com/in/lakshmi-prasanna-n-068a28353" },
     { iit: "IIT Bombay", name: 'Paridhi Vatrey', role: 'Design lead', img: paridhi, url: "https://www.linkedin.com/in/paridhi-vatrey/" },
     { iit: "Dwarkadas J. Sanghvi College of Engineering", name: 'Moksh Lakhani', role: 'Social Media Manager', img: moksh, url: "https://www.linkedin.com/in/moksh-lakhani-243244251/" },
     { iit: "IIT Bombay", name: 'Bhoomi Singhvi', role: 'Strategic Partnerships Lead', img: bhoomi, url: "https://www.linkedin.com/in/bhoomisinghvi/" },
