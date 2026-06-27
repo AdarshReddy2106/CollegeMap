@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './UserTypeModal.css';
 
 const UserTypeModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const userType = localStorage.getItem('userType');
-    if (!userType) {
+    if (!userType && location.pathname === '/') {
       setIsOpen(true);
     }
-  }, []);
+  }, [location.pathname]);
 
   const handleSelection = (type) => {
     localStorage.setItem('userType', type);

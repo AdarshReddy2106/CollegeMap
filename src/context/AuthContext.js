@@ -9,34 +9,8 @@ export const AuthProvider = ({ children }) => {
 
 
     const checkPaymentStatus = useCallback(async () => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/v1/institutes/check_balance`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-                },
-            });
-
-            if (response.status === 403) {
-                setIsPaid(false);
-                return;
-            }
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-                throw new Error(`Failed to fetch balance: ${errorData.message || response.statusText}`);
-            }
-
-            const data = await response.json();
-            if (typeof data.balance === "number" && data.balance > 0) {
-                setIsPaid(true);
-            } else {
-                setIsPaid(false);
-            }
-        } catch (error) {
-            setIsPaid(false);
-        }
+        // Backend verification removed as requested
+        setIsPaid(true);
     }, []);
 
 

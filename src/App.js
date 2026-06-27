@@ -61,7 +61,12 @@ function SmartHome() {
     };
   }, []);
 
-  return userType === 'college' ? <Home2 /> : <HomePage />;
+  return (
+    <>
+      <UserTypeModal />
+      {userType === 'college' ? <Home2 /> : <HomePage />}
+    </>
+  );
 }
 
 
@@ -118,7 +123,6 @@ function App() {
 
   return (
     <Router>
-      <UserTypeModal />
       <ScrollToTop />
       <RouteAnalyticsTracker />
       <Layout isLoggedIn={isLoggedIn}>

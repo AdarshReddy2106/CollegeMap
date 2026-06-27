@@ -13,8 +13,6 @@ export const supabase = supabaseUrl && supabaseAnonKey
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
-if (supabase) {
-  console.log('✅ Supabase client initialized');
-} else {
+if (!supabase) {
   console.error('❌ Failed to initialize Supabase client');
 }
