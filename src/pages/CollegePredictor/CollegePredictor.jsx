@@ -32,7 +32,7 @@ export default function CollegePredictor() {
         </div>
         <div className="cp-hero-right">
           <div className="cp-image-box">
-            <img src="/college-predictor.png" alt="College Predictor" />
+            <img src="/college-predictor.jpg" alt="College Predictor" />
           </div>
         </div>
       </section>
@@ -51,7 +51,7 @@ export default function CollegePredictor() {
         </p>
       </section>
 
-      {/* Bottom nav bar — same pattern as Talk to IITian */}n
+      {/* Bottom nav bar — same pattern as Talk to IITian */}
       <div className="cp-bottom-nav">
         <div className="cp-bottom-nav-steps">
           <span>Enter your rank</span>

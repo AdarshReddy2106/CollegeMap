@@ -102,8 +102,8 @@
   transition: color 0.3s ease;
 }
 
-.tti-progress-circle.active + .tti-progress-line + .tti-progress-label,
-.tti-progress-step .tti-progress-circle.active ~ .tti-progress-label {
+.tti-progress-circle.active+.tti-progress-line+.tti-progress-label,
+.tti-progress-step .tti-progress-circle.active~.tti-progress-label {
   color: #1593a1;
 }
 
@@ -126,6 +126,7 @@
     opacity: 0;
     transform: translateY(24px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -310,6 +311,7 @@
     transform: translateY(100%);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -340,6 +342,7 @@
   font-size: 1.2rem;
   opacity: 0.85;
 }
+
 /* color: #ffffff; */
 /* background: #1593a1; */
 .tti-start-now-btn {
@@ -387,7 +390,8 @@
 .tti-video-step {
   max-width: 800px;
   margin: 0 auto;
-  padding-bottom: 5rem; /* space for fixed bottom bar */
+  padding-bottom: 5rem;
+  /* space for fixed bottom bar */
 }
 
 .tti-video-header {
@@ -744,9 +748,19 @@
 }
 
 @keyframes ttiShakeIn {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  75% { transform: translateX(4px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-4px);
+  }
+
+  75% {
+    transform: translateX(4px);
+  }
 }
 
 .tti-submit-btn {
@@ -812,8 +826,15 @@
 }
 
 @keyframes ttiGradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .tti-success-checkmark {
@@ -834,9 +855,11 @@
     transform: scale(0);
     opacity: 0;
   }
+
   60% {
     transform: scale(1.15);
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -881,6 +904,7 @@
     opacity: 0;
     transform: translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -943,8 +967,13 @@
 }
 
 @keyframes ttiFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .tti-warning-modal {
@@ -963,6 +992,7 @@
     transform: scale(0.85);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -1045,7 +1075,9 @@
 }
 
 @keyframes ttiSpin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -1211,6 +1243,7 @@
     border-radius: 8px;
   }
 }
+
 @media (max-width: 768px) {
   .tti-list {
     align-items: flex-start;
@@ -1234,4 +1267,116 @@
 
 .tti-hero-start-btn:hover {
   background-color: #0da89f;
+}
+
+/* ── Mobile spacing fixes (max-width: 768px) ── */
+@media (max-width: 768px) {
+  .talk-to-iitian-page {
+    padding: 1rem 1rem 8rem;
+    /* less top padding */
+  }
+
+  .tti-hero-section {
+    gap: 1.25rem;
+    /* was 2rem — tighter between all flex children */
+    margin-bottom: 1.5rem;
+    /* was 3rem */
+  }
+
+  .tti-title {
+    font-size: 2rem;
+    margin: 0 0 0.75rem;
+    /* was 2rem bottom margin */
+  }
+
+  .tti-list {
+    gap: 0.85rem;
+    /* was 1.5rem between list items */
+  }
+
+  .tti-list li {
+    font-size: 1rem;
+  }
+
+  .tti-visual-img {
+    border-radius: 12px;
+  }
+
+  .tti-hero-start-btn {
+    margin-top: 12px;
+    padding: 10px 0;
+    width: 100%;
+  }
+
+  .tti-middle-section {
+    padding: 1.25rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tti-middle-heading {
+    margin-bottom: 1.5rem;
+    /* was 4rem */
+  }
+}
+
+@media (max-width: 768px) {
+  .tti-hero-visual {
+    min-height: unset;
+    margin-top: 2 rem;
+    /* pulls the image up */
+  }
+}
+
+@media (max-width: 768px) {
+  .tti-middle-section {
+    padding: 1.25rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tti-middle-heading {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  .tti-step {
+    padding: 16px 14px;
+    gap: 6px;
+  }
+
+  .tti-step-title {
+    font-size: 0.875rem;
+    margin-bottom: 4px;
+  }
+
+  .tti-step-desc {
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+}
+
+@media (max-width: 768px) {
+  .tti-step-arrow {
+    font-size: 1.1rem;
+    margin: -8px 0;
+    /* tighten the gap above/below arrow */
+    color: #cbd5e0;
+  }
+}
+
+/* Mobile-only line break helper */
+.tti-mobile-break {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .tti-mobile-break {
+    display: block;
+  }
+
+  .tti-step-arrow {
+    color: #10c3bc;
+    font-size: 1.3rem;
+    margin: -6px 0;
+  }
 }

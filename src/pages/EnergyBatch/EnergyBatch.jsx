@@ -7,47 +7,6 @@ const INQUIRE_WHATSAPP_URL =
   'https://api.whatsapp.com/send?phone=919326602765&text=Hi%2C%20I%20would%20like%20to%20inquire%20about%20IITian%20Guidance%20for%20JEE%20Preparation..';
 const MENTORSHIP_IMG = `${process.env.PUBLIC_URL || ''}/energybatch.jpg`;
 
-function IconGroup() {
-  return (
-    <svg className="eb-mini-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-      <circle cx="16" cy="18" r="6" stroke="currentColor" strokeWidth="2" />
-      <circle cx="32" cy="18" r="6" stroke="currentColor" strokeWidth="2" />
-      <path d="M8 38c0-6 6.5-10 16-10s16 4 16 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-function IconChart() {
-  return (
-    <svg className="eb-mini-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-      <path d="M8 40h32M12 32l8-12 8 6 8-18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M36 8l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-function IconClock() {
-  return (
-    <svg className="eb-mini-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-      <circle cx="24" cy="24" r="16" stroke="currentColor" strokeWidth="2" />
-      <path d="M24 16v10l6 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-function IconChat() {
-  return (
-    <svg className="eb-mini-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-      <path d="M10 14h28a4 4 0 014 4v14a4 4 0 01-4 4H22l-8 6v-6h-4a4 4 0 01-4-4V18a4 4 0 014-4z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </svg>
-  );
-}
-function IconBan() {
-  return (
-    <svg className="eb-mini-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-      <circle cx="24" cy="24" r="16" stroke="currentColor" strokeWidth="2" />
-      <path d="M14 34l20-20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 const PROBLEMS = [
   { pre: "Can't stay ", bold: "focused", post: "?" },
   { pre: "Unable to finish your ", bold: "syllabus", post: "?" },
@@ -57,13 +16,17 @@ const PROBLEMS = [
   { pre: "", bold: "Falling behind", post: " your study plan?" },
 ];
 
-const WHY_CARDS = [
-  { title: 'Stop Distractions', desc: 'Stay focused and eliminate study blockers.' },
-  { title: 'Finish Your Syllabus', desc: 'Structured planning and timely completion.' },
-  { title: 'Improve Scores', desc: 'Track progress and boost performance.' },
-  { title: 'Stay On Track', desc: 'Never lose direction in preparation.' },
-  { title: 'Build Consistency', desc: 'Create strong daily study habits.' },
-  { title: 'Daily Motivation', desc: 'Accountability and support from IITians.' },
+const FEATURE_CHIPS = [
+  { title: 'Personalized Support', desc: "We've got your back" },
+  { title: 'Stay Focused', desc: 'Eliminate distractions and stay productive' },
+  { title: 'Stay on Track', desc: 'Consistent improvement every weeks' },
+  { title: 'Study Effectively', desc: 'Smart strategies, not just hard work' },
+];
+
+const MENTORS = [
+  { name: 'Shivakshi Gupta', iit: 'IIT Bombay', year: '2025', img: `${process.env.PUBLIC_URL || ''}/mentors-energybatch/shivakshi1.png` },
+  { name: 'Sai Charan', iit: 'IIT Bombay', year: '2023', img: `${process.env.PUBLIC_URL || ''}/mentors-energybatch/saicharan1.png` },
+  { name: 'Anant Agrawal', iit: 'IIT Bombay', year: '2024', img: `${process.env.PUBLIC_URL || ''}/mentors-energybatch/anant1.png` },
 ];
 
 export default function EnergyBatch() {
@@ -88,7 +51,6 @@ export default function EnergyBatch() {
               <h1 className="eb-new-title">
                 Learn <span>Smarter</span><br />
                 with Dedicated <span>IITian Mentors.</span><br />
-                {/* Stay <span>Ahead.</span> */}
               </h1>
 
               <p className="eb-new-subtitle">
@@ -110,12 +72,10 @@ export default function EnergyBatch() {
 
               <div className="eb-hero-action-row">
                 <span className="eb-ratio-line">Only 5 students per mentor</span>
-
                 <a href={INQUIRE_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="eb-primary-btn">
                   Join Energy Batch
                 </a>
               </div>
-
             </div>
 
             {/* RIGHT */}
@@ -129,75 +89,81 @@ export default function EnergyBatch() {
               </figure>
             </div>
           </div>
-
-          {/* WHY JOIN */}
-          {/* <section className="eb-why-join">
-            <h2 className="eb-why-title">
-              Why Students Join <span>Energy Batch</span>
-            </h2>
-            <div className="eb-why-grid">
-              {WHY_CARDS.map(({ icon, title, desc }) => (
-                <div className="eb-why-card" key={title}>
-                  <div className="eb-why-icon">{icon}</div>
-                  <h3>{title}</h3>
-                  <p>{desc}</p>
-                </div>
-              ))}
-            </div>
-          </section> */}
         </header>
+
+        {/* ── MEET OUR MENTORS ── */}
+
+        <section className="eb-mentors" aria-labelledby="eb-mentors-title">
+          <div className="eb-mentors-badge">Meet Our Mentors</div>
+          <p className="eb-mentors-sub">Learn from IITians who understand your journey.</p>
+
+          <div className="eb-mentor-cards">
+            {MENTORS.map(({ name, iit, year, img }) => (
+              <div className="eb-mentor-card" key={name}>
+                <div className="eb-mentor-img-wrap">
+                  <img src={img} alt={name} className="eb-mentor-img" />
+                </div>
+                <div className="eb-mentor-info">
+                  <span className="eb-mentor-name">{name}</span>
+                  <span className="eb-mentor-iit-badge">{iit}</span>
+                  <span className="eb-mentor-year">Batch of {year}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* ── OTHER PROGRAMMES ── */}
         <section className="eb-programs" aria-labelledby="eb-programs-title">
+          <div className="eb-programs-badge">Other IITian Guidance Programs</div>
+
           <h2 id="eb-programs-title" className="eb-programs-title">
-            Other IITian guidance programs
+            Right Guidance Today.<br />
+            <span>Better Results</span> Tomorrow.
           </h2>
 
-          <article className="eb-program-block">
-            <div className="eb-program-grid">
-              <div className="eb-program-copy">
-                <h3 className="eb-program-sub">Class 12 group mentorship</h3>
-                <ul className="eb-program-list">
-                  <li>Prepare for your JEE 2027 with high-focus peers.</li>
-                  <li>Guidance for day-to-day planning.</li>
-                  <li>Backlog cover plans.</li>
-                  <li>Weekly progress monitoring.</li>
-                  <li>24/7 doubt clearance.</li>
-                </ul>
+          <div className="eb-feature-strip">
+            {FEATURE_CHIPS.map(({ title, desc }) => (
+              <div className="eb-feature-chip" key={title}>
+                <h4>{title}</h4>
+                <p>{desc}</p>
               </div>
-              <div className="eb-visual-card">
-                <div className="eb-visual-grid">
-                  <div className="eb-visual-cell"><IconGroup /><span>Group study</span></div>
-                  <div className="eb-visual-cell"><IconChart /><span>Backlog clear</span></div>
-                  <div className="eb-visual-cell"><IconClock /><span>Weekly tracking</span></div>
-                  <div className="eb-visual-cell"><IconChat /><span>24/7 motivation + doubts</span></div>
-                </div>
-              </div>
-            </div>
-          </article>
+            ))}
+          </div>
 
-          <article className="eb-program-block">
-            <div className="eb-program-grid eb-program-grid--reverse">
-              <div className="eb-program-copy">
-                <h3 className="eb-program-sub">Class 11 group mentorship</h3>
-                <ul className="eb-program-list">
-                  <li>Prepare for your JEE 2028 with high-focus peers.</li>
-                  <li>Early guidance to build discipline.</li>
-                  <li>Day-to-day planning to avoid backlogs.</li>
-                  <li>Weekly progress monitoring.</li>
-                  <li>Maximum benefit from an early start.</li>
-                </ul>
-              </div>
-              <div className="eb-visual-card">
-                <div className="eb-visual-grid">
-                  <div className="eb-visual-cell"><IconGroup /><span>Group study</span></div>
-                  <div className="eb-visual-cell"><IconBan /><span>Avoid backlogs</span></div>
-                  <div className="eb-visual-cell"><IconClock /><span>Delete confusion</span></div>
-                  <div className="eb-visual-cell"><IconChat /><span>24/7 build discipline</span></div>
-                </div>
-              </div>
-            </div>
-          </article>
+          <div className="eb-program-cards">
+            <article className="eb-program-card">
+              <h3 className="eb-program-card-title">Class 12</h3>
+              <p className="eb-program-card-sub">JEE 2027 Aspirants</p>
+              <hr className="eb-program-divider" />
+              <ul className="eb-program-list">
+                <li>Prepare for your <strong>JEE 2027</strong> with <strong>high-focus</strong> peers.</li>
+                <li>Guidance for <strong>day-to-day planning</strong>.</li>
+                <li><strong>Backlog</strong> cover plans.</li>
+                <li><strong>Weekly progress</strong> monitoring.</li>
+                <li><strong>24/7 doubt</strong> clearance.</li>
+              </ul>
+              <a href={INQUIRE_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="eb-program-card-btn">
+                Join Class 12 Mentorship
+              </a>
+            </article>
+
+            <article className="eb-program-card">
+              <h3 className="eb-program-card-title">Class 11</h3>
+              <p className="eb-program-card-sub">JEE 2028 Aspirants</p>
+              <hr className="eb-program-divider" />
+              <ul className="eb-program-list">
+                <li>Prepare for your <strong>JEE 2028</strong> with <strong>high-focus</strong> peers.</li>
+                <li>Early guidance to <strong>build discipline</strong>.</li>
+                <li>Day-to-day planning to <strong>avoid backlogs</strong>.</li>
+                <li><strong>Weekly progress</strong> monitoring.</li>
+                <li>Maximum benefit from an <strong>early start</strong>.</li>
+              </ul>
+              <a href={INQUIRE_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="eb-program-card-btn">
+                Join Class 11 Mentorship
+              </a>
+            </article>
+          </div>
         </section>
 
         <p className="eb-footnote">

@@ -9,7 +9,7 @@ const testimonials = [
   {
     name: 'Geet Sharma',
     batch: '2026(12th pass out)',
-    text: '"CollegeMap really helped me during my prep. The 24/7 Google meets were really helpful in building consistency and as a person with ADHD I can confirm we do need a push which I can was able to get from here."',
+    text: '"CollegeMap really helped me during my prep. The 24/7 Google meets were really helpful in building consistency and as a person with ADHD I can confirm we do need a push which I was able to get from here."',
     image: geetVerma,
   },
 ];

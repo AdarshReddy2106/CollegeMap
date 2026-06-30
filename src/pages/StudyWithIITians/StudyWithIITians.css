@@ -294,3 +294,63 @@
 		font-size: 1.4rem;
 	}
 }
+
+@media (max-width: 480px) {
+	.study-with-iitians-page {
+		padding: 1.25rem 1rem 3rem;
+	}
+
+	.swi-page-label {
+		font-size: 1.1rem;
+		letter-spacing: 1px;
+		margin-bottom: 0.5rem;
+		/* prevent awkward wrapping */
+		white-space: nowrap;
+	}
+
+	.swi-title {
+		font-size: 1.3rem;
+		line-height: 1.4;
+		margin-bottom: 1.25rem;
+	}
+
+	.swi-card {
+		padding: 1.25rem;
+	}
+
+	.swi-card h2 {
+		font-size: 1.1rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.swi-list li {
+		font-size: 0.9rem;
+	}
+
+	.swi-action-btn {
+		font-size: 0.9rem;
+		padding: 0.7rem 1.2rem;
+	}
+
+	.swi-youtube-row {
+		font-size: 0.9rem;
+		margin-bottom: 1.5rem;
+		padding: 0.9rem 1rem;
+	}
+
+	.swi-marquee-title {
+		font-size: 1.2rem;
+	}
+
+	.swi-marquee-subtitle {
+		font-size: 0.875rem;
+	}
+
+	.swi-talk-section {
+		padding: 1.25rem;
+	}
+
+	.swi-talk-section h2 {
+		font-size: 1.1rem;
+	}
+}
