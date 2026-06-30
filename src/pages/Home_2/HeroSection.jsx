@@ -37,33 +37,12 @@ const HeroSection = () => {
       </div>
 
       <div className="home2-hero-visual" aria-hidden="true">
-        <div className="home2-graphic-card">
-          <div className="home2-graphic-header">
-            <span>Insight map</span>
-            <span className="home2-status-dot" />
-          </div>
-          <div className="home2-graphic-grid">
-            <div className="home2-graphic-tile">
-              <p>Cutoffs</p>
-              <strong>2024</strong>
-            </div>
-            <div className="home2-graphic-tile">
-              <p>Placements</p>
-              <strong>Top 15%</strong>
-            </div>
-            <div className="home2-graphic-tile">
-              <p>Campus life</p>
-              <strong>4.6/5</strong>
-            </div>
-            <div className="home2-graphic-tile">
-              <p>Fees</p>
-              <strong>Compare</strong>
-            </div>
-          </div>
-          <div className="home2-graphic-footer">
-            <span>Compare colleges after this section</span>
-          </div>
-        </div>
+        <img 
+          src="/college-predictor.png" 
+          alt="College Predictor" 
+          className="home2-graphic-card"
+          style={{ padding: 0, objectFit: 'contain' }}
+        />
         <div className="home2-hero-orb" />
       </div>
     </section>

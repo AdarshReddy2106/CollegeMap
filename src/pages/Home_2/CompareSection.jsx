@@ -40,14 +40,14 @@ const CompareSection = () => {
       </div>
 
       <div className="home2-video-card">
-        <div className="home2-video-frame">
-          <div className="home2-play" aria-hidden="true">
-            <svg viewBox="0 0 48 48" role="img" aria-label="Play">
-              <circle cx="24" cy="24" r="22" fill="none" stroke="currentColor" strokeWidth="2" />
-              <path d="M20 16l14 8-14 8z" fill="currentColor" />
-            </svg>
-          </div>
-          <p>Sample video</p>
+        <div className="home2-video-frame" style={{ padding: 0 }}>
+          <video 
+            src="/branch_comp.mp4"
+            controls
+            playsInline
+            title="Compare Colleges"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }}
+          />
         </div>
       </div>
     </section>
