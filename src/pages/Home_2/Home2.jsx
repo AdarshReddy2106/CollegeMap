@@ -33,50 +33,11 @@ const Home2 = () => {
         {/* 3. Explore & shortlist tools */}
         <ExploreSection />
 
-        {/* 4. Quick tools nav */}
-        <ToolsNavSection />
-
         {/* 5. Compare colleges tool section */}
         <CompareSection />
 
-        {/* 6. JOSAA / college pathways */}
-        <PathwaysSection />
-
-        {/* 7. Connect with IITians */}
-        <section className="home2-section home2-compare">
-          <div className="home2-compare-content">
-            <p className="home2-eyebrow">Connect with college students</p>
-            <h2 className="home2-heading">Connect with IITians and College students</h2>
-            <p className="home2-body">
-              Talk to students who have gone through it all. Connect with final year students from your dream college in a 1-to-1 session.
-            </p>
-            <div className="home2-btn-container">
-              <Link className="home2-btn home2-btn-accent home2-btn-talk" to="/TalkToIITians">
-                Talk now
-              </Link>
-            </div>
-          </div>
-
-          <div className="home2-video-card home2-video-card-centered">
-            <div className="home2-graphic-grid home2-graphic-grid-small">
-              <div className="home2-graphic-tile home2-graphic-tile-gmeet">
-                <img src={gm1} alt="GMeet session 1" className="home2-gmeet-img" />
-              </div>
-              <div className="home2-graphic-tile home2-graphic-tile-gmeet">
-                <img src={gm2} alt="GMeet session 2" className="home2-gmeet-img" />
-              </div>
-              <div className="home2-graphic-tile home2-graphic-tile-gmeet">
-                <img src={gm3} alt="GMeet session 3" className="home2-gmeet-img" />
-              </div>
-              <div className="home2-graphic-tile home2-graphic-tile-gmeet">
-                <img src={gm4} alt="GMeet session 4" className="home2-gmeet-img" />
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* 8. Branch recommendation */}
-        <section className="home2-section home2-compare">
+        {/* <section className="home2-section home2-compare">
           <div className="home2-compare-content">
             <p className="home2-eyebrow">Branch recommendation</p>
             <h2 className="home2-heading">
@@ -105,7 +66,57 @@ const Home2 = () => {
               <p>video showing sample</p>
             </div>
           </div>
+        </section> */}
+
+        {/* 6. JOSAA / college pathways */}
+        <PathwaysSection />
+
+        {/* 7. Connect with IITians */}
+        <section className="home2-section home2-compare">
+          <div className="home2-compare-content">
+            <span className="home2-eyebrow-pill">Connect with college students</span>
+            <h2 className="home2-heading home2-heading-tight">Connect with IITians and College students</h2>
+            <p className="home2-body">
+              Talk to students who have gone through it all. Connect with final year students from your dream college in a 1-to-1 session.
+            </p>
+
+            <div className="home2-btn-container">
+              <Link className="home2-btn home2-btn-accent home2-btn-talk home2-btn-wide" to="/TalkToIITians">
+                Talk now
+              </Link>
+            </div>
+          </div>
+
+          <div className="home2-video-card home2-video-card-centered">
+            <div className="home2-graphic-grid home2-graphic-grid-small">
+              <div className="home2-graphic-tile home2-graphic-tile-gmeet">
+                <img src={gm1} alt="GMeet session 1" className="home2-gmeet-img" />
+              </div>
+              <div className="home2-graphic-tile home2-graphic-tile-gmeet">
+                <img src={gm2} alt="GMeet session 2" className="home2-gmeet-img" />
+              </div>
+              <div className="home2-graphic-tile home2-graphic-tile-gmeet">
+                <img src={gm3} alt="GMeet session 3" className="home2-gmeet-img" />
+              </div>
+              <div className="home2-graphic-tile home2-graphic-tile-gmeet">
+                <img src={gm4} alt="GMeet session 4" className="home2-gmeet-img" />
+              </div>
+            </div>
+          </div>
         </section>
+
+
+
+
+        {/* 4. Quick tools nav */}
+        {/* <ToolsNavSection /> */}
+
+
+
+
+
+
+
 
       </div>
     </main>

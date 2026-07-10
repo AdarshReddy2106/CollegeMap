@@ -1292,3 +1292,395 @@
     margin: 0.25rem auto !important;
   }
 }
+
+.home2-explore-title-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.home2-explore-title-pill {
+  display: inline-block;
+  background: rgba(16, 195, 188, 0.1);
+  color: #10c3bc;
+  border: 1.5px solid rgba(16, 195, 188, 0.35);
+  border-radius: 999px;
+  padding: 0.35rem 1.1rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+.home2-explore-card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease !important;
+}
+
+.home2-explore-card:hover {
+  transform: translateY(-6px) scale(1.02) !important;
+  box-shadow: 0 20px 40px rgba(16, 195, 188, 0.15) !important;
+}
+
+.home2-toolsnav-title-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.home2-toolsnav-title-pill {
+  display: inline-block;
+  background: rgba(16, 195, 188, 0.1);
+  color: #10c3bc;
+  border: 1.5px solid rgba(16, 195, 188, 0.35);
+  border-radius: 999px;
+  padding: 0.35rem 1.1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Eyebrow as a capsule badge (Compare Colleges section) */
+.home2-eyebrow-pill {
+  display: inline-flex;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--home2-primary-dark);
+  background: rgba(16, 195, 188, 0.1);
+  border: 1.5px solid rgba(16, 195, 188, 0.35);
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  margin-bottom: 0.8rem;
+  width: fit-content;
+}
+
+/* Points list with check icons instead of -> */
+.home2-compare-points {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.2rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.home2-compare-points li {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-weight: 500;
+  color: var(--home2-ink);
+  font-size: 0.98rem;
+}
+
+.home2-check-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  color: var(--home2-primary);
+}
+
+.home2-check-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Tighter chip box so it doesn't leave empty space on the right */
+.home2-prompt-compact {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.home2-prompt-compact .home2-chip-row {
+  flex-wrap: wrap;
+}
+
+/* Auto-width button instead of full-width stretch */
+.home2-btn-auto {
+  width: fit-content;
+  padding: 0.75rem 2rem;
+}
+
+/* Tighter heading so it doesn't wrap into 2 huge lines */
+.home2-heading-tight {
+  max-width: 480px;
+}
+
+/* Wider Talk Now button */
+.home2-btn-wide {
+  padding: 0.85rem 3.5rem;
+  font-size: 1.02rem;
+}
+
+/* Small trust stats row */
+.home2-connect-stats {
+  display: flex;
+  gap: 2rem;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.home2-connect-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.home2-connect-stat strong {
+  font-size: 1.3rem;
+  color: var(--home2-primary-dark);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.home2-connect-stat span {
+  font-size: 0.8rem;
+  color: var(--home2-muted);
+}
+
+/* Give the gmeet grid tiles a bit more polish */
+.home2-graphic-tile-gmeet {
+  box-shadow: 0 6px 16px rgba(7, 41, 43, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.home2-graphic-tile-gmeet:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(7, 41, 43, 0.14);
+}
+
+/* Center the header + capsule for pathways section */
+.home2-pathways-header-center {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home2-pathways-header-center .home2-eyebrow-pill {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Pop effect on the 3 pathway cards */
+.home2-path-card-pop {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  cursor: default;
+}
+
+.home2-path-card-pop:hover {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 0 20px 40px rgba(16, 195, 188, 0.16) !important;
+  border-color: rgba(16, 195, 188, 0.4) !important;
+}
+
+/* Cleaner text hierarchy inside each card */
+.home2-path-text h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--home2-ink);
+  letter-spacing: -0.01em;
+}
+
+.home2-path-text p {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--home2-muted);
+}
+
+.home2-path-text-filler {
+  margin-bottom: 0.85rem;
+}
+
+/* Link styled as a clear "next step" instead of a plain arrow */
+.home2-link {
+  font-size: 0.88rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(16, 195, 188, 0.08);
+  border: 1px solid rgba(16, 195, 188, 0.25);
+  width: fit-content;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.home2-link:hover {
+  background: rgba(16, 195, 188, 0.16);
+}
+
+.home2-link::after {
+  content: "→";
+  font-size: 0.95rem;
+}
+
+/* Cards: flex column so buttons can stick to bottom */
+.home2-toolsnav-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  cursor: default;
+}
+
+.home2-toolsnav-grid {
+  align-items: stretch;
+}
+
+/* Card pop effect on hover */
+.home2-toolsnav-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 18px 36px rgba(16, 195, 188, 0.18) !important;
+  border-color: rgba(16, 195, 188, 0.4) !important;
+}
+
+/* Description fills remaining space so buttons align at the bottom */
+.home2-toolsnav-desc {
+  flex-grow: 1;
+  margin-bottom: 0.75rem;
+}
+
+/* Button always pinned to bottom */
+.home2-toolsnav-cta {
+  margin-top: auto !important;
+}
+
+/* Button pop + fill with theme color on hover */
+.home2-toolsnav-cta {
+  border-color: rgba(16, 195, 188, 0.4) !important;
+  color: var(--home2-primary-dark) !important;
+  background: #ffffff;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home2-toolsnav-cta:hover {
+  background: var(--home2-primary) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 10px 20px rgba(16, 195, 188, 0.35);
+  opacity: 1 !important;
+}
+
+/* Pop effect for "Your JEE Main Rank" card */
+.home2-graphic-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
+}
+
+.home2-graphic-card:hover {
+  transform: translateY(-8px) scale(1.015);
+  box-shadow: 0 32px 56px rgba(16, 195, 188, 0.22) !important;
+}
+
+/* JOSAA counselling and college pathways — keep on one line */
+.home2-pathways-header.home2-pathways-header-center {
+  max-width: none;
+}
+
+.home2-pathways-header .home2-heading {
+  font-size: clamp(1.3rem, 2.4vw, 2rem);
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .home2-pathways-header .home2-heading {
+    white-space: normal;
+    font-size: clamp(1.3rem, 4vw, 1.7rem);
+  }
+}
+
+/* Video trigger button (no default button styling) */
+.home2-video-trigger {
+  all: unset;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+
+.home2-video-trigger p {
+  margin: 0.8rem 0 0;
+  font-weight: 600;
+  color: var(--home2-primary-dark);
+}
+
+/* Once playing, remove the shimmer/gradient decoration and let video fill the frame */
+.home2-video-frame--playing {
+  padding: 0;
+  background: #000;
+}
+
+.home2-video-frame--playing::after {
+  display: none;
+}
+
+.home2-video-el {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  display: block;
+  border-radius: 22px;
+  background: #000;
+}
+
+/* ── Section background rhythm (4-step cycle) ── */
+
+.home2-section {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Neutralize the old odd/even alternation */
+.home2-section:nth-child(odd),
+.home2-section:nth-child(even) {
+  background: transparent !important;
+}
+
+/* 1 — Subtle diagonal gradient */
+.home2-section:nth-child(4n + 1) {
+  background: linear-gradient(135deg, #ffffff 0%, #f0faf9 100%) !important;
+}
+
+/* 2 — Tiny dot grid */
+.home2-section:nth-child(4n + 2) {
+  background-color: #f5fbfb !important;
+  background-image: radial-gradient(rgba(16, 195, 188, 0.18) 1px, transparent 1px) !important;
+  background-size: 22px 22px !important;
+}
+
+/* 3 — Plain white breather */
+.home2-section:nth-child(4n + 3) {
+  background: #ffffff !important;
+}
+
+/* 4 — Soft blobs */
+.home2-section:nth-child(4n) {
+  background: #f5fbfb !important;
+}
+
+.home2-section:nth-child(4n)::before,
+.home2-section:nth-child(4n)::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.home2-section:nth-child(4n)::before {
+  width: 320px;
+  height: 320px;
+  background: rgba(16, 195, 188, 0.16);
+  top: -80px;
+  left: -60px;
+}
+
+.home2-section:nth-child(4n)::after {
+  width: 260px;
+  height: 260px;
+  background: rgba(10, 22, 40, 0.06);
+  bottom: -60px;
+  right: -40px;
+}
+
+/* keep real content above the blobs */
+.home2-section:nth-child(4n) > * {
+  position: relative;
+  z-index: 1;
+}

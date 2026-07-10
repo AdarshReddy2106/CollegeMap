@@ -33,7 +33,6 @@
   width: 100%;
 }
 
-// Badge
 .eb-badge {
   display: inline-flex;
   align-items: center;
@@ -47,7 +46,6 @@
   margin-bottom: 1.5rem;
 }
 
-// Heading — matches reference: large but not absurd
 .eb-new-title {
   margin: 0;
   font-size: clamp(1rem, 3.5vw, 2.2rem);
@@ -56,12 +54,9 @@
   color: #0f172a;
   letter-spacing: -1px;
 
-  span {
-    color: #10c3bc;
-  }
+  span { color: #10c3bc; }
 }
 
-// Subtitle
 .eb-new-subtitle {
   margin-top: 1.25rem;
   margin-bottom: 1.75rem;
@@ -87,6 +82,7 @@
   gap: 10px;
   background: #fff;
   border: 1px solid rgba(16, 195, 188, 0.12);
+  border-left: 3px solid #10c3bc;
   border-radius: 14px;
   padding: 14px 16px;
   min-height: 64px;
@@ -94,72 +90,86 @@
   font-size: 0.9rem;
   font-weight: 600;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    border-color: rgba(16, 195, 188, 0.4);
+    border-left-color: #0a97a0;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 26px rgba(16, 195, 188, 0.16);
   }
 }
 
-.eb-problem-icon {
-  font-size: 1.1rem;
+.eb-problem-text {
+  font-weight: 500;
+  color: #344054;
+
+  strong {
+    color: #0b6f73;
+    font-weight: 800;
+  }
+}
+
+// ─────────────────────────────────────────────
+//  HERO ACTION ROW
+// ─────────────────────────────────────────────
+.eb-hero-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.eb-ratio-line {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0b6f73;
+  white-space: nowrap;
   flex-shrink: 0;
 }
 
-// ─────────────────────────────────────────────
-//  HERO BUTTONS
-// ─────────────────────────────────────────────
-.eb-hero-buttons {
-  display: flex;
-  gap: 12px;
-  margin-top: 0.5rem;
-  flex-wrap: wrap;
-}
-
 .eb-primary-btn {
+  flex: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 13px 28px;
   border-radius: 10px;
-  background: #10c3bc;
+  background: linear-gradient(135deg, #14d6ce 0%, #0a97a0 100%);
   color: #fff;
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 700;
   white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 22px rgba(16, 195, 188, 0.38);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 14px rgba(16, 195, 188, 0.35);
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -60%;
+    width: 40%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.55s ease;
+  }
 
   &:hover {
     color: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(16, 195, 188, 0.5);
-  }
-}
-
-.eb-secondary-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 13px 28px;
-  border-radius: 10px;
-  border: 2px solid #10c3bc;
-  color: #10c3bc;
-  text-decoration: none;
-  font-size: 0.95rem;
-  font-weight: 700;
-  white-space: nowrap;
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: rgba(16, 195, 188, 0.07);
+    box-shadow: 0 10px 28px rgba(16, 195, 188, 0.5);
+    &::after { left: 130%; }
   }
 }
 
 // ─────────────────────────────────────────────
-//  HERO IMAGE (RIGHT)
+//  HERO IMAGE
 // ─────────────────────────────────────────────
 .eb-hero-right {
   display: flex;
@@ -168,8 +178,9 @@
 }
 
 .eb-hero-visual-modern {
-  margin: 0;
+  margin: 0 auto;
   width: 100%;
+  max-width: 480px;
   background: #fff;
   border-radius: 20px;
   overflow: hidden;
@@ -183,59 +194,99 @@
 }
 
 // ─────────────────────────────────────────────
-//  WHY JOIN SECTION
+//  MEET OUR MENTORS
 // ─────────────────────────────────────────────
-.eb-why-join {
-  margin-top: 4rem;
-  background: rgba(255, 255, 255, 0.45);
-  border-radius: 24px;
-  padding: 2.5rem;
+.eb-mentors {
+  margin-bottom: 3.5rem;
+  text-align: center;
 }
 
-.eb-why-title {
-  text-align: center;
-  margin: 0 0 2rem;
-  font-size: clamp(1.4rem, 2.5vw, 2rem);
+.eb-mentors-title {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 800;
-  color: #111827;
-
-  span {
-    color: #10c3bc;
-  }
+  color: #0f172a;
 }
 
-.eb-why-grid {
+.eb-mentors-sub {
+  margin: 0 0 2rem;
+  font-size: 1rem;
+  color: #667085;
+}
+
+.eb-mentor-cards {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
 }
 
-.eb-why-card {
+.eb-mentor-card {
   background: #fff;
-  border-radius: 16px;
-  padding: 20px 14px;
-  text-align: center;
-  border: 1px solid rgba(16, 195, 188, 0.08);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+  border: 1px solid rgba(16, 195, 188, 0.1);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 
-  h3 {
-    margin: 0 0 8px;
-    font-size: 0.92rem;
-    font-weight: 700;
-    color: #0f172a;
-  }
-
-  p {
-    margin: 0;
-    font-size: 0.82rem;
-    line-height: 1.5;
-    color: #667085;
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 36px rgba(16, 195, 188, 0.18);
+    border-color: rgba(16, 195, 188, 0.3);
   }
 }
 
-.eb-why-icon {
-  font-size: 1.75rem;
-  margin-bottom: 10px;
+// LEFT — large photo
+.eb-mentor-img-wrap {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: linear-gradient(160deg, #0d9fa0 0%, #0a1628 100%);
+  overflow: hidden;
+}
+
+.eb-mentor-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+// RIGHT — name + badge
+.eb-mentor-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 1rem 1rem 1rem 1.1rem;
+  text-align: left;
+}
+
+.eb-mentor-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.eb-mentor-iit-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(16, 195, 188, 0.08);
+  border: 1px solid rgba(16, 195, 188, 0.25);
+  color: #0b6f73;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.eb-mentor-year {
+  font-size: 0.78rem;
+  color: #667085;
+  font-weight: 500;
 }
 
 // ─────────────────────────────────────────────
@@ -246,42 +297,124 @@
   border-top: 1px solid rgba($primary3, 0.3);
 }
 
-.eb-programs-title {
-  margin: 0 0 2rem;
-  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
-  font-weight: 800;
-  color: $dark-green-blue;
-  text-align: center;
+.eb-programs-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  padding: 8px 20px;
+  border-radius: 999px;
+  background: rgba(16, 195, 188, 0.08);
+  border: 1px solid rgba(16, 195, 188, 0.2);
+  color: #0b6f73;
+  font-size: 0.85rem;
+  font-weight: 700;
+  width: fit-content;
 }
 
-.eb-program-block {
-  margin-bottom: 2.5rem;
+.eb-programs-title {
+  text-align: center;
+  margin: 0 0 2.5rem;
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-weight: 800;
+  line-height: 1.25;
+  color: #0f172a;
 
-  &:last-of-type {
-    margin-bottom: 0;
+  span { color: #10c3bc; }
+}
+
+.eb-feature-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 2.5rem;
+}
+
+.eb-feature-chip {
+  background: #fff;
+  border: 1px solid rgba(16, 195, 188, 0.12);
+  border-radius: 14px;
+  padding: 18px 16px;
+  text-align: center;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+  cursor: default;
+
+  h4 {
+    margin: 0 0 6px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #0b6f73;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #667085;
+    line-height: 1.4;
+  }
+
+  &:hover {
+    transform: translateY(-6px) scale(1.03);
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-color: rgba(16, 195, 188, 0.45);
+    box-shadow: 0 14px 32px rgba(16, 195, 188, 0.22);
+    h4 { color: #0a97a0; }
   }
 }
 
-.eb-program-grid {
+.eb-program-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.75rem 2rem;
-  align-items: center;
+  gap: 2rem;
 }
 
-.eb-program-sub {
-  margin: 0 0 1rem;
-  font-size: 1.1rem;
+.eb-program-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 2rem;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+
+  &:hover {
+    transform: translateY(-6px) scale(1.015);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 20px 44px rgba(16, 195, 188, 0.18);
+  }
+}
+
+.eb-program-card-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.6rem;
   font-weight: 800;
-  color: $primary;
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 5px;
-  text-decoration-color: rgba($primary, 0.4);
+  color: #10c3bc;
+  text-align: center;
+}
+
+.eb-program-card-sub {
+  margin: 0 0 1.25rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.eb-program-divider {
+  border: none;
+  border-top: 1px solid rgba(16, 195, 188, 0.25);
+  width: 70%;
+  margin: 0 auto 1.5rem;
 }
 
 .eb-program-list {
-  margin: 0;
+  flex: 1;
+  margin: 0 0 1.75rem;
   padding-left: 1.1rem;
   color: $text-dark;
   font-size: 0.95rem;
@@ -289,46 +422,28 @@
 
   li {
     margin-bottom: 0.45rem;
-
-    &::marker {
-      color: $primary;
-    }
+    &::marker { color: $primary; }
+    strong { color: #0b6f73; }
   }
 }
 
-.eb-visual-card {
-  border-radius: 16px;
-  border: 1px solid rgba($primary3, 0.5);
-  background: $background;
-  padding: 1.25rem;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
-}
-
-.eb-visual-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.eb-visual-cell {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.eb-program-card-btn {
+  display: block;
   text-align: center;
-  gap: 0.5rem;
-  padding: 0.75rem 0.5rem;
-  border-radius: 12px;
-  background: rgba($primary, 0.05);
-  color: $dark-green-blue;
-  font-size: 0.78rem;
+  padding: 14px 24px;
+  border-radius: 10px;
+  background: #10c3bc;
+  color: #fff;
   font-weight: 700;
-  line-height: 1.3;
-}
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 
-.eb-mini-icon {
-  width: 36px;
-  height: 36px;
-  color: $primary;
+  &:hover {
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(43, 111, 118, 0.35);
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -351,9 +466,7 @@
 // ─────────────────────────────────────────────
 .eb-bottom-nav {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   background: #0a1628;
   border-top: 1px solid rgba(16, 195, 188, 0.2);
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.35);
@@ -411,77 +524,74 @@
     transform: translateY(-1px);
   }
 
-  &:active {
-    transform: translateY(0);
-  }
+  &:active { transform: translateY(0); }
 }
 
 // ─────────────────────────────────────────────
 //  RESPONSIVE
 // ─────────────────────────────────────────────
-@media (max-width: 1100px) {
-  .eb-why-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
 @media (max-width: 900px) {
   .eb-hero-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
 
-  .eb-hero-right {
-    order: -1;
-  }
+  .eb-hero-right { order: 1; }
 
-  .eb-hero-visual-modern {
-    max-width: 480px;
-    margin: 0 auto;
-  }
+  .eb-hero-visual-modern { max-width: 320px; }
 
-  .eb-new-title {
-    font-size: clamp(1.8rem, 6vw, 2.8rem);
-  }
+  .eb-new-title { font-size: clamp(1.8rem, 6vw, 2.8rem); }
 
-  .eb-program-grid,
-  .eb-program-grid--reverse {
-    grid-template-columns: 1fr;
-  }
+  .eb-mentor-cards { grid-template-columns: 1fr; }
 
-  .eb-program-grid--reverse .eb-visual-card {
-    order: -1;
-  }
+  .eb-feature-strip { grid-template-columns: repeat(2, 1fr); }
+
+  .eb-program-cards { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
-  .eb-problem-grid {
-    grid-template-columns: 1fr;
-  }
+  .eb-problem-grid { grid-template-columns: 1fr; }
 
-  .eb-hero-buttons {
+  .eb-hero-action-row {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
 
-  .eb-primary-btn,
-  .eb-secondary-btn {
+  .eb-primary-btn {
+    flex: none;
     width: 100%;
-  }
-
-  .eb-why-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .eb-why-join {
-    padding: 1.5rem;
-  }
-
-  .eb-why-title {
-    font-size: 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
+  .eb-badge {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    margin-bottom: 0.75rem;
+  }
+
+  .eb-new-title {
+    font-size: 1.6rem;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+
+  .eb-new-subtitle {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin-top: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .eb-mentor-cards { grid-template-columns: 1fr; }
+
+  .eb-mentor-card {
+    grid-template-columns: 140px 1fr;
+  }
+
+  .eb-feature-strip { grid-template-columns: 1fr; }
+
   .eb-bottom-nav {
     flex-direction: column;
     align-items: stretch;
@@ -495,9 +605,7 @@
     gap: 3px;
   }
 
-  .eb-nav-arrow {
-    font-size: 13px;
-  }
+  .eb-nav-arrow { font-size: 13px; }
 
   .eb-start-btn {
     text-align: center;
@@ -505,250 +613,45 @@
     padding: 11px;
     border-radius: 8px;
   }
-
-  .eb-why-grid {
-    grid-template-columns: 1fr;
-  }
 }
-
-// ─────────────────────────────────────────────
-//  PROBLEM CARDS — v2 (bold keywords + hover accent)
-// ─────────────────────────────────────────────
-.eb-problem-card {
-  position: relative;
+.eb-mentor-img-wrap {
+  width: 100%;
+  height: 220px;
+  background: #fff;
   overflow: hidden;
+
+}
+.eb-mentors {
+  margin-bottom: 3.5rem;
+  text-align: center;
+}
+
+.eb-mentors-badge {
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
-
-  &::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(180deg, #10c3bc, #0a97a0);
-    transform: scaleY(0);
-    transform-origin: bottom;
-    transition: transform 0.25s ease;
-  }
-
-  &:hover {
-    border-color: rgba(16, 195, 188, 0.4);
-    transform: translateY(-3px);
-    box-shadow: 0 12px 26px rgba(16, 195, 188, 0.16);
-  }
-
-  &:hover::before {
-    transform: scaleY(1);
-  }
+  padding: 12px 28px; 
+  border-radius: 999px;
+  background: rgba(16, 195, 188, 0.08);
+  border: 1px solid rgba(16, 195, 188, 0.2);
+  color: #1f4f5d;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
 }
 
-.eb-problem-mark {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: rgba(16, 195, 188, 0.1);
-  color: #0a7a7d;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 0.8rem;
-  flex-shrink: 0;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
-
-.eb-problem-card:hover .eb-problem-mark {
-  background: #10c3bc;
-  color: #fff;
-  transform: scale(1.1);
-}
-
-.eb-problem-text {
-  font-weight: 500;
-  color: #344054;
-
-  strong {
-    color: #0b6f73;
-    font-weight: 800;
-  }
-}
-
-// ─────────────────────────────────────────────
-//  ACTION ROW — mentor ratio + CTAs side by side
-// ─────────────────────────────────────────────
-.eb-hero-action-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  margin-top: 0.25rem;
-}
-
-.eb-ratio-stat {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-}
-
-.eb-ratio-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(16, 195, 188, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  .eb-mini-icon {
-    width: 24px;
-    height: 24px;
-  }
-}
-
-.eb-ratio-text {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.92rem;
-  color: #344054;
-  line-height: 1.35;
-
-  strong {
-    color: #0f172a;
-    font-weight: 800;
-  }
-
-  small {
-    font-size: 0.78rem;
-    color: #667085;
-    font-weight: 500;
-  }
-}
-
-.eb-hero-buttons {
-  margin-top: 0;
-}
-
-// ─────────────────────────────────────────────
-//  BUTTONS — v2 (richer gradient + shine sweep)
-// ─────────────────────────────────────────────
-.eb-primary-btn {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, #14d6ce 0%, #0a97a0 100%);
-  box-shadow: 0 8px 22px rgba(16, 195, 188, 0.38);
-
-  &::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -60%;
-    width: 40%;
-    height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    transform: skewX(-20deg);
-    transition: left 0.55s ease;
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 28px rgba(16, 195, 188, 0.5);
-  }
-
-  &:hover::after {
-    left: 130%;
-  }
-}
-
-.eb-secondary-btn {
-  border-width: 2px;
-  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-
-  &:hover {
-    background: rgba(16, 195, 188, 0.08);
-    border-color: #0a97a0;
-    color: #0a7a7d;
-    transform: translateY(-1px);
-  }
-}
-
-@media (max-width: 640px) {
-  .eb-hero-action-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .eb-hero-buttons {
-    width: 100%;
-  }
-}
-
-/* ── Paste at the very end of EnergyBatch.scss ── */
-
-/* Problem cards: always-on left accent line, no hover-only effect */
-.eb-problem-card {
-  border-left: 3px solid #10c3bc;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.eb-problem-card::before {
-  display: none;
-}
-
-.eb-problem-card:hover {
-  border-color: rgba(16, 195, 188, 0.4);
-  border-left-color: #0a97a0;
-  transform: translateY(-3px);
-  box-shadow: 0 12px 26px rgba(16, 195, 188, 0.16);
-}
-
-/* Action row: button fills remaining space next to the ratio line */
-.eb-hero-action-row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-  margin-top: 0.25rem;
-}
-
-.eb-ratio-line {
+.eb-mentors-sub {
+  margin: 0 0 2rem;
   font-size: 1rem;
-  font-weight: 800;
-  color: #0b6f73;
-  white-space: nowrap;
-  flex-shrink: 0;
+  color: #667085;
 }
-
-.eb-primary-btn {
-  flex: 1;
-}
-
-@media (max-width: 640px) {
-  .eb-hero-action-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .eb-primary-btn {
-    flex: none;
-    width: 100%;
+@media (max-width: 480px) {
+  .eb-mentors-badge {
+    font-size: 0.95rem;
+    padding: 8px 16px;
   }
 }
-
-/* ── Shrink the hero illustration ── */
-.eb-hero-visual-modern {
-  max-width: 480px;   /* lower this number to make it smaller, e.g. 380px */
-  margin: 0 auto;      /* keeps it centered in its grid column */
-}
-
-@media (max-width: 900px) {
-  .eb-hero-visual-modern {
-    max-width: 320px;   /* smaller size just for mobile */
+@media (max-width: 480px) {
+  .eb-mentors-sub {
+    font-size: 0.8rem;
   }
 }

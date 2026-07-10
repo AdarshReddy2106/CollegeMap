@@ -3589,6 +3589,97 @@ With
   }
 }
 
+@media (max-width: 768px) {
+  .cp-hero {
+    padding: 20px 20px 30px;   /* was 60px top */
+    gap: 20px;
+  }
+
+  .cp-small-heading {
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+
+  .cp-main-heading {
+    font-size: 26px;
+    margin-bottom: 20px;
+  }
+
+  .cp-question-tags {
+    gap: 10px;
+  }
+
+  .cp-tag {
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 4px 0 4px 16px;
+  }
+
+  .cp-hero-start-btn {
+    margin-top: 12px;
+    padding: 10px 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .cp-info-section {
+    margin: 20px auto 40px;
+    padding: 0 20px;
+  }
+
+  .cp-info-section h2 {
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+
+  .cp-info-section p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+}
+
+@media (max-width: 900px) {
+  .cp-tool-page {
+    padding: 1.25rem 1rem 3rem;
+  }
+
+  .cp-hero-layout {
+    gap: 1rem;        /* reduce gap between steps and form */
+  }
+
+  .cp-badge {
+    font-size: 0.6rem;
+    padding: 0.25rem 0.7rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .cp-main-heading {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .cp-step-content strong {
+    font-size: 0.82rem;
+  }
+
+  .cp-step-content span {
+    font-size: 0.72rem;
+  }
+
+  .cp-steps {
+    margin-bottom: 0;   /* remove extra space below steps */
+  }
+}
+
+@media (min-width: 769px) {
+  .cp-image-box {
+    width: 580px;
+    height: 400px;
+  }
+}
+
 
 
 

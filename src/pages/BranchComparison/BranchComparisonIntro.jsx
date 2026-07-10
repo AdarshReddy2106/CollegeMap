@@ -30,7 +30,7 @@ export default function BranchComparisonIntro() {
         </div>
         <div className="bc-hero-right">
           <div className="bc-image-box">
-            <img src="/branch-comparison.png" alt="Branch Comparison" />
+            <img src="/branch-comparison2.png" alt="Branch Comparison" />
           </div>
         </div>
       </section>

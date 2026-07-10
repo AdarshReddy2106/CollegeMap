@@ -1,4 +1,4 @@
-/* ════════════════════════════════════════════════════════════════════════════
+﻿/* ════════════════════════════════════════════════════════════════════════════
    Talk to IITian — Multi-Step Flow Styles
    ════════════════════════════════════════════════════════════════════════════ */
 
@@ -1234,4 +1234,106 @@
 
 .tti-hero-start-btn:hover {
   background-color: #0da89f;
+}
+
+/* ── Mobile spacing fixes (max-width: 768px) ── */
+@media (max-width: 768px) {
+  .talk-to-iitian-page {
+    padding: 1rem 1rem 8rem;   /* less top padding */
+  }
+
+  .tti-hero-section {
+    gap: 1.25rem;              /* was 2rem — tighter between all flex children */
+    margin-bottom: 1.5rem;     /* was 3rem */
+  }
+
+  .tti-title {
+    font-size: 2rem;
+    margin: 0 0 0.75rem;       /* was 2rem bottom margin */
+  }
+
+  .tti-list {
+    gap: 0.85rem;              /* was 1.5rem between list items */
+  }
+
+  .tti-list li {
+    font-size: 1rem;
+  }
+
+  .tti-visual-img {
+    border-radius: 12px;
+  }
+
+  .tti-hero-start-btn {
+    margin-top: 12px;
+    padding: 10px 0;
+    width: 100%;
+  }
+
+  .tti-middle-section {
+    padding: 1.25rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tti-middle-heading {
+    margin-bottom: 1.5rem;    /* was 4rem */
+  }
+}
+@media (max-width: 768px) {
+  .tti-hero-visual {
+    min-height: unset;
+    margin-top: 2 rem;   /* pulls the image up */
+  }
+}
+
+@media (max-width: 768px) {
+  .tti-middle-section {
+    padding: 1.25rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tti-middle-heading {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  .tti-step {
+    padding: 16px 14px;
+    gap: 6px;
+  }
+
+  .tti-step-title {
+    font-size: 0.875rem;
+    margin-bottom: 4px;
+  }
+
+  .tti-step-desc {
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+}
+@media (max-width: 768px) {
+  .tti-step-arrow {
+    font-size: 1.1rem;
+    margin: -8px 0;   /* tighten the gap above/below arrow */
+    color: #cbd5e0;
+  }
+}
+
+/* Mobile-only line break helper */
+.tti-mobile-break {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .tti-mobile-break {
+    display: block;
+  }
+
+  .tti-step-arrow {
+    color: #10c3bc;
+    font-size: 1.3rem;
+    margin: -6px 0;
+  }
 }

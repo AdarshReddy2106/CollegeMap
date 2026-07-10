@@ -40,17 +40,17 @@ const PredictorIcon = () => (
 
 const tools = [
   {
-    icon: <CollegeExplorerIcon />,
+    // icon: <CollegeExplorerIcon />,
     color: "#10c3bc",
     title: "College Explorer",
     desc: "Explore top colleges in India with ratings, reviews, placements, campus life and more.",
-    points: ["Ratings & Reviews", "Placements", "Campus Life", "Cutoffs"],
+    points: ["Ratings & Reviews", "Placements", "Campus Life,Cutoffs"],
     cta: "Explore Colleges",
     to: "/College",
   },
   {
-    icon: <CollegeComparisonIcon />,
-    color: "#7c6ff7",
+    // icon: <CollegeComparisonIcon />,
+    color: "#10c3bc",
     title: "College Comparison",
     desc: "Compare colleges side-by-side on placements, fees, ranking, campus and other factors.",
     points: ["Side-by-side comparison", "Multiple filters", "Save & share"],
@@ -58,8 +58,8 @@ const tools = [
     to: "/BranchComparision",
   },
   {
-    icon: <CutoffExplorerIcon />,
-    color: "#f59e0b",
+    // icon: <CutoffExplorerIcon />,
+    color: "#10c3bc",
     title: "Cutoff Explorer",
     desc: "Check previous year cutoffs for JEE Main to understand closing ranks and trends.",
     points: ["Year-wise cutoffs", "Category filters", "Branch-wise data"],
@@ -67,8 +67,8 @@ const tools = [
     to: "/CollegePredictor",
   },
   {
-    icon: <PredictorIcon />,
-    color: "#10b981",
+    // icon: <PredictorIcon />,
+    color: "#10c3bc",
     title: "College Predictor",
     desc: "Predict colleges you can get based on your JEE Main rank and category.",
     points: ["AI-based prediction", "Probable chances", "Smart recommendations"],
@@ -88,7 +88,9 @@ const ExploreSection = () => {
         {tools.map((tool) => (
           <div key={tool.title} className="home2-explore-card">
             <div className="home2-explore-icon">{tool.icon}</div>
-            <h3 className="home2-explore-title" style={{ color: tool.color }}>{tool.title}</h3>
+            <div className="home2-explore-title-wrap">
+              <span className="home2-explore-title-pill">{tool.title}</span>
+            </div>
             <p className="home2-explore-desc">{tool.desc}</p>
             <ul className="home2-explore-points">
               {tool.points.map((p) => (

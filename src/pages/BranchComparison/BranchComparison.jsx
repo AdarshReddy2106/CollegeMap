@@ -203,11 +203,11 @@ const BranchComparison = () => {
 
   useEffect(() => {
     const verifyAccess = async () => {
-      if (DEV_BYPASS_PAYMENT) {        // ← add this
-        setHasAccess(true);            // ← add this
-        setCheckingAccess(false);      // ← add this
-        return;                        // ← add this
-      }
+      // if (DEV_BYPASS_PAYMENT) {        // ← add this
+      //   setHasAccess(true);            // ← add this
+      //   setCheckingAccess(false);      // ← add this
+      //   return;                        // ← add this
+      // }
       if (!isLoggedIn || !user?.email) {
         setHasAccess(false);
         setCheckingAccess(false);

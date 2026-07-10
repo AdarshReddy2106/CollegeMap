@@ -375,7 +375,7 @@ const TalkToIITian = () => {
             <div className="tti-middle-section">
               <h2 className="tti-middle-heading">
                 Before spending <span>lakhs</span> on your college,<br />
-                this is the perfect <span>final check</span> — @ ₹500
+                this is the perfect <span>final check</span> — <span className="tti-mobile-break"></span>@ ₹500
               </h2>
 
               <div className="tti-steps-container">

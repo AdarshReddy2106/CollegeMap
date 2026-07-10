@@ -37,7 +37,7 @@ const StepsSection = () => {
     <section className="home2-section home2-steps-section">
       <div className="home2-steps-header">
         <h2 className="home2-heading">
-          Your College Journey in{" "}
+          Choose Your College in{" "}
           <span style={{ color: "var(--home2-primary)" }}>4 Simple Steps</span>
         </h2>
       </div>

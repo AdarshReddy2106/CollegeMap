@@ -1250,3 +1250,83 @@
     background-color: #0dada7;
   }
 }
+
+
+@media (max-width: 768px) {
+  .bc-hero {
+    padding: 20px 20px 30px;   /* was 60px top — much tighter */
+    gap: 20px;
+  }
+
+  .bc-small-heading {
+    margin-bottom: 16px;       /* was 34px */
+    font-size: 14px;
+  }
+
+  .bc-main-heading {
+    font-size: 26px;           /* was 30px */
+    margin-bottom: 20px;       /* was 38px */
+  }
+
+  .bc-question-tags {
+    gap: 10px;                 /* was 18px */
+  }
+
+  .bc-tag {
+    font-size: 14px;           /* was 18px */
+    line-height: 1.6;
+    padding: 4px 0 4px 16px;
+  }
+
+  .bc-hero-start-btn {
+    margin-top: 12px;
+    padding: 10px 0;
+    width: 100%;
+  }
+}
+@media (max-width: 768px) {
+  .bc-info-section {
+    margin: 20px auto 40px;
+    padding: 0 20px;
+  }
+
+  .bc-info-section h2 {
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+
+  .bc-info-section p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .bc-tool-header-left {
+    padding-left: 0;
+
+    .bc-compare-label {
+      font-size: 0.55rem;
+      padding: 0.2rem 0.6rem;
+      margin-bottom: 0.4rem;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      margin-bottom: 0.25rem;
+    }
+
+    p {
+      font-size: 0.75rem;
+      line-height: 1.45;
+    }
+  }
+}
+
+@media (min-width: 769px) {
+  .bc-image-box {
+    width: 680px;
+    height: 400px;
+  }
+}
