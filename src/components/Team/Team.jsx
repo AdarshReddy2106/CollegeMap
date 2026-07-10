@@ -1,14 +1,14 @@
 import React from 'react';
 import './Team.scss';
 import defaultphoto from "../../assets/default_photo.jpg";
-import tanvi from "../../assets/Team/Tanvi_Indore_Strategic_Advisor.jpg";
-import anuj from '../../assets/Team/AnujPatel_IITB_FounderAndCEO.png';
-import bhoomi from "../../assets/Team/Bhoomi_IITB_StrategicPartnershipsLead.jpeg";
-import veera from "../../assets/Team/VeeraVenkat_IITPalakkad_CollegeCounsellingOperationsLead.jpeg";
-import paridhi from "../../assets/Team/paridhi.jpg";
-import lakshmi from "../../assets/Team/lakshmi.jpeg";
-import moksh from "../../assets/Team/moksh.jpeg";
-import adarsh from "../../assets/Team/adarsh.jpeg";
+import tanvi from "../../assets/Team/tanvi1.png";
+import anuj from '../../assets/Team/anuj1.png';
+import bhoomi from "../../assets/Team/bhoomi1.png";
+import veera from "../../assets/Team/venkat1.png";
+import paridhi from "../../assets/Team/paridhi1.png";
+import lakshmi from "../../assets/Team/lakshmi1.png";
+import moksh from "../../assets/Team/moksh1.png";
+import adarsh from "../../assets/Team/adarsh1.png";
 
 const teamMembers = [
     { iit: "IIT Bombay", name: 'Anuj Patel', role: 'Founder and CEO', img: anuj, url: "https://www.linkedin.com/in/anuj-patel-679550297/" },
