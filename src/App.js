@@ -42,6 +42,10 @@ import BranchComparisonIntro from './pages/BranchComparison/BranchComparisonIntr
 // Lazy-loaded: pulls in josaaCutoffs.json (1.3 MB) only when user visits /colleges/...
 const CollegeCutoffPage = lazy(() => import('./pages/CollegeCutoffPage/CollegeCutoffPage'));
 
+// Blog pages — lazy-loaded so the markdown renderer isn't in the main bundle
+const BlogList = lazy(() => import('./pages/Blog/BlogList'));
+const BlogPost = lazy(() => import('./pages/Blog/BlogPost'));
+
 // Smart home that switches between JEE home (HomePage) and College home (Home2)
 // based on the cached userType preference — same URL for both.
 function SmartHome() {
@@ -184,6 +188,9 @@ function App() {
               </Suspense>
             }
           />
+          {/* Blog */}
+          <Route path="/blog" element={<Suspense fallback={null}><BlogList /></Suspense>} />
+          <Route path="/blog/:slug" element={<Suspense fallback={null}><BlogPost /></Suspense>} />
           {/* Add other routes as needed */}
         </Routes>
       </Layout>
