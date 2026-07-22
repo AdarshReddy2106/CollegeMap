@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
@@ -6,11 +6,22 @@ import ReactMarkdown from "react-markdown";
 import { supabase } from "../../supabaseClient";
 import "./Blog.scss";
 
+/** Send a GA4 custom event (safe no-op if gtag isn't loaded) */
+const trackEvent = (eventName, params = {}) => {
+  if (typeof window.gtag === "function") {
+    window.gtag("event", eventName, params);
+  }
+};
+
 export default function BlogPost() {
   const { slug } = useParams();
   const [blog, setBlog] = useState(null);
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Scroll-depth tracking refs
+  const scrollMilestonesRef = useRef(new Set());
+  const startTimeRef = useRef(Date.now());
 
   useEffect(() => {
     async function fetchBlog() {
@@ -35,6 +46,63 @@ export default function BlogPost() {
     }
     fetchBlog();
   }, [slug]);
+
+  /* ── GA: blog_post_view ── */
+  useEffect(() => {
+    if (blog) {
+      trackEvent("blog_post_view", {
+        blog_slug: blog.slug,
+        blog_title: blog.title,
+        content_length: blog.content ? blog.content.length : 0,
+      });
+    }
+  }, [blog]);
+
+  /* ── GA: scroll-depth milestones (25 / 50 / 75 / 100 %) ── */
+  useEffect(() => {
+    if (!blog) return;
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (docHeight <= 0) return;
+
+      const pct = Math.round((scrollTop / docHeight) * 100);
+      const milestones = [25, 50, 75, 100];
+
+      milestones.forEach((m) => {
+        if (pct >= m && !scrollMilestonesRef.current.has(m)) {
+          scrollMilestonesRef.current.add(m);
+          trackEvent("blog_post_scroll", {
+            blog_slug: blog.slug,
+            blog_title: blog.title,
+            scroll_depth: m,
+          });
+        }
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [blog]);
+
+  /* ── GA: estimated read time on unmount ── */
+  useEffect(() => {
+    if (!blog) return;
+
+    const postSlug = blog.slug;
+    const postTitle = blog.title;
+    const entryTime = startTimeRef.current;
+
+    return () => {
+      const seconds = Math.round((Date.now() - entryTime) / 1000);
+      trackEvent("blog_post_read_time", {
+        blog_slug: postSlug,
+        blog_title: postTitle,
+        read_time_seconds: seconds,
+      });
+    };
+  }, [blog]);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-IN", {

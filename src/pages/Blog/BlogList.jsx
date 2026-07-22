@@ -5,6 +5,13 @@ import { motion } from "framer-motion";
 import { supabase } from "../../supabaseClient";
 import "./Blog.scss";
 
+/** Send a GA4 custom event (safe no-op if gtag isn't loaded) */
+const trackEvent = (eventName, params = {}) => {
+  if (typeof window.gtag === "function") {
+    window.gtag("event", eventName, params);
+  }
+};
+
 export default function BlogList() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +37,15 @@ export default function BlogList() {
     }
     fetchBlogs();
   }, []);
+
+  /* Track blog list page view once blogs are loaded */
+  useEffect(() => {
+    if (!loading && blogs.length > 0) {
+      trackEvent("blog_list_view", {
+        blog_count: blogs.length,
+      });
+    }
+  }, [loading, blogs.length]);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-IN", {
@@ -72,6 +88,46 @@ export default function BlogList() {
           >
             Expert insights on JEE, IITs, branch selection &amp; beyond
           </motion.p>
+
+          {/* Google Analytics Badge */}
+          <motion.div
+            className="blog-hero__ga-badge"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.5 }}
+          >
+            <a
+              href="https://analytics.google.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ga-badge"
+              id="blog-ga-badge"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M20 20H4V4"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M4 16.5L12 9L15 12L21 6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              Tracked with Google Analytics
+            </a>
+          </motion.div>
         </div>
       </motion.section>
 
@@ -112,6 +168,13 @@ export default function BlogList() {
                   to={`/blog/${blog.slug}`}
                   className="blog-card"
                   id={`blog-card-${blog.slug}`}
+                  onClick={() =>
+                    trackEvent("blog_card_click", {
+                      blog_slug: blog.slug,
+                      blog_title: blog.title,
+                      card_position: index + 1,
+                    })
+                  }
                 >
                   {blog.image_url && (
                     <div className="blog-card__image-wrapper">

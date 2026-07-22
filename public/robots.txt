@@ -13,3 +13,7 @@ Disallow: /results
 
 # Sitemap location
 Sitemap: https://collegemap.in/sitemap.xml
+
+# LLMs.txt — structured site info for AI crawlers
+# https://llmstxt.org
+llms.txt: https://collegemap.in/llms.txt
