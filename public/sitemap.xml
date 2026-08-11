@@ -62,6 +62,11 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
+    <loc>https://collegemap.in/blog</loc>
+    <priority>0.6</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
     <loc>https://collegemap.in/news</loc>
     <priority>0.6</priority>
     <changefreq>daily</changefreq>
@@ -2958,4 +2963,6 @@
     <priority>0.8</priority>
     <changefreq>yearly</changefreq>
   </url>
+
+  <!-- ═══════════ Blog Posts (0 pages) ═══════════ -->
 </urlset>

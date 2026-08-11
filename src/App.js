@@ -78,6 +78,10 @@ function RouteAnalyticsTracker() {
   const location = useLocation();
 
   useEffect(() => {
+    if (location.pathname.startsWith("/blog")) {
+      return;
+    }
+
     if (typeof window.gtag !== "function") {
       return;
     }

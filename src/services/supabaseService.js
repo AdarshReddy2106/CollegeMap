@@ -361,6 +361,34 @@ export const trackResourceEventSupabase = async (resource, actionType, userEmail
  * @param {string} resourceId - The resource ID
  * @returns {Promise<Object>} Views and downloads count
  */
+/**
+ * Fetch analytics for ALL resources from Supabase (for sorting by popularity)
+ * @returns {Promise<Object>} Map of resourceId -> { views, downloads }
+ */
+export const getAllResourceAnalyticsSupabase = async () => {
+  if (!supabase) return {};
+
+  try {
+    const { data, error } = await supabase
+      .from('resource_analytics')
+      .select('resource_id, views, downloads');
+
+    if (error) throw error;
+
+    const analyticsMap = {};
+    (data || []).forEach(row => {
+      analyticsMap[String(row.resource_id)] = {
+        views: row.views || 0,
+        downloads: row.downloads || 0,
+      };
+    });
+    return analyticsMap;
+  } catch (error) {
+    console.error('❌ Error fetching all resource analytics from Supabase:', error);
+    return {};
+  }
+};
+
 export const getResourceAnalyticsSupabase = async (resourceId) => {
   if (!supabase) return { views: 0, downloads: 0 };
 

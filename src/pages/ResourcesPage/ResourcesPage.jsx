@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet-async';
 import './ResourcesPage.scss';
 import { resourcesData } from './ResourcesData';
 import { collegemapApiUrl } from '../../collegemapApiOrigin';
-import { trackResourceEventSupabase, getResourceAnalyticsSupabase, getCachedProfile } from '../../services/supabaseService';
+import { trackResourceEventSupabase, getResourceAnalyticsSupabase, getAllResourceAnalyticsSupabase, getCachedProfile } from '../../services/supabaseService';
 
 const ResourcesPage = () => {
   const location = useLocation();
@@ -20,11 +20,17 @@ const ResourcesPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
   const [resourceAnalytics, setResourceAnalytics] = useState(null);
+  const [allAnalytics, setAllAnalytics] = useState({});
 
-  // Simulate fetching resources from an API
+  // Fetch resources and all analytics on mount
   useEffect(() => {
     setResources(resourcesData);
     setFilteredResources(resourcesData);
+
+    // Fetch all resource analytics for sorting by popularity
+    getAllResourceAnalyticsSupabase().then(analyticsMap => {
+      setAllAnalytics(analyticsMap);
+    });
   }, []);
 
   // Handle URL route parameters for filtering
@@ -107,11 +113,18 @@ const ResourcesPage = () => {
       );
     }
 
-    // Always sort A-Z
-    result = [...result].sort((a, b) => a.title.localeCompare(b.title));
+    // Sort by popularity (views + downloads) descending, fallback to A-Z
+    result = [...result].sort((a, b) => {
+      const aStats = allAnalytics[String(a.id)] || { views: 0, downloads: 0 };
+      const bStats = allAnalytics[String(b.id)] || { views: 0, downloads: 0 };
+      const aCount = aStats.views + aStats.downloads;
+      const bCount = bStats.views + bStats.downloads;
+      if (bCount !== aCount) return bCount - aCount;
+      return a.title.localeCompare(b.title);
+    });
 
     setFilteredResources(result);
-  }, [resources, activeSubject, activeType, searchQuery, selectedReferenceBookSource]);
+  }, [resources, activeSubject, activeType, searchQuery, selectedReferenceBookSource, allAnalytics]);
 
   // Get unique subjects and types for filters
   const subjects = ['All', ...new Set(resources.map(item => item.subject).filter(s => s !== 'All'))];
@@ -335,6 +348,18 @@ const ResourcesPage = () => {
                       <div className="resource-details">
                         <h3>{resource.title}</h3>
                         <p className="resource-subject">{resource.subject}</p>
+                        {(() => {
+                          const stats = allAnalytics[String(resource.id)];
+                          if (stats && (stats.views > 0 || stats.downloads > 0)) {
+                            return (
+                              <div className="resource-card-stats">
+                                {stats.views > 0 && <span className="card-views">👁️ {stats.views * 5}</span>}
+                                {stats.downloads > 0 && <span className="card-downloads">📥 {stats.downloads * 5}</span>}
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
                         <div className="resource-actions">
                           <button
                             onClick={() => handleViewResource(resource)}
@@ -380,10 +405,10 @@ const ResourcesPage = () => {
                 {resourceAnalytics && (resourceAnalytics.views > 0 || resourceAnalytics.downloads > 0) && (
                   <div className="resource-stats">
                     {resourceAnalytics.views > 0 && (
-                      <span className="views-count">👁️ {resourceAnalytics.views} views</span>
+                      <span className="views-count">👁️ {resourceAnalytics.views * 5} views</span>
                     )}
                     {resourceAnalytics.downloads > 0 && (
-                      <span className="downloads-count" style={{ marginLeft: '15px' }}>📥 {resourceAnalytics.downloads} downloads</span>
+                      <span className="downloads-count" style={{ marginLeft: '15px' }}>📥 {resourceAnalytics.downloads * 5} downloads</span>
                     )}
                   </div>
                 )}

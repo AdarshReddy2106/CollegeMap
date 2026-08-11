@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
@@ -12,10 +12,22 @@ const trackEvent = (eventName, params = {}) => {
   }
 };
 
+const sendPageView = (pagePath, pageTitle) => {
+  if (typeof window.gtag === "function") {
+    window.gtag("event", "page_view", {
+      page_path: pagePath,
+      page_location: `${window.location.origin}${pagePath}`,
+      page_title: pageTitle,
+      page_referrer: document.referrer || undefined,
+    });
+  }
+};
+
 export default function BlogList() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const pageViewSentRef = useRef(false);
 
   useEffect(() => {
     async function fetchBlogs() {
@@ -40,6 +52,14 @@ export default function BlogList() {
 
   /* Track blog list page view once blogs are loaded */
   useEffect(() => {
+    if (!loading && !pageViewSentRef.current) {
+      pageViewSentRef.current = true;
+      sendPageView(
+        "/blog",
+        "Blog | CollegeMap — Insights for JEE & College Admissions"
+      );
+    }
+
     if (!loading && blogs.length > 0) {
       trackEvent("blog_list_view", {
         blog_count: blogs.length,

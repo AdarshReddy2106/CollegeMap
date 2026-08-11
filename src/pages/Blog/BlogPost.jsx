@@ -13,11 +13,23 @@ const trackEvent = (eventName, params = {}) => {
   }
 };
 
+const sendPageView = (pagePath, pageTitle) => {
+  if (typeof window.gtag === "function") {
+    window.gtag("event", "page_view", {
+      page_path: pagePath,
+      page_location: `${window.location.origin}${pagePath}`,
+      page_title: pageTitle,
+      page_referrer: document.referrer || undefined,
+    });
+  }
+};
+
 export default function BlogPost() {
   const { slug } = useParams();
   const [blog, setBlog] = useState(null);
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
+  const pageViewSentRef = useRef(false);
 
   // Scroll-depth tracking refs
   const scrollMilestonesRef = useRef(new Set());
@@ -49,6 +61,14 @@ export default function BlogPost() {
 
   /* ── GA: blog_post_view ── */
   useEffect(() => {
+    if (!loading && !pageViewSentRef.current) {
+      pageViewSentRef.current = true;
+      sendPageView(
+        `/blog/${slug}`,
+        blog ? `${blog.title} | CollegeMap Blog` : "Post not found | CollegeMap Blog"
+      );
+    }
+
     if (blog) {
       trackEvent("blog_post_view", {
         blog_slug: blog.slug,
@@ -56,7 +76,7 @@ export default function BlogPost() {
         content_length: blog.content ? blog.content.length : 0,
       });
     }
-  }, [blog]);
+  }, [blog, loading, slug]);
 
   /* ── GA: scroll-depth milestones (25 / 50 / 75 / 100 %) ── */
   useEffect(() => {
