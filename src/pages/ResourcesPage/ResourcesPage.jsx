@@ -353,8 +353,8 @@ const ResourcesPage = () => {
                           if (stats && (stats.views > 0 || stats.downloads > 0)) {
                             return (
                               <div className="resource-card-stats">
-                                {stats.views > 0 && <span className="card-views">👁️ {stats.views * 5}</span>}
-                                {stats.downloads > 0 && <span className="card-downloads">📥 {stats.downloads * 5}</span>}
+                                {stats.views > 0 && <span className="card-views">👁️ {stats.views * 3}</span>}
+                                {stats.downloads > 0 && <span className="card-downloads">📥 {stats.downloads * 3}</span>}
                               </div>
                             );
                           }
