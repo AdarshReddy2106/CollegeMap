@@ -477,7 +477,7 @@ const TestInterface = () => {
       })
       .catch(error => {
         console.error('Error loading test:', error);
-        navigate('/exams');
+        navigate('/practice-mock-tests');
       });
   }, [testId, navigate]);
 
@@ -1196,7 +1196,7 @@ const TestInterface = () => {
       <div className="loading">
         <h3>No questions available</h3>
         <p>This test does not have any questions configured yet.</p>
-        <button onClick={() => navigate('/exams')}>Back to Portal</button>
+        <button onClick={() => navigate('/practice-mock-tests')}>Back to Portal</button>
       </div>
     );
   }
@@ -1235,7 +1235,7 @@ const TestInterface = () => {
       <div className="loading">
         <h3>Error loading question</h3>
         <p>Unable to load the current question. Please try again.</p>
-        <button onClick={() => navigate('/exams')}>Back to Portal</button>
+        <button onClick={() => navigate('/practice-mock-tests')}>Back to Portal</button>
       </div>
     );
   }

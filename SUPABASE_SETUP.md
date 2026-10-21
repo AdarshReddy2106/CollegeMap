@@ -234,3 +234,45 @@ group by resource_id;
 2. Set up new user profile (will save to Supabase)
 3. Take a test (results will save to Supabase)
 4. Check dashboard (will fetch from Supabase)
+
+---
+
+## 5. jee_daily_submissions table (NEW - run this in Supabase SQL editor)
+
+### Required backend setting
+
+JEE Daily Target submissions are saved only by the backend after it verifies the
+student's Supabase access token. In the Vercel project for
+`collegemapbackend`, add `SUPABASE_SERVICE_ROLE_KEY` using the **service_role**
+secret from Supabase Project Settings → API, then redeploy the backend. Do not
+add this secret to any `REACT_APP_*` variable or to the frontend project.
+
+```sql
+create table if not exists public.jee_daily_submissions (
+  id bigserial primary key,
+  user_email text not null,
+  user_name text not null,
+  target_date text not null, -- YYYY-MM-DD in IST
+  score integer not null default 0,
+  total_questions integer not null default 3,
+  correct_answers integer not null default 0,
+  incorrect_answers integer not null default 0,
+  unattempted integer not null default 0,
+  accuracy numeric not null default 0,
+  time_taken_seconds integer not null default 0,
+  answers jsonb,
+  submitted_at timestamptz not null default now(),
+  constraint unique_user_daily_target unique (user_email, target_date)
+);
+
+create index if not exists idx_jee_daily_target_date on public.jee_daily_submissions(target_date);
+create index if not exists idx_jee_daily_user_email on public.jee_daily_submissions(user_email);
+create index if not exists idx_jee_daily_submitted_at on public.jee_daily_submissions(submitted_at desc);
+
+alter table public.jee_daily_submissions enable row level security;
+
+create policy "allow anon select jee_daily_submissions" on public.jee_daily_submissions for select to anon using (true);
+create policy "allow anon insert jee_daily_submissions" on public.jee_daily_submissions for insert to anon with check (true);
+create policy "allow anon update jee_daily_submissions" on public.jee_daily_submissions for update to anon using (true) with check (true);
+```
+

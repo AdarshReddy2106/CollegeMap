@@ -20,7 +20,7 @@ const bannerSlides = [
     id: 3,
     image: '/energy_banner.png',
     alt: 'CollegeMap - Energy Batch Mentorship',
-    link: '/EnergyBatch',
+    link: '/Mentorship',
   },
   {
     id: 4,

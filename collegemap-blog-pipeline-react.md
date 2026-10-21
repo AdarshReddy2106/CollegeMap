@@ -11,17 +11,26 @@ Next's `getStaticProps`/ISR — we'll do client-side fetching with a short cache
 Run this in the Supabase SQL Editor.
 
 ```sql
--- 1. Table
+-- 1. Table schema (with 3 distinct paragraph content columns)
 create table public.blogs (
   id uuid primary key default gen_random_uuid(),
   slug text unique not null,
   title text not null,
-  content text not null,          -- markdown
+  content text,                    -- fallback single markdown content
+  content_start text,              -- Paragraph 1 (Introduction)
+  content_body text,               -- Paragraph 2 (Main Body)
+  content_end text,                -- Paragraph 3 (Conclusion)
   image_url text,
   meta_description text,
   published boolean not null default false,
   created_at timestamptz not null default now()
 );
+
+-- If table already exists, run this migration to add the 3 columns:
+alter table public.blogs 
+  add column if not exists content_start text,
+  add column if not exists content_body text,
+  add column if not exists content_end text;
 
 -- 2. Index for fast slug lookups
 create index blogs_slug_idx on public.blogs (slug);
@@ -34,11 +43,6 @@ create policy "Public can read published blogs"
 on public.blogs
 for select
 using (published = true);
-
--- No insert/update/delete policy for anon/authenticated —
--- writes only happen via the service_role key in Apps Script,
--- which bypasses RLS entirely. This is the key safety boundary:
--- service_role key never goes near the React app.
 ```
 
 ### Storage bucket

@@ -148,7 +148,7 @@ const CBTPortal = () => {
 
   const handleStartTest = (testId) => {
     if (!userProfile) {
-      navigate('/login', { state: { testId, redirectTo: '/exams' } });
+      navigate('/login', { state: { testId, redirectTo: '/practice-mock-tests' } });
       return;
     }
     getTestById(testId)
@@ -159,12 +159,12 @@ const CBTPortal = () => {
           setTermsAccepted(false);
         } else {
           console.error('Test not found:', testId);
-          navigate('/exams');
+          navigate('/practice-mock-tests');
         }
       })
       .catch(error => {
         console.error('Error loading test:', error);
-        navigate('/exams');
+        navigate('/practice-mock-tests');
       });
   };
 
@@ -184,7 +184,7 @@ const CBTPortal = () => {
       <Helmet>
         <title>JEE Mock Tests | Exam Practice with PYQs — CollegeMap</title>
         <meta name="description" content="Attempt JEE Main mock tests in a real JEE Mains environment. Practice previous year papers with a timer, question palette, and instant results. 10,000+ JEE questions curated by IITians." />
-        <link rel="canonical" href="https://collegemap.in/exams" />
+        <link rel="canonical" href="https://collegemap.in/practice-mock-tests" />
       </Helmet>
       {/* ─── Header Section ─── */}
       <motion.div
@@ -231,7 +231,7 @@ const CBTPortal = () => {
         </p>
         <motion.button
           className="custom-build-btn"
-          onClick={() => navigate('/exams/custom')}
+          onClick={() => navigate('/jee-mock-tests')}
           whileHover={{ scale: 1.04, x: 4 }}
           whileTap={{ scale: 0.97 }}
         >

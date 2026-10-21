@@ -30,7 +30,11 @@ const TESTS_WITH_CAPITALIZED_FOLDERS = new Set([
  * @returns {string} Image path
  */
 export const getQuestionImagePath = (testName, subject, questionNumber) => {
-  const usesCapitalizedFolders = testName && TESTS_WITH_CAPITALIZED_FOLDERS.has(testName);
+  const usesCapitalizedFolders = testName && (
+    TESTS_WITH_CAPITALIZED_FOLDERS.has(testName) ||
+    testName.startsWith('JEE Main') ||
+    testName.includes('2026')
+  );
   // 2022/2023 use "mathematics" folder; 2026 (non-21-jan) use "maths"
   const usesMathematicsFolder = testName && (testName.includes('2022') || testName.includes('2023'));
 
@@ -55,17 +59,25 @@ export const getQuestionImagePath = (testName, subject, questionNumber) => {
  * @returns {Promise<Object>} Answer key data
  */
 export const loadAnswerKey = async (testName) => {
-  try {
-    const response = await fetch(`/tests/${testName}/answerKey.json`);
-    if (!response.ok) {
-      throw new Error(`Failed to load answer key: ${response.status}`);
+  const snakeFolder = testName.toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_');
+  const candidateFiles = [
+    'answerKey.json',
+    `${snakeFolder}_answer_key.json`,
+    `${testName.toLowerCase().replace(/\s+/g, '-')}_answer_key.json`
+  ];
+
+  for (const fileName of candidateFiles) {
+    try {
+      const response = await fetch(`/tests/${encodeURIComponent(testName)}/${encodeURIComponent(fileName)}`);
+      if (!response.ok) continue;
+      const text = await response.text();
+      if (!text || text.trimStart().startsWith('<')) continue;
+      return JSON.parse(text);
+    } catch (error) {
+      // try next candidate
     }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error loading answer key:', error);
-    throw error;
   }
+  throw new Error(`Failed to load answer key for ${testName}`);
 };
 
 /**

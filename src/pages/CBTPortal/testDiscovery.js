@@ -29,7 +29,7 @@ export const discoverTests = async () => {
     
     // Known test folders - can be extended (with answerKey.json)
     const knownTestFolders = [
-      // 2026 tests
+      // 2026 Session 1 (January)
       'jee-main-2026-21-jan-shift-1',
       'jee-main-2026-21-jan-shift-2',
       'jee-main-2026-22-jan-shift-1',
@@ -40,6 +40,16 @@ export const discoverTests = async () => {
       'jee-main-2026-24th-jan-shift-2',
       'jee-main-2026-28th-jan-shift-1',
       'jee-main-2026-28th-jan-shift-2',
+      // 2026 Session 2 (April)
+      'jee-main-2026-2nd-apr-shift-1',
+      'jee-main-2026-2nd-apr-shift-2',
+      'jee-main-2026-4th-apr-shift-1',
+      'jee-main-2026-4th-apr-shift-2',
+      'jee-main-2026-5th-apr-shift-1',
+      'jee-main-2026-5th-apr-shift-2',
+      'jee-main-2026-6th-apr-shift-1',
+      'jee-main-2026-6th-apr-shift-2',
+      'jee-main-2026-8th-apr-shift-2',
       // 2025 April tests
       'jee-main-2025-7th-apr-shift-1',
       'jee-main-2025-7th-apr-shift-2',
@@ -126,7 +136,18 @@ export const discoverTests = async () => {
       }
     }
     
-    return tests;
+    // Deduplicate by title key
+    const seenTitles = new Set();
+    const uniqueTests = [];
+    for (const t of tests) {
+      const key = (t.title || t.id).toLowerCase().trim();
+      if (!seenTitles.has(key)) {
+        seenTitles.add(key);
+        uniqueTests.push(t);
+      }
+    }
+
+    return uniqueTests;
   } catch (error) {
     console.error('Error discovering tests:', error);
     return [];
@@ -134,27 +155,30 @@ export const discoverTests = async () => {
 };
 
 /**
- * Load test metadata from answerKey.json
+ * Load test metadata from answerKey.json or fallback filenames
  * @param {string} testFolder - Name of the test folder
  * @returns {Promise<Object|null>} Test metadata or null if not found
  */
 export const loadTestMetadata = async (testFolder) => {
-  try {
-    const response = await fetch(`/tests/${encodeURIComponent(testFolder)}/answerKey.json`);
-    if (!response.ok) {
-      return null;
+  const snakeFolder = testFolder.toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_');
+  const candidateFiles = [
+    'answerKey.json',
+    `${snakeFolder}_answer_key.json`,
+    `${testFolder.toLowerCase().replace(/\s+/g, '-')}_answer_key.json`
+  ];
+
+  for (const fileName of candidateFiles) {
+    try {
+      const response = await fetch(`/tests/${encodeURIComponent(testFolder)}/${encodeURIComponent(fileName)}`);
+      if (!response.ok) continue;
+      const text = await response.text();
+      if (!text || text.trimStart().startsWith('<')) continue;
+      return JSON.parse(text);
+    } catch (error) {
+      // try next candidate
     }
-    // On deployed SPAs, missing static files return 200 + index.html instead of 404.
-    // Guard against that by reading text first and checking for HTML.
-    const text = await response.text();
-    if (!text || text.trimStart().startsWith('<')) {
-      return null; // file not on server yet
-    }
-    return JSON.parse(text);
-  } catch (error) {
-    // Silently skip — file simply isn't available on this environment
-    return null;
   }
+  return null;
 };
 
 /**

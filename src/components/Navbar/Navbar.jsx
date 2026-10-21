@@ -92,7 +92,7 @@ const Navbar = () => {
                             <li><Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
                             <li><Link to="/Resources" onClick={() => setIsMenuOpen(false)}>Top Resources</Link></li>
                             <li><Link to="/StudyWithIITians" onClick={() => setIsMenuOpen(false)}>Study With IITians</Link></li>
-                            <li><Link to="/EnergyBatch" onClick={() => setIsMenuOpen(false)}>Energy Batch</Link></li>
+                            <li><Link to="/Mentorship" onClick={() => setIsMenuOpen(false)}>Mentorship</Link></li>
                             
                             <li
                                 className="nav-dropdown"
@@ -109,8 +109,9 @@ const Navbar = () => {
                                 </span>
                                 {pyqDropdownOpen && (
                                     <ul className="dropdown-menu">
-                                        <li><Link to="/exams" onClick={() => setIsMenuOpen(false)}>Test Portal</Link></li>
+                                        <li><Link to="/practice-mock-tests" onClick={() => setIsMenuOpen(false)}>Test Portal</Link></li>
                                         <li><Link to="/pyq" onClick={() => setIsMenuOpen(false)}>Past Year Papers</Link></li>
+                                        <li><Link to="/jee-daily-target" onClick={() => setIsMenuOpen(false)}>JEE Daily Target</Link></li>
                                     </ul>
                                 )}
                             </li>
@@ -179,9 +180,10 @@ const Navbar = () => {
                                         </li>
                                         <li><Link to="/Resources" onClick={() => { handleSwitchNav('jee', '/Resources'); setJeeDropdownOpen(false); }}>Top Resources</Link></li>
                                         <li><Link to="/StudyWithIITians" onClick={() => { handleSwitchNav('jee', '/StudyWithIITians'); setJeeDropdownOpen(false); }}>Study With IITians</Link></li>
-                                        <li><Link to="/EnergyBatch" onClick={() => { handleSwitchNav('jee', '/EnergyBatch'); setJeeDropdownOpen(false); }}>Energy Batch</Link></li>
-                                        <li><Link to="/exams" onClick={() => { handleSwitchNav('jee', '/exams'); setJeeDropdownOpen(false); }}>Test Portal</Link></li>
+                                        <li><Link to="/Mentorship" onClick={() => { handleSwitchNav('jee', '/Mentorship'); setJeeDropdownOpen(false); }}>Mentorship</Link></li>
+                                        <li><Link to="/practice-mock-tests" onClick={() => { handleSwitchNav('jee', '/practice-mock-tests'); setJeeDropdownOpen(false); }}>Test Portal</Link></li>
                                         <li><Link to="/pyq" onClick={() => { handleSwitchNav('jee', '/pyq'); setJeeDropdownOpen(false); }}>Past Year Papers</Link></li>
+                                        <li><Link to="/jee-daily-target" onClick={() => { handleSwitchNav('jee', '/jee-daily-target'); setJeeDropdownOpen(false); }}>JEE Daily Target</Link></li>
                                     </ul>
                                 )}
                             </li>

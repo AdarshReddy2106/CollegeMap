@@ -1,11 +1,13 @@
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const express = require('express');
 const cors = require('cors');
 const cron = require('node-cron');
 const { scrapeNTAUpdates } = require('./scraper'); 
 const { parseNTARSS } = require('./rssParser');
 const { registerBranchIntelRoutes } = require('./branchIntel');
+const { registerDailyTargetRoutes } = require('./dailyTargetRoutes');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
@@ -48,22 +50,36 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // Middleware
-app.use(cors({
-  origin: [
+// Keep CORS in one shared policy so normal requests and browser preflight
+// requests always advertise the same permitted headers.  In particular, old
+// cached frontend bundles can still send X-User-Email while newer bundles put
+// the email in the query string.
+const allowedOrigins = [
     'https://collegemapseminarpage.vercel.app',
     'http://localhost:3000',
     'http://localhost:5173',
     'https://www.collegemap.in',
     'https://collegemap.in'
-  ],
+];
+const corsOptions = {
+  origin(origin, callback) {
+    // Requests without an Origin header are server-to-server/health requests.
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error(`Origin not allowed by CORS: ${origin}`));
+  },
   methods: ['GET', 'POST', 'OPTIONS'],
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-User-Profile']
-}));
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-User-Profile', 'X-User-Email'],
+  optionsSuccessStatus: 204,
+};
+
+app.options('*', cors(corsOptions));
+app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '10mb' }));
 
 registerBranchIntelRoutes(app);
+registerDailyTargetRoutes(app);
 
 // Razorpay Payment Routes
 app.post("/order", async (req, res) => {

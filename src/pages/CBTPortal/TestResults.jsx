@@ -265,7 +265,7 @@ const TestResults = ({ results, testData, imageUrls = {}, userProfile = {} }) =>
           </button>
           <button
             className="action-button primary"
-            onClick={() => navigate('/exams')}
+            onClick={() => navigate('/practice-mock-tests')}
           >
             Take Another Test
           </button>

@@ -5,7 +5,7 @@
 }
 
 .swi-layout {
-	max-width: 1120px;
+	max-width: 1200px;
 	margin: 0 auto;
 }
 
@@ -38,17 +38,37 @@
 
 .swi-cards-grid {
 	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
+	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 1.5rem;
 	padding: 0 0 2rem;
+	align-items: stretch;
 }
 
 .swi-card {
 	border: none;
 	border-radius: 20px;
-	padding: 2rem;
+	padding: 1.6rem;
 	background: #ffffff;
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+	display: flex;
+	flex-direction: column;
+}
+
+.swi-card-link {
+	text-decoration: none;
+	color: inherit;
+	cursor: pointer;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.swi-card-link:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 14px 34px rgba(0, 0, 0, 0.08);
+}
+
+.swi-card-link:focus-visible {
+	outline: 3px solid #10c3bc;
+	outline-offset: 2px;
 }
 
 .swi-card h2 {
@@ -97,6 +117,8 @@
 	font-size: 1rem;
 	padding: 0.8rem 1.4rem;
 	transition: all 0.3s ease;
+	margin-top: auto;
+	align-self: flex-start;
 }
 
 .swi-action-btn:hover {
@@ -241,7 +263,7 @@
 	}
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
 	.swi-cards-grid {
 		grid-template-columns: 1fr;
 	}

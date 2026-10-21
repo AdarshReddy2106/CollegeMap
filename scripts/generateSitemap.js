@@ -11,6 +11,9 @@
 const fs = require('fs');
 const path = require('path');
 
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+
+
 const BASE_URL = 'https://collegemap.in';
 
 function getEnv(...names) {
@@ -100,27 +103,29 @@ async function fetchPublishedBlogSlugs() {
 
 // ─── Static routes ────────────────────────────────────────────
 const staticRoutes = [
-  { loc: '/',                        priority: '1.0', changefreq: 'weekly'  },
-  { loc: '/CollegePredictor',        priority: '0.9', changefreq: 'monthly' },
-  { loc: '/CollegePredictor/tool',   priority: '0.9', changefreq: 'monthly' },
-  { loc: '/BranchComparision',       priority: '0.9', changefreq: 'monthly' },
-  { loc: '/BranchComparision/tool',  priority: '0.9', changefreq: 'monthly' },
-  { loc: '/College',                 priority: '0.8', changefreq: 'monthly' },
-  { loc: '/TalkToIITians',           priority: '0.8', changefreq: 'weekly'  },
-  { loc: '/StudyWithIITians',        priority: '0.8', changefreq: 'weekly'  },
-  { loc: '/EnergyBatch',             priority: '0.8', changefreq: 'weekly'  },
-  { loc: '/exams',                   priority: '0.8', changefreq: 'weekly'  },
-  { loc: '/pyq',                     priority: '0.7', changefreq: 'monthly' },
-  { loc: '/Resources',               priority: '0.7', changefreq: 'weekly'  },
-  { loc: '/blog',                    priority: '0.6', changefreq: 'weekly'  },
-  { loc: '/news',                    priority: '0.6', changefreq: 'daily'   },
-  { loc: '/AboutUs',                 priority: '0.5', changefreq: 'monthly' },
-  { loc: '/contact',                 priority: '0.5', changefreq: 'monthly' },
-  { loc: '/team',                    priority: '0.4', changefreq: 'monthly' },
-  { loc: '/HowItWorks',              priority: '0.4', changefreq: 'monthly' },
-  { loc: '/Privacy-Policy',          priority: '0.3', changefreq: 'yearly'  },
-  { loc: '/Terms-and-Conditions',    priority: '0.3', changefreq: 'yearly'  },
-  { loc: '/refund',                  priority: '0.3', changefreq: 'yearly'  },
+  { loc: '/', priority: '1.0', changefreq: 'weekly' },
+  { loc: '/CollegePredictor', priority: '0.9', changefreq: 'monthly' },
+  { loc: '/CollegePredictor/tool', priority: '0.9', changefreq: 'monthly' },
+  { loc: '/BranchComparision', priority: '0.9', changefreq: 'monthly' },
+  { loc: '/BranchComparision/tool', priority: '0.9', changefreq: 'monthly' },
+  { loc: '/College', priority: '0.8', changefreq: 'monthly' },
+  { loc: '/TalkToIITians', priority: '0.8', changefreq: 'weekly' },
+  { loc: '/StudyWithIITians', priority: '0.8', changefreq: 'weekly' },
+  { loc: '/jee-daily-target', priority: '0.8', changefreq: 'daily' },
+  { loc: '/EnergyBatch', priority: '0.8', changefreq: 'weekly' },
+  { loc: '/practice-mock-tests', priority: '0.8', changefreq: 'weekly' },
+  { loc: '/jee-mock-tests', priority: '0.8', changefreq: 'weekly' },
+  { loc: '/pyq', priority: '0.7', changefreq: 'monthly' },
+  { loc: '/Resources', priority: '0.7', changefreq: 'weekly' },
+  { loc: '/blog', priority: '0.6', changefreq: 'weekly' },
+  { loc: '/news', priority: '0.6', changefreq: 'daily' },
+  { loc: '/AboutUs', priority: '0.5', changefreq: 'monthly' },
+  { loc: '/contact', priority: '0.5', changefreq: 'monthly' },
+  { loc: '/team', priority: '0.4', changefreq: 'monthly' },
+  { loc: '/HowItWorks', priority: '0.4', changefreq: 'monthly' },
+  { loc: '/Privacy-Policy', priority: '0.3', changefreq: 'yearly' },
+  { loc: '/Terms-and-Conditions', priority: '0.3', changefreq: 'yearly' },
+  { loc: '/refund', priority: '0.3', changefreq: 'yearly' },
 ];
 
 // ─── Build XML ────────────────────────────────────────────────

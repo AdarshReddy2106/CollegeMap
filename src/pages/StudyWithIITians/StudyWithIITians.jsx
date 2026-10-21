@@ -1,5 +1,6 @@
 import React from "react";
 import { Helmet } from 'react-helmet-async';
+import { Link } from "react-router-dom";
 import "./StudyWithIITians.css";
 import thumbnailOne from "../../assets/Thumbnails/yt1.jpeg";
 import thumbnailTwo from "../../assets/Thumbnails/yt2.jpeg";
@@ -28,6 +29,12 @@ const highFocusPoints = [
 	"Set daily goals and work",
 	"Peer learning and encouragement",
 	"Support and guidance by IITians",
+];
+
+const dailyTargetPoints = [
+	"A fresh set of JEE questions every day",
+	"Stay consistent with a focused daily target",
+	"Track and complete today’s practice in one place",
 ];
 
 const youtubeThumbnails = [
@@ -124,6 +131,20 @@ const StudyWithIITian = () => {
 								<span>Join for FREE</span>
 							</a>
 						</article>
+
+						<Link
+							to="/jee-daily-target"
+							className="swi-card swi-card-link"
+							aria-label="Open JEE Daily Target"
+						>
+							<h2>JEE Daily Target</h2>
+							<ul className="swi-list">
+								{dailyTargetPoints.map((point) => (
+									<li key={point}>{point}</li>
+								))}
+							</ul>
+							<span className="swi-action-btn">Start today’s questions</span>
+						</Link>
 
 						<article className="swi-card">
 							<h2>Live Paper Attempts</h2>

@@ -20,8 +20,8 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#1a1a2e",
-  "background_color": "#ffffff",
+  "theme_color": "#0a2224",
+  "background_color": "#0a2224",
   "description": "One-stop for your JEE journey: from preparation to college counseling. Built by IITians, for future IITians.",
   "categories": ["education", "productivity"]
 }

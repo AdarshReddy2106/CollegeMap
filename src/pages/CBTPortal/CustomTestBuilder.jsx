@@ -1,10 +1,20 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import {
+  BookOpen,
+  Target,
+  ChevronDown,
+  ChevronUp,
+  Atom,
+  FlaskConical,
+  Calculator,
+  Info,
+  AlertCircle
+} from 'lucide-react';
 import { useUserProfile } from '../../context/UserProfileContext';
 import './CustomTestBuilder.scss';
 import { buildQuestionPool, filterQuestions, getAvailableCounts, generateCustomTest } from './customTestGenerator';
-import ProfileIcon from '../../components/ProfileIcon/ProfileIcon';
 
 const CustomTestBuilder = () => {
   const navigate = useNavigate();
@@ -17,6 +27,9 @@ const CustomTestBuilder = () => {
   const [totalChaptersLoaded, setTotalChaptersLoaded] = useState(0);
 
   // Filter state
+  const [includeCollegeMap, setIncludeCollegeMap] = useState(true);
+  const [selectedJeeYears, setSelectedJeeYears] = useState([]);
+  const [availableJeeYears, setAvailableJeeYears] = useState([]);
   const [selectedSubjects, setSelectedSubjects] = useState([]);
   const [selectedDifficulties, setSelectedDifficulties] = useState([]);
   const [selectedLessons, setSelectedLessons] = useState([]);
@@ -24,6 +37,8 @@ const CustomTestBuilder = () => {
   const [questionType, setQuestionType] = useState('all'); // 'all', 'mcq', 'numerical'
 
   // UI state
+  const [showJeeDropdown, setShowJeeDropdown] = useState(false);
+  const jeeDropdownRef = useRef(null);
   const [showLessonPicker, setShowLessonPicker] = useState(false);
   const [lessonSearch, setLessonSearch] = useState('');
   const [generating, setGenerating] = useState(false);
@@ -32,12 +47,23 @@ const CustomTestBuilder = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
 
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (jeeDropdownRef.current && !jeeDropdownRef.current.contains(event.target)) {
+        setShowJeeDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   // Load question pool on mount
   useEffect(() => {
     if (!userProfile) {
       const emailStored = sessionStorage.getItem('userEmail');
       if (!emailStored) {
-        navigate('/login', { state: { redirectTo: '/exams/custom' } });
+        navigate('/login', { state: { redirectTo: '/jee-mock-tests' } });
         return;
       }
       // Load profile from context
@@ -52,6 +78,11 @@ const CustomTestBuilder = () => {
         setLessonsBySubject(pool.lessonsBySubject);
         setTotalTestsLoaded(pool.totalTests);
         setTotalChaptersLoaded(pool.totalChapters || 0);
+
+        const years = pool.availableJeeYears || ['2026', '2025', '2024'];
+        setAvailableJeeYears(years);
+        setSelectedJeeYears(years);
+
         setLoading(false);
       })
       .catch(err => {
@@ -63,11 +94,13 @@ const CustomTestBuilder = () => {
 
   // Current filters object
   const currentFilters = useMemo(() => ({
+    includeCollegeMap,
+    selectedJeeYears,
     subjects: selectedSubjects,
     lessons: selectedLessons,
     difficulties: selectedDifficulties,
     questionType
-  }), [selectedSubjects, selectedLessons, selectedDifficulties, questionType]);
+  }), [includeCollegeMap, selectedJeeYears, selectedSubjects, selectedLessons, selectedDifficulties, questionType]);
 
   // Filtered questions and counts
   const filteredQuestions = useMemo(() =>
@@ -108,6 +141,20 @@ const CustomTestBuilder = () => {
   }, [filteredQuestions.length, questionCount]);
 
   // Handlers
+  const toggleJeeYear = (year) => {
+    setSelectedJeeYears(prev =>
+      prev.includes(year) ? prev.filter(y => y !== year) : [...prev, year]
+    );
+  };
+
+  const selectAllJeeYears = () => {
+    setSelectedJeeYears([...availableJeeYears]);
+  };
+
+  const clearAllJeeYears = () => {
+    setSelectedJeeYears([]);
+  };
+
   const toggleSubject = (subject) => {
     setSelectedSubjects(prev => {
       const next = prev.includes(subject)
@@ -149,6 +196,8 @@ const CustomTestBuilder = () => {
 
     try {
       const config = {
+        includeCollegeMap,
+        selectedJeeYears,
         subjects: selectedSubjects,
         lessons: selectedLessons,
         difficulties: selectedDifficulties,
@@ -181,15 +230,15 @@ const CustomTestBuilder = () => {
 
   // Subject configs
   const subjects = [
-    { id: 'physics', label: 'Physics', icon: '⚛️', color: '#4CAF50' },
-    { id: 'chemistry', label: 'Chemistry', icon: '🧪', color: '#FF9800' },
-    { id: 'mathematics', label: 'Mathematics', icon: '📐', color: '#2196F3' }
+    { id: 'physics', label: 'Physics', icon: <Atom size={16} />, color: '#4CAF50' },
+    { id: 'chemistry', label: 'Chemistry', icon: <FlaskConical size={16} />, color: '#FF9800' },
+    { id: 'mathematics', label: 'Mathematics', icon: <Calculator size={16} />, color: '#2196F3' }
   ];
 
   const difficulties = [
-    { id: 'easy', label: 'Easy', icon: '🟢', color: '#4CAF50' },
-    { id: 'medium', label: 'Medium', icon: '🟡', color: '#FF9800' },
-    { id: 'hard', label: 'Hard', icon: '🔴', color: '#f44336' }
+    { id: 'easy', label: 'Easy', color: '#4CAF50' },
+    { id: 'medium', label: 'Medium', color: '#FF9800' },
+    { id: 'hard', label: 'Hard', color: '#f44336' }
   ];
 
   if (loading) {
@@ -207,7 +256,8 @@ const CustomTestBuilder = () => {
     return (
       <div className="custom-test-builder">
         <div className="error-container">
-          <h2>❌ Error</h2>
+          <AlertCircle size={40} color="#ef4444" />
+          <h2>Error Loading Question Bank</h2>
           <p>{error}</p>
           <button onClick={() => window.location.reload()}>Retry</button>
         </div>
@@ -225,11 +275,11 @@ const CustomTestBuilder = () => {
         transition={{ duration: 0.5 }}
       >
         <div className="header-nav">
-          <button className="back-button" onClick={() => navigate('/exams')}>
+          <button className="back-button" onClick={() => navigate('/practice-mock-tests')}>
             ← Back to CBT Portal
           </button>
         </div>
-        <h1>📝 Custom Test Builder</h1>
+        <h1>Custom Test Builder</h1>
         <p className="subtitle">
           Build your own practice test from <strong>{questionPool.length}</strong> questions
           across <strong>{totalTestsLoaded}</strong> JEE Main papers
@@ -245,10 +295,95 @@ const CustomTestBuilder = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          {/* Step 1: Subject Selection */}
-          <div className="filter-section">
+          {/* Step 1: Select Question Source(s) */}
+          <div className="filter-section source-selection-section">
             <h3 className="section-title">
               <span className="step-number">1</span>
+              Select Question Source(s)
+            </h3>
+            <p className="section-hint">Select the question sets to include in your custom test</p>
+
+            <div className="source-controls-container">
+              {/* Checkbox 1: CollegeMap Practice Sets */}
+              <label className={`source-card ${includeCollegeMap ? 'active' : ''}`}>
+                <input
+                  type="checkbox"
+                  checked={includeCollegeMap}
+                  onChange={(e) => setIncludeCollegeMap(e.target.checked)}
+                  className="source-checkbox"
+                />
+                <span className="source-icon"><BookOpen size={18} /></span>
+                <span className="source-label">CollegeMap Practice Sets</span>
+                {availableCounts.collegeMapCount !== undefined && (
+                  <span className="source-count">{availableCounts.collegeMapCount}</span>
+                )}
+              </label>
+
+              {/* Dropdown: JEE Mains Sets */}
+              <div className="jee-dropdown-wrapper" ref={jeeDropdownRef}>
+                <button
+                  type="button"
+                  className={`jee-dropdown-trigger ${selectedJeeYears.length > 0 ? 'active' : ''}`}
+                  onClick={() => setShowJeeDropdown(!showJeeDropdown)}
+                >
+                  <div className="trigger-content">
+                    <span className="source-icon"><Target size={18} /></span>
+                    <span className="trigger-label">JEE Mains Sets</span>
+                    <span className="trigger-subtitle">
+                      {selectedJeeYears.length === 0
+                        ? '(None Selected)'
+                        : selectedJeeYears.length === availableJeeYears.length
+                          ? '(All Years Selected)'
+                          : `(${selectedJeeYears.slice().sort((a, b) => b - a).join(', ')})`
+                      }
+                    </span>
+                  </div>
+                  <span className="dropdown-arrow">{showJeeDropdown ? <ChevronUp size={16} /> : <ChevronDown size={16} />}</span>
+                </button>
+
+                <AnimatePresence>
+                  {showJeeDropdown && (
+                    <motion.div
+                      className="jee-dropdown-menu"
+                      initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <div className="dropdown-actions">
+                        <span className="actions-title">Filter JEE Main Years:</span>
+                        <div className="action-buttons">
+                          <button type="button" onClick={selectAllJeeYears}>All</button>
+                          <button type="button" onClick={clearAllJeeYears}>Clear</button>
+                        </div>
+                      </div>
+
+                      <div className="dropdown-options-list">
+                        {availableJeeYears.map(year => (
+                          <label key={year} className="dropdown-option-item">
+                            <input
+                              type="checkbox"
+                              checked={selectedJeeYears.includes(year)}
+                              onChange={() => toggleJeeYear(year)}
+                            />
+                            <span className="option-year-text">JEE Main {year}</span>
+                            <span className="option-count">
+                              {availableCounts.jeeYearCounts?.[year] || 0}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+          </div>
+
+          {/* Step 2: Subject Selection */}
+          <div className="filter-section">
+            <h3 className="section-title">
+              <span className="step-number">2</span>
               Select Subject(s)
             </h3>
             <p className="section-hint">Leave empty for all subjects</p>
@@ -275,10 +410,10 @@ const CustomTestBuilder = () => {
             </div>
           </div>
 
-          {/* Step 2: Difficulty Selection */}
+          {/* Step 3: Difficulty Selection */}
           <div className="filter-section">
             <h3 className="section-title">
-              <span className="step-number">2</span>
+              <span className="step-number">3</span>
               Select Difficulty
             </h3>
             <p className="section-hint">Leave empty for all difficulty levels</p>
@@ -295,7 +430,7 @@ const CustomTestBuilder = () => {
                     : {}
                   }
                 >
-                  <span className="chip-icon">{diff.icon}</span>
+                  <span className="chip-indicator" style={{ backgroundColor: diff.color }} />
                   <span className="chip-label">{diff.label}</span>
                   <span className="chip-count">{availableCounts.byDifficulty[diff.id] || 0}</span>
                 </motion.button>
@@ -303,10 +438,10 @@ const CustomTestBuilder = () => {
             </div>
           </div>
 
-          {/* Step 3: Lesson/Topic Selection */}
+          {/* Step 4: Lesson/Topic Selection */}
           <div className="filter-section">
             <h3 className="section-title">
-              <span className="step-number">3</span>
+              <span className="step-number">4</span>
               Select Topics
             </h3>
             <p className="section-hint">
@@ -381,10 +516,10 @@ const CustomTestBuilder = () => {
             )}
           </div>
 
-          {/* Step 4: Question Type */}
+          {/* Step 5: Question Type */}
           <div className="filter-section">
             <h3 className="section-title">
-              <span className="step-number">4</span>
+              <span className="step-number">5</span>
               Question Type
             </h3>
             <div className="type-selector">
@@ -404,10 +539,10 @@ const CustomTestBuilder = () => {
             </div>
           </div>
 
-          {/* Step 5: Number of Questions */}
+          {/* Step 6: Number of Questions */}
           <div className="filter-section">
             <h3 className="section-title">
-              <span className="step-number">5</span>
+              <span className="step-number">6</span>
               Number of Questions
             </h3>
             <div className="question-count-control">
@@ -538,7 +673,7 @@ const CustomTestBuilder = () => {
 
             {/* Practice mode notice */}
             <div className="practice-notice">
-              <span className="notice-icon">ℹ️</span>
+              <span className="notice-icon"><Info size={18} /></span>
               <p>
                 Questions sourced from JEE Main papers. Some questions may be in
                 <strong> practice mode</strong> (no auto-scoring) if answer keys are unavailable.
@@ -561,7 +696,7 @@ const CustomTestBuilder = () => {
               ) : filteredQuestions.length === 0 ? (
                 'No questions match your filters'
               ) : (
-                `🚀 Generate & Start Test (${Math.min(questionCount, filteredQuestions.length)} Questions)`
+                `Generate & Start Test (${Math.min(questionCount, filteredQuestions.length)} Questions)`
               )}
             </motion.button>
           </div>

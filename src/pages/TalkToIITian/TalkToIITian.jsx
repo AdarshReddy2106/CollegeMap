@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Helmet } from 'react-helmet-async';
+import Addmentor from "../../components/Addmentor/Addmentor";
 import "./TalkToIITian.css";
 
 const BASE_URL = process.env.REACT_APP_API_URL || "https://collegemapbackend.vercel.app";
@@ -703,6 +704,11 @@ const TalkToIITian = () => {
           </div>
         </div>
       )}
+
+      {/* Floating Join as Mentor Label */}
+      <Addmentor
+        hasBottomNav={false}
+      />
     </main>
   );
 };

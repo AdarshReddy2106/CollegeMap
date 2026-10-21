@@ -31,14 +31,16 @@ import CBTDashboard from "./pages/CBTPortal/CBTDashboard";
 import HomePage from "./pages/Home/HomePage";
 import PYQPage from "./pages/PYQPage/PYQPage";
 import PYQAdvancedPage from "./pages/PYQAdvancedPage/PYQAdvancedPage";
-import EnergyBatch from "./pages/EnergyBatch/EnergyBatch";
+import Mentorship from "./pages/Mentorship/Mentorship";
 import TalkToIITian from "./pages/TalkToIITian/TalkToIITian";
 import Home2 from "./pages/Home_2/Home2";
 import Login2 from "./pages/Login_2/login2";
 import UserTypeModal from "./components/UserTypeModal/UserTypeModal";
 import StudyWithIITian from "./pages/StudyWithIITians/StudyWithIITians";
+import JEEDailyTarget from "./pages/JEEDailyTarget/JEEDailyTarget";
 import CollegePredictortool from './pages/CollegePredictor/CollegePredictortool';
 import BranchComparisonIntro from './pages/BranchComparison/BranchComparisonIntro';
+import JoinAsMentor from './pages/JoinAsMentor/JoinAsMentor';
 // Lazy-loaded: pulls in josaaCutoffs.json (1.3 MB) only when user visits /colleges/...
 const CollegeCutoffPage = lazy(() => import('./pages/CollegeCutoffPage/CollegeCutoffPage'));
 
@@ -170,12 +172,15 @@ function App() {
           {/* <Route path="/BranchComparision" element={<BranchComparison />} /> */}
           <Route path="/CollegePredictor" element={<CollegePredictor />} />
           <Route path="/CollegePredictor/results" element={<CollegePredictorResults />} />
-          <Route path="/EnergyBatch" element={<EnergyBatch />} />
-          <Route path="/StudyWithIITians" element={<StudyWithIITian/>} />
+          <Route path="/Mentorship" element={<Mentorship />} />
+          <Route path="/StudyWithIITians" element={<StudyWithIITian />} />
+          <Route path="/jee-daily-target" element={<JEEDailyTarget />} />
           <Route path="/TalkToIITians" element={<TalkToIITian />} />
+          <Route path="/join-as-mentor" element={<JoinAsMentor />} />
           {/* <Route path="/cbt-portal" element={<CBTPortal />} /> */}
+          <Route path="/practice-mock-tests" element={<CBTPortal />} />
           <Route path="/exams" element={<CBTPortal />} />
-          {/* <Route path="/cbt-portal/custom-test" element={<CustomTestBuilder />} /> */}
+          <Route path="/jee-mock-tests" element={<CustomTestBuilder />} />
           <Route path="/exams/custom" element={<CustomTestBuilder />} />
           <Route path="/exams/test/:testId" element={<TestInterface />} />
           <Route path="/exams/dashboard" element={<CBTDashboard />} />

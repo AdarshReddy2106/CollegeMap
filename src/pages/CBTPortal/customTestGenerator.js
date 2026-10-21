@@ -62,6 +62,52 @@ const TEST_REGISTRY = [
     hasAnswerKey: true,
     subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
   },
+  // 2026 Session 2 (April) tests
+  {
+    folder: 'jee-main-2026-2nd-apr-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
+  },
+  {
+    folder: 'jee-main-2026-2nd-apr-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
+  },
+  {
+    folder: 'jee-main-2026-4th-apr-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
+  },
+  {
+    folder: 'jee-main-2026-4th-apr-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
+  },
+  {
+    folder: 'jee-main-2026-5th-apr-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
+  },
+  {
+    folder: 'jee-main-2026-5th-apr-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
+  },
+  {
+    folder: 'jee-main-2026-6th-apr-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
+  },
+  {
+    folder: 'jee-main-2026-6th-apr-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
+  },
+  {
+    folder: 'jee-main-2026-8th-apr-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
+  },
   // 2025 tests
   {
     folder: 'jee-main-2025-22-jan-shift-1',
@@ -102,6 +148,22 @@ const TEST_REGISTRY = [
     folder: 'jee-main-2025-29th-jan-shift-2',
     hasAnswerKey: true,
     subjectFolders: { physics: 'Physics', chemistry: 'Chemistry', mathematics: 'Maths' }
+  },
+  // 2025 April tests
+  {
+    folder: 'jee-main-2025-7th-apr-shift-1',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2025-7th-apr-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
+  },
+  {
+    folder: 'jee-main-2025-8th-apr-shift-2',
+    hasAnswerKey: true,
+    subjectFolders: { physics: 'physics', chemistry: 'chemistry', mathematics: 'maths' }
   },
   // 2024 Session 1 (January / February) tests
   {
@@ -383,7 +445,8 @@ const loadQuestionBankChapter = async (chapterInfo) => {
               testFolder: `QB-${chapterInfo.chapterId}`,
               subjectFolder: '',
               hasAnswerKey: true,
-              source: 'question-bank',
+              source: 'collegemap',
+              year: null,
               // Image path matching encoding pattern, without explicit encodeURI for Dev Server compat
               imagePath: `/QUESTION_BANK/${chapterInfo.folder}/${difficulty}/${qNum}`,
               questionType: qData.questionType || 'single-correct',
@@ -417,7 +480,7 @@ const loadQuestionBankChapter = async (chapterInfo) => {
 
 /**
  * Build the complete question pool from all registered tests.
- * Returns { questions: [...], lessonsBySubject: {...}, allLessons: [...] }
+ * Returns { questions: [...], lessonsBySubject: {...}, allLessons: [...], availableJeeYears: [...] }
  */
 export const buildQuestionPool = async () => {
   const questions = [];
@@ -426,12 +489,17 @@ export const buildQuestionPool = async () => {
     chemistry: new Set(),
     mathematics: new Set()
   };
+  const availableJeeYearsSet = new Set();
 
   // --- Phase 1: Load questions from previous year test papers ---
   for (const testInfo of TEST_REGISTRY) {
     try {
       const metadata = await loadTestMetadataJSON(testInfo.folder);
       if (!metadata || !metadata.sections) continue;
+
+      const yearMatch = testInfo.folder.match(/\b(20\d\d)\b/);
+      const year = yearMatch ? yearMatch[1] : '2026';
+      if (year) availableJeeYearsSet.add(year);
 
       // Load answer key if available
       let answerKey = null;
@@ -480,6 +548,8 @@ export const buildQuestionPool = async () => {
             testFolder: testInfo.folder,
             subjectFolder,
             hasAnswerKey: testInfo.hasAnswerKey,
+            source: 'jee-mains',
+            year,
             // Image path: /tests/{folder}/{subjectFolder}/{qNum}
             imagePath: `/tests/${encodeURI(testInfo.folder)}/${encodeURI(subjectFolder)}/${qNum}`,
             // Answer data (only for tests with answer keys)
@@ -545,12 +615,15 @@ export const buildQuestionPool = async () => {
     ...lessonsBySubjectArray.mathematics
   ])].sort();
 
+  const availableJeeYears = Array.from(availableJeeYearsSet).sort((a, b) => Number(b) - Number(a));
+
   return {
     questions,
     lessonsBySubject: lessonsBySubjectArray,
     allLessons,
     totalTests: TEST_REGISTRY.length,
-    totalChapters: totalChaptersLoaded
+    totalChapters: totalChaptersLoaded,
+    availableJeeYears
   };
 };
 
@@ -558,9 +631,27 @@ export const buildQuestionPool = async () => {
  * Filter the question pool based on selected criteria
  */
 export const filterQuestions = (pool, filters) => {
-  const { subjects = [], lessons = [], difficulties = [], questionType = 'all' } = filters;
+  const {
+    subjects = [],
+    lessons = [],
+    difficulties = [],
+    questionType = 'all',
+    includeCollegeMap = true,
+    selectedJeeYears = []
+  } = filters;
 
   return pool.filter(q => {
+    // Source filter
+    const isCollegeMap = q.source === 'collegemap' || q.source === 'question-bank';
+    const isJeeMains = q.source === 'jee-mains' || (!isCollegeMap && q.testFolder && !q.testFolder.startsWith('QB-'));
+
+    if (isCollegeMap && !includeCollegeMap) return false;
+
+    if (isJeeMains) {
+      if (!selectedJeeYears || selectedJeeYears.length === 0) return false;
+      if (q.year && !selectedJeeYears.includes(q.year)) return false;
+    }
+
     // Subject filter
     if (subjects.length > 0 && !subjects.includes(q.subject)) return false;
 
@@ -594,11 +685,32 @@ export const getAvailableCounts = (pool, filters) => {
     byLesson[q.lesson] = (byLesson[q.lesson] || 0) + 1;
   });
 
+  // Calculate available questions per source matching active subject/difficulty/lesson/type filters
+  let collegeMapCount = 0;
+  const jeeYearCounts = {};
+
+  pool.forEach(q => {
+    if (filters.subjects?.length > 0 && !filters.subjects.includes(q.subject)) return;
+    if (filters.lessons?.length > 0 && !filters.lessons.includes(q.lesson)) return;
+    if (filters.difficulties?.length > 0 && !filters.difficulties.includes(q.difficulty)) return;
+    if (filters.questionType === 'mcq' && q.type !== 'MCQ') return;
+    if (filters.questionType === 'numerical' && q.type !== 'Numerical') return;
+
+    const isCollegeMap = q.source === 'collegemap' || q.source === 'question-bank';
+    if (isCollegeMap) {
+      collegeMapCount += 1;
+    } else if (q.year) {
+      jeeYearCounts[q.year] = (jeeYearCounts[q.year] || 0) + 1;
+    }
+  });
+
   return {
     total: filtered.length,
     bySubject,
     byDifficulty,
-    byLesson
+    byLesson,
+    collegeMapCount,
+    jeeYearCounts
   };
 };
 

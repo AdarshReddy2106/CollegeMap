@@ -217,7 +217,7 @@ const CBTDashboard = () => {
         <div className="header-actions">
           <button
             className="back-button"
-            onClick={() => navigate('/exams')}
+            onClick={() => navigate('/practice-mock-tests')}
           >
             ← Back to Portal
           </button>
@@ -237,7 +237,7 @@ const CBTDashboard = () => {
             <p>Start taking tests to see your results and analysis here</p>
             <button
               className="start-test-button"
-              onClick={() => navigate('/exams')}
+              onClick={() => navigate('/practice-mock-tests')}
             >
               Take Your First Test
             </button>

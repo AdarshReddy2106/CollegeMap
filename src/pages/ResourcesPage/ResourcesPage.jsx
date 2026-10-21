@@ -405,10 +405,10 @@ const ResourcesPage = () => {
                 {resourceAnalytics && (resourceAnalytics.views > 0 || resourceAnalytics.downloads > 0) && (
                   <div className="resource-stats">
                     {resourceAnalytics.views > 0 && (
-                      <span className="views-count">👁️ {resourceAnalytics.views * 5} views</span>
+                      <span className="views-count">👁️ {resourceAnalytics.views * 3} views</span>
                     )}
                     {resourceAnalytics.downloads > 0 && (
-                      <span className="downloads-count" style={{ marginLeft: '15px' }}>📥 {resourceAnalytics.downloads * 5} downloads</span>
+                      <span className="downloads-count" style={{ marginLeft: '15px' }}>📥 {resourceAnalytics.downloads * 3} downloads</span>
                     )}
                   </div>
                 )}
